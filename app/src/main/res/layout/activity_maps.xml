@@ -1,0 +1,94 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.ridelineTeam.application.rideline.view.MapsActivity" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@color/icons">
+            <ImageView
+                android:id="@+id/originIc"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/ic_origin" />
+            <AutoCompleteTextView
+                android:id="@+id/txtOrigin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/originIc"
+                android:layout_centerVertical="true"
+                android:hint="@string/originText"
+                android:inputType="textAutoComplete"
+                android:maxLines="1" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/icons">
+            <ImageView
+                android:id="@+id/destinationIc"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:src="@drawable/ic_destination" />
+            <AutoCompleteTextView
+                android:id="@+id/txtDestination"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/destinationIc"
+                android:layout_centerVertical="true"
+                android:hint="@string/destinationText"
+                android:inputType="textAutoComplete"
+                android:maxLines="1" />
+        </RelativeLayout>
+        <Button
+            android:id="@+id/btn_ShowRoute"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="5dp"
+            android:text="@string/btn_showRoute"
+            android:drawableEnd="@drawable/ic_map"
+            android:theme="@style/RaisedButtonDark" />
+    </LinearLayout>
+    <ProgressBar
+        android:id="@+id/loading"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+        <Button
+            android:layout_alignParentBottom="true"
+            android:id="@+id/btn_createRide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:padding="12dp"
+            android:text="@string/btn_createRide"
+            android:theme="@style/RaisedButtonDark" />
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

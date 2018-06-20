@@ -1,0 +1,22 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/icons"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.ridelineTeam.application.rideline.view.fragment.HomeFragment">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
+            android:id="@+id/mainRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:msrv_gravity="center"
+            app:msrv_snap_count="3" />
+    </FrameLayout>
+
+</android.support.design.widget.CoordinatorLayout>

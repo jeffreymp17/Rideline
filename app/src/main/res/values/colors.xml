@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        <color name="colorPrimary">#2196F3</color>
+        <color name="colorPrimaryDark">#1976D2</color>
+        <color name="colorPrimaryLight">#BBDEFB</color>
+        <color name="colorAccent">#FFC107</color>
+        <color name="primaryText">#212121</color>
+        <color name="secondaryText">#757575</color>
+        <color name="icons">#FFFFFF</color>
+        <color name="divider">#BDBDBD</color>
+        <color name="background">#EEEEEE</color>
+        <color name="colorBackgroundTextCard">#56404040</color>
+        <color name="dangerColor">#b71c1c</color>
+        <color name="colorCancelPrimary">#F44336</color>
+        <color name="colorCancelDark">#D32F2F</color>
+        <color name="myBubble">#b3e5fc</color>
+</resources>

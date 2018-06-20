@@ -1,0 +1,127 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardview="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/divider">
+<ScrollView
+    android:id="@+id/scrollRideDetail"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.ridelineTeam.application.rideline.view.RideDetailActivity" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_card_ride_detail"
+            android:background="?android:selectableItemBackground"
+            android:elevation="10dp"
+            android:defaultFocusHighlightEnabled="true"
+            android:id="@+id/card_details"
+            cardview:cardCornerRadius="5dp">
+            <TextView
+                android:id="@+id/show_detail_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="19sp"
+                android:textStyle="bold"
+                android:text="@string/ride_detail_hidden_message" />
+            <LinearLayout
+                android:id="@+id/linear_detail_information"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/details"
+                    android:textSize="19sp"
+                    android:textAlignment="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="@string/ride_detail_hidden_message" />
+                <TextView
+                    android:id="@+id/detailOrigin"
+                    android:textSize="15sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ride_details_active_message" />
+                <TextView
+                    android:id="@+id/detailDestination"
+                    android:textSize="15sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/destinationText" />
+                <TextView
+                    android:id="@+id/detailDate"
+                    android:textSize="15sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/date" />
+                <TextView
+                    android:id="@+id/detailStatus"
+                    android:textSize="15sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hint_status" />
+
+                <TextView
+                    android:id="@+id/detailCommunity"
+                    android:textSize="15sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="" />
+            </LinearLayout>
+            <RelativeLayout
+                android:id="@+id/relative_detail_information"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:elevation="8dp"
+                    android:src="@drawable/outline_call_white_18dp"
+                    android:visibility="visible"
+                    android:id="@+id/btn_call"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginBottom="23dp"
+                    android:layout_marginEnd="23dp"/>
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:elevation="8dp"
+            android:visibility="visible"
+            android:background="?android:attr/selectableItemBackground"
+            android:id="@+id/btn_navigation"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="23dp"
+            android:layout_marginEnd="23dp"
+            android:src="@drawable/ic_navigation_white_24dp" />
+    </RelativeLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

@@ -1,0 +1,134 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.ridelineTeam.application.rideline.view.fragment.ProfileFragment">
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="215dp"
+            android:background="@color/colorPrimary"
+            android:paddingTop="15dp">
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/my_picture_profile"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:src="@drawable/avatar"
+                    app:civ_border_color="@color/icons"
+                    app:civ_border_width="2dp" />
+
+                <TextView
+                    android:id="@+id/profile_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Jeffry Martinez Perez"
+                    android:textAlignment="center"
+                    android:textColor="@color/icons"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/profile_place"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Caimital"
+                    android:textAlignment="center"
+                    android:textColor="@color/icons"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/user_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Caimital"
+                    android:textAlignment="center"
+                    android:textColor="@color/icons"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/user_year"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="2018"
+                    android:textAlignment="center"
+                    android:textColor="@color/icons"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/edit_profile"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="5dp"
+                android:src="@drawable/ic_pencil" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
+                android:text="@string/active_ride" />
+
+            <include
+                layout="@layout/cardview"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/noActiveRideText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/no_active_ride_message"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="5dp">
+
+            <com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
+                android:id="@+id/recycler_profile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="10dp"
+                app:msrv_gravity="start"
+                app:msrv_ms_per_inch="@dimen/normal_speed"
+                app:msrv_snap_count="2" />
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

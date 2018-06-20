@@ -1,0 +1,244 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/icons"
+    tools:context="com.ridelineTeam.application.rideline.view.fragment.RideFragment">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/icons"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="5dp"
+                        android:text="@string/passengers"
+                        android:textSize="16sp"
+                        android:textColor="@color/primaryText"
+                        android:background="@color/icons"/>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/passengerIc"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="10dp"
+                            android:src="@drawable/ic_passengers" />
+                        <com.jaredrummler.materialspinner.MaterialSpinner
+                            android:id="@+id/spinnerRiders"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@+id/passengerIc"
+                            android:layout_centerVertical="true"
+                            android:textSize="16sp"
+                            app:ms_hint="@string/hint_passengerSpinner"
+                            app:ms_arrow_tint="@color/colorAccent"
+                            app:ms_dropdown_max_height="300dp"
+                            app:ms_hint_color="@color/secondaryText" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="5dp"
+                        android:text="@string/rideType"
+                        android:textColor="@color/primaryText"
+                        android:textSize="16sp" />
+
+                    <co.ceryle.radiorealbutton.RadioRealButtonGroup
+                        android:id="@+id/radioGroupType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:rrbg_animateTexts_enter="overshoot"
+                        app:rrbg_dividerColor="@color/divider"
+                        app:rrbg_dividerSize="1dp"
+                        app:rrbg_radius="10dp"
+                        app:rrbg_selectorColor="@color/colorAccent"
+                        app:rrbg_selectorSize="6dp">
+
+                        <co.ceryle.radiorealbutton.RadioRealButton
+                            android:id="@+id/radioTypeRequest"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/radioTypeRequest"
+                            app:rrb_checked="true"
+                            app:rrb_drawable="@drawable/ic_requested"
+                            app:rrb_drawableHeight="36dp"
+                            app:rrb_drawablePadding="8dp"
+                            app:rrb_drawableWidth="36dp"
+                            app:rrb_ripple="true"
+                            app:rrb_rippleColor="@color/colorAccent"
+                            app:rrb_text="@string/radioTypeRequest"
+                            app:rrb_textColor="@color/secondaryText" />
+
+                        <co.ceryle.radiorealbutton.RadioRealButton
+                            android:id="@+id/radioTypeOffer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/radioTypeOffer"
+                            app:rrb_drawable="@drawable/ic_offered"
+                            app:rrb_drawableHeight="36dp"
+                            app:rrb_drawablePadding="8dp"
+                            app:rrb_drawableWidth="36dp"
+                            app:rrb_ripple="true"
+                            app:rrb_rippleColor="@color/colorAccent"
+                            app:rrb_text="@string/radioTypeOffer"
+                            app:rrb_textColor="@color/secondaryText" />
+                    </co.ceryle.radiorealbutton.RadioRealButtonGroup>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical">
+
+                    <CheckBox
+                        android:id="@+id/roundTripItem"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/roundTrip"
+                        android:textSize="20sp"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:textColor="@color/primaryText"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:baselineAligned="false"
+                        android:weightSum="1">
+
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5">
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:rrbg_animateDrawables_enter="overshoot">
+                            <ImageView
+                                android:id="@+id/dateIc"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="10dp"
+                                android:src="@drawable/ic_date" />
+                            <EditText
+                                android:id="@+id/dateRide"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:clickable="true"
+                                android:focusable="false"
+                                android:hint="@string/date"
+                                android:textColorHint="@color/secondaryText"
+                                android:inputType="date"
+                                android:layout_toEndOf="@+id/dateIc"
+                                android:layout_centerVertical="true"
+                                android:maxLines="1" />
+                            </RelativeLayout>
+                        </android.support.design.widget.TextInputLayout>
+                        <android.support.design.widget.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                           >
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@color/icons">
+                            <ImageView
+                                android:id="@+id/timeIc"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="10dp"
+                                android:src="@drawable/ic_time" />
+                            <EditText
+                                android:id="@+id/time"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:clickable="true"
+                                android:focusable="false"
+                                android:hint="@string/time"
+                                android:inputType="time"
+                                android:textColorHint="@color/secondaryText"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/timeIc"
+                                android:maxLines="1" />
+                            </RelativeLayout>
+                        </android.support.design.widget.TextInputLayout>
+                    </LinearLayout>
+                    <TextView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="5dp"
+                        android:text="@string/publish"
+                        android:textColor="@color/primaryText"
+                        android:textSize="16sp"/>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/communityIc"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="10dp"
+                            android:src="@drawable/ic_community_accent" />
+                        <com.jaredrummler.materialspinner.MaterialSpinner
+                            android:id="@+id/spinnerCommunities"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:layout_toEndOf="@+id/communityIc"
+                            android:layout_centerVertical="true"
+                            android:textSize="16sp"
+                            app:ms_hint="@string/hint_communitySpinner"
+                            app:ms_arrow_tint="@color/colorAccent"
+                            app:ms_dropdown_max_height="300dp"
+                            app:ms_hint_color="@color/secondaryText"/>
+                    </RelativeLayout>
+                    <Button
+                        android:id="@+id/btn_next"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:padding="12dp"
+                        android:text="@string/btnNext"
+                        android:theme="@style/RaisedButtonDark"
+                        android:drawableEnd="@drawable/ic_next"/>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+</android.support.constraint.ConstraintLayout>

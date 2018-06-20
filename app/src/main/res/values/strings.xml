@@ -1,0 +1,186 @@
+<resources>
+
+    <string name="createAccountActivity">Create account</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="firebase_server">"AAAAUHFwRIM:APA91bFVlNdK1sGKFg3i6GuAtSPtOwdiaaVvh-_c1bx-Xw1qC3cy2ZbWR1oY0ocMF0Gvn5beBxOkC0ZVwkc4KVhsY1UdMUZu7prM9mK3MHp-hWB9tXt5ivOZ9HCcTNF_6Zz527O6hsf2"</string>
+    <string name="action_settings">Settings</string>
+    <string name="community">Community</string>
+    <string name="more">More</string>
+    <string name="about_us">About us</string>
+    <string name="logout">Logout</string>
+    <string name="profile">Profile</string>
+    <string name="ride">Ride</string>
+    <string name="home">Home</string>
+    <string name="title_activity_login">Sign in</string>
+
+
+    <string name="hint_txtEmail">Email</string>
+    <string name="hint_txtPassword">Password</string>
+    <string name="btn_login">Login</string>
+    <string name="link_signup">Do not have account? Create here.</string>
+    <string name="forgot_password">Forgot your password? Reset here.</string>
+    <string name="emptyUserPassToast">"Please enter your password and email"</string>
+    <string name="title_activity_create_account">CreateAccountActivity</string>
+    <string name="hint_txtName">Name</string>
+    <string name="hint_txtLast_names">Last names</string>
+    <string name="hint_txtUser">Username</string>
+    <string name="hint_txtConfirmPassword">Confirm password</string>
+    <string name="btn_createAccount">Create account</string>
+
+    <string name="passwordMatchError">"Please enter the same password"</string>
+    <string name="passwordLengthError">"Your password must contain at least 6 characters"</string>
+    <string name="address">Address</string>
+    <string name="btn_resetPassword">Reset password</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="btn_createRide">Let\'s go!</string>
+    <string name="hint_communitySpinner">Choose a community</string>
+    <string name="hint_passengerSpinner">Choose number of passenger</string>
+    <string name="apiKey">AIzaSyBn-8ob75zYW4WPp8GWgdVvOaR9_kY21xU</string>
+    <string name="btn_showRoute">Draw route</string>
+    <string name="completeFields">You must complete origin and destination fields.</string>
+    <string name="errorMessage">An error has occurred, please try again.</string>
+    <string name="btnNext">Next</string>
+    <string name="roundTripYes">Yes</string>
+    <string name="roundTripNo">No</string>
+    <string name="radioTypeRequest">I need ride</string>
+    <string name="radioTypeOffer">I am offering ride</string>
+    <string name="roundTrip">Round trip</string>
+    <string name="passengers">Number of passengers: </string>
+    <string name="time">Time</string>
+    <string name="date">Date</string>
+    <string name="title_activity_ride_detail">Map</string>
+    <string name="originText">Origin: </string>
+    <string name="leaveGroup">Leave community</string>
+    <string name="rideType">Type of Ride</string>
+    <string name="defaultStatus">Hey, let\'s travel together! </string>
+    <string name="hint_status">Status</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_example">ExampleActivity</string>
+    <string name="hint_txtDescription">Description</string>
+    <string name="hint_txtTelephone">Telephone</string>
+    <string name="btn_createCommunity">Create Community</string>
+    <string name="communityCreated">Created by</string>
+    <string name="members">members</string>
+    <string name="you">You</string>
+    <string name="title_close_your_session">Close session</string>
+    <string name="message_when_close_your_session">Are you want to close session?</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="destinationText">Destination: </string>
+    <string name="hour">Hour</string>
+    <string name="goText">Go</string>
+    <string name="ride_detail_hidden_message">Show ride details</string>
+    <string name="ride_details_active_message">Ride Details</string>
+    <string name="verifiedText">Please verify your email address</string>
+    <string name="write_a_message">Write a message</string>
+    <string name="available">available: </string>
+    <string name="seats">Seats: </string>
+    <string name="active_ride">Active ride</string>
+    <string name="no_active_ride_message">You don\'t have an active ride</string>
+    <string name="ride_timeout_tittle">Ride timeout</string>
+    <string name="ride_timeout_body">The ride time has run out</string>
+    <string name="ride_canceled">Ride Canceled</string>
+    <string name="join">Join</string>
+    <string name="publicCommunity">Public</string>
+    <string name="Incorrect_time_message">You chose an incorrect time</string>
+
+
+    <!--Terminos y condiciones-->
+    <string name="informacion_relevante_p1">
+        Es de requisito necesario para la utilización de esta aplicación, que lea y
+        acepte los siguientes Términos y Condiciones que a continuación se redactan.
+        El uso de nuestros servicios, implicará que usted ha leído y aceptado los Términos
+        y Condiciones de Uso en el presente documento. Será necesario el registro por
+        parte del usuario, con ingreso de datos personales fidedignos y definición de una contraseña.
+    </string>
+    <string name="informacion_relevante_p2">
+        El usuario puede elegir y cambiar la clave para su acceso de administración de la cuenta
+        en cualquier momento, en caso de que se haya registrado. Rideline no asume
+        la responsabilidad en caso de que entregue dicha clave a terceros.
+    </string>
+    <string name="licencia_p1">
+        Rideline es una aplicación gratuita, la cual concede una licencia para que los usuarios
+        utilicen los servicios que son ofrecidos por dicha aplicación de acuerdo a los
+        Términos y Condiciones que se describen en este documento.
+    </string>
+    <string name="propiedad_p1">
+        Usted no puede declarar propiedad intelectual o exclusiva de la siguiente aplicación.
+        En caso de que no se especifique lo contrario, nuestros productos se proporcionan
+        sin ningún tipo de garantía, expresa o implícita.
+        En ningún esta compañía será responsables de ningún daño incluyendo, pero no limitado a,
+        daños directos, indirectos, especiales, fortuitos o consecuentes u otras pérdidas
+        resultantes del uso o de la imposibilidad de utilizar nuestras aplicación.
+    </string>
+    <string name="privacidad_p1">
+        La presente Política de Privacidad establece los términos en que Rideline usa y
+        protege la información que es proporcionada por sus usuarios al momento de utilizar su
+        sitio web. Esta compañía está comprometida con la seguridad de los datos de sus usuarios.
+        Cuando le pedimos llenar los campos de información personal con la cual usted pueda ser
+        identificado, lo hacemos asegurando que sólo se empleará de acuerdo con los términos de
+        este documento. Sin embargo, esta Política de Privacidad puede cambiar con el tiempo o ser
+        actualizada por lo que le recomendamos y enfatizamos revisar continuamente esta página para
+        asegurarse que está de acuerdo con dichos cambios.
+    </string>
+    <string name="informacion_recogida_p1">
+        Nuestra aplicación podrá recoger información personal, por ejemplo:
+        Nombre, información de contacto como su dirección de correo electrónico e información
+        demográfica. Así mismo cuando sea necesario podrá ser requerida información específica para
+        procesar alguna característica de la aplicación.
+    </string>
+
+    <string name="uso_informacion_recogida_p1">
+        Nuestra aplicación emplea la información con el fin de proporcionar el mejor servicio
+        posible, particularmente para mantener un registro de usuarios, mejorar nuestros productos
+        y servicios.  Es posible que sean enviados correos electrónicos periódicamente a través de
+        la plataforma con ofertas especiales, nuevos productos y otra información publicitaria que
+        consideremos relevante para usted o que pueda brindarle algún beneficio, estos correos
+        electrónicos serán enviados a la dirección que usted proporcione y podrán ser cancelados en
+        cualquier momento.
+    </string>
+    <string name="uso_informacion_recogida_p2">
+       Rideline está altamente comprometido para cumplir con el compromiso de mantener su
+       información segura. Usamos los sistemas más avanzados y los actualizamos constantemente
+        para asegurarnos que no exista ningún acceso no autorizado.
+    </string>
+    <string name="enlaces_terceros_p1">
+        Esta aplicación podría contener enlaces a otros sitios que pudieran ser de su interés.
+        Una vez que usted de clic en estos enlaces y abandone nuestra aplicación, ya no tenemos
+        control sobre al sitio al que es redirigido y por lo tanto no somos responsables de los
+        términos o privacidad ni de la protección de sus datos en esos otros sitios terceros.
+        Dichos sitios están sujetos a sus propias políticas de privacidad por lo cual es
+        recomendable que los consulte para confirmar que usted está de acuerdo con estas.
+    </string>
+    <string name="control_informacion_personal">
+        Esta compañía no venderá, cederá ni distribuirá la información personal que es recopilada
+        sin su consentimiento, salvo que sea requerido por un juez con un orden judicial.
+    </string>
+
+    <string name="end_terminos">
+        Rideline reserva los derechos de cambiar o de modificar estos términos sin previo aviso.
+    </string>
+    <string name="cant_access_community">You must join to this community to see the chat</string>
+    <string name="ride_accepted">Ride accepted</string>
+    <string name="ride_accepted_body">Your ride request has been accepted by</string>
+    <string name="ride_taken">Ride taken</string>
+    <string name="ride_taken_body">Your ride has taken by</string>
+    <string name="new_ride_offered">New ride offered</string>
+    <string name="new_ride_requested">New ride requested</string>
+    <string name="new_ride_offered_body">Tap to see the new ride offered in</string>
+    <string name="new_ride_requested_body">Tap to see the new ride requested in</string>
+    <string name="join_title">New person in your community</string>
+    <string name="join_body">has joined to your community</string>
+    <string name="AboutApplication">About</string>
+    <string name="developers">Developers</string>
+    <string name="active">Active</string>
+    <string name="canceled">Canceled</string>
+    <string name="finished">Finished</string>
+    <string name="publish">Publish in</string>
+    <string name="retry">Try again</string>
+    <string name="write_message">Please write your message</string>
+    <string name="title_activity_maps2">Map</string>
+    <string name="version">Version 0.0.1</string>
+
+
+</resources>

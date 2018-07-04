@@ -19,8 +19,9 @@
     <string name="hint_txtEmail">Email</string>
     <string name="hint_txtPassword">Password</string>
     <string name="btn_login">Login</string>
-    <string name="link_signup">Do not have account? Create here.</string>
-    <string name="forgot_password">Forgot your password? Reset here.</string>
+    <string name="text_sign_up">Do not have account?</string>
+    <string name="link_sign_up">Create here.</string>
+    <string name="forgot_password">Forgot your password?</string>
     <string name="emptyUserPassToast">"Please enter your password and email"</string>
     <string name="title_activity_create_account">CreateAccountActivity</string>
     <string name="hint_txtName">Name</string>

@@ -1,5 +1,6 @@
 package com.ridelineTeam.application.rideline.view.fragment
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -18,6 +19,7 @@ import com.google.firebase.database.*
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.ChatCommunityAdapter
+import com.ridelineTeam.application.rideline.cloudMessageServices.MyFirebaseInstanceIDService
 import com.ridelineTeam.application.rideline.model.Community
 import com.ridelineTeam.application.rideline.model.Messages
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
@@ -40,8 +42,11 @@ class ChatCommunityActivity : AppCompatActivity() {
     private lateinit var adpater: ChatCommunityAdapter.ChatCommunityAdapterRecycler
     private var listOfTokens = ArrayList<String>()
     private var usersIds = ArrayList<String>()
-  private  var user: FirebaseUser? = null
+    private  var user: FirebaseUser? = null
+    private val token= MyFirebaseInstanceIDService().onTokenRefresh()
 
+
+    @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_community)
@@ -51,7 +56,6 @@ class ChatCommunityActivity : AppCompatActivity() {
         database= FirebaseDatabase.getInstance()
         databaseReference=database.reference.child(COMMUNITIES)
         RecyclerChat=findViewById(R.id.recycler_chat)
-
          user = FirebaseAuth.getInstance().currentUser
         userId = user!!.uid
         txtMessage=findViewById(R.id.txtMessage)
@@ -60,6 +64,7 @@ class ChatCommunityActivity : AppCompatActivity() {
             sendMessage()
         }
         Log.d("id", community.id)
+        Log.d("myToken","$token")
 
     }
 
@@ -84,7 +89,7 @@ class ChatCommunityActivity : AppCompatActivity() {
 
 
     private fun sendMessage(){
-        if(!TextUtils.isEmpty(txtMessage.text.toString())) {
+        if(!TextUtils.isEmpty(txtMessage.text.trim().toString())) {
             val messages = Messages()
             messages.apply {
                 userName = userId
@@ -93,7 +98,7 @@ class ChatCommunityActivity : AppCompatActivity() {
             }
             databaseReference.child(community.id).child("messages").push().setValue(messages).addOnCompleteListener {
                 if (it.isSuccessful) {
-                    txtMessage.text.clear()
+                    txtMessage.setText("")
                     getCommunityUsers(messages.message)
                     loadConversation()
                 }
@@ -139,6 +144,7 @@ class ChatCommunityActivity : AppCompatActivity() {
 
     }
     private fun getCommunityUsers(message:String) {
+        usersIds.clear()
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(COMMUNITIES).child(community.id).child(COMMUNITY_USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -158,7 +164,6 @@ class ChatCommunityActivity : AppCompatActivity() {
         })
     }
     private fun getTokens(list: ArrayList<String>,message:String) {
-
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -167,13 +172,15 @@ class ChatCommunityActivity : AppCompatActivity() {
 
             override fun onDataChange(userToken: DataSnapshot) {
                 for (items in list) {
-                    listOfTokens.add(userToken.child(items).child(TOKEN).value.toString())
+                        listOfTokens.add(userToken.child(items).child(TOKEN).value.toString())
+                }
+                Log.d("Tokens in data change","$listOfTokens")
+                NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens, "${community.name}"
+                        , "${user!!.displayName} $message")
                 }
 
-                NotificationHelper.messageToCommunity(MainActivity.Companion.fmc, listOfTokens, "${community.name}"
-                            , "${user!!.displayName}:$message")
-                }
         })
+
 }
 
 }

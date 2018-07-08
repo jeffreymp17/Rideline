@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\vale\Documents\Android\rideline-android-app\carpooling.iml" filepath="C:\Users\vale\Documents\Android\rideline-android-app\carpooling.iml" />
       <module fileurl="file://$PROJECT_DIR$/rideline-android-app.iml" filepath="$PROJECT_DIR$/rideline-android-app.iml" />
     </modules>
   </component>

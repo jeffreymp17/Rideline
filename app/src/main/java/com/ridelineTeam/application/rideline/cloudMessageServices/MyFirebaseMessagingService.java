@@ -17,8 +17,11 @@ import com.ridelineTeam.application.rideline.MainActivity;
 import com.ridelineTeam.application.rideline.R;
 import com.ridelineTeam.application.rideline.model.Ride;
 
+import java.util.ArrayList;
+
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
+    ArrayList<String> notifications = new ArrayList<>();
 
 
     @Override
@@ -68,6 +71,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void showNotification(String title, String body) {
+        notifications.add(body);
+        NotificationCompat.InboxStyle style=new NotificationCompat.InboxStyle();
+        for (int i=0; i < notifications.size(); i++) {
+            Log.d("Count",""+i);
+            style.addLine(notifications.get(i));
+        }
+        style.setBigContentTitle(title);
+        style.setSummaryText(""+notifications.size()+" messages");
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.if_citycons_car_1342944);
         Intent intent=new Intent(this,MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -81,14 +92,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentText(body)
                 .setWhen(System.currentTimeMillis())
                 .setLargeIcon(bmp)
+                .setGroupSummary(true)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
+                .setStyle(style)
                 .setAutoCancel(true)
                 .setTimeoutAfter(1000)
+                .setGroup("community")
                 .setSound(uriRingtone).setContentIntent(pendingIntent);
 
         NotificationManager notification=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        notification.notify(0,builder.build());
+        notification.notify(2,builder.build());
     }
 }

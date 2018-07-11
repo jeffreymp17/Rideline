@@ -182,6 +182,7 @@
     <string name="write_message">Please write your message</string>
     <string name="title_activity_maps2">Map</string>
     <string name="version">Version 0.0.1</string>
+    <string name="inboxMessages">new messages</string>
 
 
 </resources>

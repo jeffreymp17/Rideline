@@ -71,14 +71,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void showNotification(String title, String body) {
-        notifications.add(body);
         NotificationCompat.InboxStyle style=new NotificationCompat.InboxStyle();
+        notifications.add(body);
         for (int i=0; i < notifications.size(); i++) {
             Log.d("Count",""+i);
             style.addLine(notifications.get(i));
         }
         style.setBigContentTitle(title);
-        style.setSummaryText(""+notifications.size()+" messages");
+        style.setSummaryText(""+notifications.size()+getResources().getString(R.string.inboxMessages));
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.if_citycons_car_1342944);
         Intent intent=new Intent(this,MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -103,5 +103,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         NotificationManager notification=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         notification.notify(2,builder.build());
+
     }
 }

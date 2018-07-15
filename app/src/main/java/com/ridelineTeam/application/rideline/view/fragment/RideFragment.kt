@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.TaskCompletionSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.jaredrummler.materialspinner.MaterialSpinner
+import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.view.MapsActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
@@ -149,6 +150,8 @@ class RideFragment : Fragment() {
         })
         btn_go_community.setOnClickListener {
             FragmentHelper.changeFragment(CommunityFragment(),activity!!.supportFragmentManager)
+            (activity as MainActivity).supportActionBar!!.title="Community"
+
 
         }
     }

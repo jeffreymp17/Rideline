@@ -176,15 +176,17 @@
     <string name="canceled">Cancelado</string>
     <string name="finished">Finalizado</string>
     <string name="publish">Publicar en</string>
-    <string name="retry">Try again</string>
-    <string name="write_message">Please write your message</string>
+    <string name="retry">Intenta de nuevo</string>
+    <string name="write_message">Escribir mensaje</string>
     <string name="version">Version 0.0.1</string>
     <string name="completeUserForm">Por favor complete la información del usuario</string>
     <string name="terms">He leído y acepto los </string>
     <string name="terms1">términos y condiciones.</string>
-    <string name="termsAndConditionsMessage">You must accept terms and conditions</string>
-    <string name="requiredFieldMessage">Required field</string>
-    <string name="emailError">Este email ya se encuentra registrado</string>
-    <string name="invalidEmail">Email invalido</string>
+    <string name="termsAndConditionsMessage">¡Debes aceptar los terminos y condiciones!</string>
+    <string name="requiredFieldMessage">¡Campo requerido!</string>
+    <string name="emailError">¡Este email ya se encuentra registrado!</string>
+    <string name="invalidEmail">¡Email invalido!</string>
+    <string name="textOnlyFieldMessage">¡Este campo solo acepta letras!</string>
+    <string name="phoneFieldMessage">¡No es un numero de teléfono valido!</string>
 
 </resources>

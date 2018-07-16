@@ -184,6 +184,7 @@
     <string name="write_message">Please write your message</string>
     <string name="title_activity_maps2">Map</string>
     <string name="version">Version 0.0.1</string>
+    <string name="communityList">List of communities</string>
 
 
 </resources>

@@ -149,8 +149,8 @@ class RideFragment : Fragment() {
             community = arrayCommunitiesIds[position]
         })
         btn_go_community.setOnClickListener {
-            FragmentHelper.changeFragment(CommunityFragment(),activity!!.supportFragmentManager)
-            (activity as MainActivity).supportActionBar!!.title="Community"
+            FragmentHelper.changeFragment(CommunitiesFragment(),activity!!.supportFragmentManager)
+            (activity as MainActivity).supportActionBar!!.title=getString(R.string.communityList)
 
 
         }

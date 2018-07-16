@@ -5,10 +5,15 @@
     tools:context=".MainActivity">
     <item
         android:id="@+id/action_search"
-        android:actionLayout="@layout/search_view"
         android:icon="@drawable/ic_action_action_search"
         android:orderInCategory="100"
         android:title="search"
         app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_view_commnunities"
+        android:icon="@drawable/baseline_group_add_white_48dp"
+        android:orderInCategory="100"
+        android:title="search"
         app:showAsAction="always" />
 </menu>

@@ -182,5 +182,6 @@
     <string name="retry">Try again</string>
     <string name="write_message">Please write your message</string>
     <string name="version">Version 0.0.1</string>
+    <string name="communityList">Lista de comunidades</string>
 
 </resources>

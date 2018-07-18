@@ -28,10 +28,7 @@ import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.view.AboutActivity
 import com.ridelineTeam.application.rideline.view.LoginActivity
-import com.ridelineTeam.application.rideline.view.fragment.CommunityFragment
-import com.ridelineTeam.application.rideline.view.fragment.HomeFragment
-import com.ridelineTeam.application.rideline.view.fragment.ProfileFragment
-import com.ridelineTeam.application.rideline.view.fragment.RideFragment
+import com.ridelineTeam.application.rideline.view.fragment.*
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
@@ -137,8 +134,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 cantCreateRideWhenActive()
             }
             R.id.nav_community -> {
-                FragmentHelper.changeFragment(CommunityFragment(),supportFragmentManager)
-                titleNav = getString(R.string.community)
+                titleNav = if(userObject!!.communities.isEmpty()){
+                    FragmentHelper.changeFragment(CommunitiesFragment(),supportFragmentManager)
+                    getString(R.string.community)
+                }else{
+                    FragmentHelper.changeFragment(CommunityFragment(),supportFragmentManager)
+                    getString(R.string.community)
+                }
+
             }
             R.id.nav_about_us -> {
                 startActivity(Intent(MainActivity@ this, AboutActivity::class.java))

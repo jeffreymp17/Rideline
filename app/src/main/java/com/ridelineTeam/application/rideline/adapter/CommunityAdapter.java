@@ -239,8 +239,6 @@ public class CommunityAdapter {
             query.addChildEventListener(childEventListener);
             this.childEventListener = childEventListener;
         }
-
-        @NonNull
         @Override
         public CommunityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(context);

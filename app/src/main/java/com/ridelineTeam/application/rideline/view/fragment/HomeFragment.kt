@@ -70,6 +70,6 @@ private lateinit var arrayCommunity:ArrayList<String>
     }
     override fun onStop() {
         super.onStop()
-       this.adapter!!.cleanupListener()
+      // this.adapter!!.cleanupListener()
     }
 }// Required empty public constructor

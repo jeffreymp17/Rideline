@@ -12,9 +12,11 @@ import android.widget.SearchView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.CommunityAdapter.CommunityAdapterRecycler
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
+import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 
 
@@ -75,6 +77,12 @@ class CommunityFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.action_search -> true
+            R.id.action_view_commnunities ->{
+
+                FragmentHelper.changeFragment(CommunitiesFragment(),activity!!.supportFragmentManager)
+                (activity as MainActivity).supportActionBar!!.title=getString(R.string.communityList)
+                return true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -129,3 +137,4 @@ class CommunityFragment : Fragment() {
 
     }
     }// Required empty public constructor
+

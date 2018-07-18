@@ -186,8 +186,10 @@
     <string name="terms">I have read and accept the </string>
     <string name="terms1">terms and Conditions.</string>
     <string name="termsAndConditionsMessage">You must accept terms and conditions</string>
-    <string name="requiredFieldMessage">Required field</string>
-    <string name="emailError">This email has been taken</string>
-    <string name="invalidEmail">Invalid email</string>
+    <string name="requiredFieldMessage">Required field!</string>
+    <string name="emailError">This email has been taken!</string>
+    <string name="invalidEmail">Invalid email!</string>
+    <string name="textOnlyFieldMessage">This field alphabetic characters!</string>
+    <string name="phoneFieldMessage">Invalid phone number!</string>
 
 </resources>

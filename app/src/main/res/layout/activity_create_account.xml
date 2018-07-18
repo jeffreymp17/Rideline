@@ -197,8 +197,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/icons"
-                android:layout_marginBottom="@dimen/white_space">
+                android:background="@color/icons">
 
                 <ImageView
                     android:id="@+id/ic_phone"
@@ -214,7 +213,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@+id/ic_phone">
+                    android:layout_toEndOf="@+id/ic_phone"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="8"
+                    app:counterOverflowTextAppearance="@style/MyOverflowText">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/txtTelephone"

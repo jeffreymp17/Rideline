@@ -27,8 +27,8 @@ import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.model.User
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.InputsHelper
+import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
 import es.dmoral.toasty.Toasty
-import kotlinx.android.synthetic.main.activity_create_account.*
 
 
 class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
@@ -74,12 +74,12 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
         super.onStart()
         btnCreateAccount.setOnClickListener{_ ->createUser()}
         clickableText(txtTerms,SpannableString(resources.getString(R.string.terms1)))
-        InputsHelper.required(txtNameLayout,resources)
-        InputsHelper.required(txtLastNamesLayout,resources)
+        InputsHelper.textOnly(txtNameLayout,resources)
+        InputsHelper.textOnly(txtLastNamesLayout,resources)
         InputsHelper.email(txtEmailLayout,resources)
-        InputsHelper.required(txtTelephoneLayout,resources)
+        InputsHelper.phoneNumber(txtTelephoneLayout,resources)
         InputsHelper.required(txtAddressLayout,resources)
-        errorPassword(txtPasswordLayout)
+        InputsHelper.password(txtPasswordLayout,resources)
         confirmPassword(txtConfirmPasswordLayout)
         dbReference.keepSynced(true)
     }
@@ -90,7 +90,7 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
     }
 
     private fun createUser() {
-        progressBar.visibility = View.VISIBLE
+        showProgressBar()
         if (validateFields()) {
             val user = User()
             user.apply {
@@ -103,7 +103,7 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
             }
             emailExist(user)
         }else{
-            progressBar.visibility = View.GONE
+            hideProgressBar()
             Toasty.warning(this,getString(R.string.completeUserForm),Toast.LENGTH_SHORT,true).show()
         }
     }
@@ -121,18 +121,17 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
         textView.movementMethod = LinkMovementMethod.getInstance()
         textView.setText(spannableString,TextView.BufferType.SPANNABLE)
     }
-    private fun confirmPassword(confirmPassword:TextInputLayout){
-        confirmPassword.editText!!.addTextChangedListener(object: TextWatcher {
+    private fun confirmPassword(textInputLayout:TextInputLayout){
+        textInputLayout.editText!!.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
                 txtValidatePassword= txtPassword.text.toString()
-                if (editable.toString() != txtValidatePassword) {
-                    btn_createAccount.isEnabled=false
-                    confirmPassword.error = getString(R.string.passwordMatchError)
-                }
-                else{
-                    confirmPassword.isErrorEnabled = false
-                    btn_createAccount.isEnabled=true
-                    confirmPassword.error = ""
+                when {
+                    editable.toString().trim().isEmpty() -> textInputLayout.error = resources.getString(R.string.requiredFieldMessage)
+                    editable.toString() != txtValidatePassword -> textInputLayout.error = getString(R.string.passwordMatchError)
+                    else -> {
+                        textInputLayout.isErrorEnabled = false
+                        textInputLayout.error = ""
+                    }
                 }
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -140,25 +139,6 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
             }
             override fun onTextChanged(charSequence: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 charSequence.toString()
-            }
-        })
-    }
-    private fun errorPassword(password: TextInputLayout) {
-        password.editText!!.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(editable: Editable?) {
-                if (editable.toString().length < 6) {
-                    password.error = getString(R.string.passwordLengthError)
-                } else {
-                    password.isErrorEnabled = false
-                    password.error = ""
-                }
-            }
-            override fun beforeTextChanged(charSequence: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
-            }
-
-            override fun onTextChanged(charSequence: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
             }
         })
     }
@@ -205,30 +185,57 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
         when {
             TextUtils.isEmpty(txtName.text) -> {
                 txtNameLayout.error = getString(R.string.requiredFieldMessage)
+                txtName.requestFocus()
+                return false
+            }
+            InputsHelper.isTextOnly(txtName.text.toString())->{
+                txtNameLayout.error = getString(R.string.textOnlyFieldMessage)
+                txtName.requestFocus()
                 return false
             }
             TextUtils.isEmpty(txtLastName.text) -> {
                 txtLastNamesLayout.error = getString(R.string.requiredFieldMessage)
+                txtLastName.requestFocus()
+                return false
+            }
+            InputsHelper.isTextOnly(txtLastName.text.toString())->{
+                txtLastNamesLayout.error = getString(R.string.textOnlyFieldMessage)
+                txtLastName.requestFocus()
                 return false
             }
             TextUtils.isEmpty(txtEmail.text) -> {
                 txtEmailLayout.error = getString(R.string.requiredFieldMessage)
+                txtEmail.requestFocus()
                 return false
             }
             TextUtils.isEmpty(txtPassword.text) -> {
                 txtPasswordLayout.error = getString(R.string.requiredFieldMessage)
+                txtPassword.requestFocus()
                 return false
             }
             TextUtils.isEmpty(txtConfirmPassword.text) -> {
                 txtConfirmPasswordLayout.error = getString(R.string.requiredFieldMessage)
+                txtConfirmPassword.requestFocus()
+                return false
+            }
+            txtConfirmPassword.text.toString() != txtPassword.text.toString() ->{
+                txtConfirmPasswordLayout.error = getString(R.string.passwordMatchError)
+                txtConfirmPassword.requestFocus()
                 return false
             }
             TextUtils.isEmpty(txtTelephone.text) -> {
                 txtTelephoneLayout.error = getString(R.string.requiredFieldMessage)
+                txtTelephone.requestFocus()
+                return false
+            }
+            InputsHelper.isPhoneNumber(txtTelephone.text.toString()) -> {
+                txtTelephoneLayout.error = getString(R.string.phoneFieldMessage)
+                txtTelephone.requestFocus()
                 return false
             }
             TextUtils.isEmpty(txtAddress.text)->{
                 txtAddressLayout.error=getString(R.string.requiredFieldMessage)
+                txtAddress.requestFocus()
                 return false
             }
             !checkTerms.isChecked ->{
@@ -246,7 +253,8 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
             if (task.isComplete){
                 if(!task.result.signInMethods!!.isEmpty()){
                     txtEmailLayout.error=getString(R.string.emailError)
-                    progressBar.visibility = View.GONE
+                    txtEmail.requestFocus()
+                    hideProgressBar()
                 }
                 else{
                     registerUserAccount(user)
@@ -266,13 +274,22 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
                                 .build()
                         newUser.updateProfile(profileUpdate)
                         dbReference.child(user.id).setValue(user)
-                        progressBar.visibility = View.GONE
+                        hideProgressBar()
                         startActivity(Intent(this, LoginActivity::class.java))
                     }else {
-                        progressBar.visibility = View.GONE
+                        hideProgressBar()
                         Toasty.error(this, task.exception!!.message!!,
                                 Toast.LENGTH_SHORT,true).show()
                     }
                 }
+    }
+
+    private fun showProgressBar(){
+        progressBar.visibility = View.VISIBLE
+        PermissionHelper.disableScreenInteraction(window)
+    }
+    private fun hideProgressBar(){
+        progressBar.visibility = View.GONE
+        PermissionHelper.enableScreenInteraction(window)
     }
 }

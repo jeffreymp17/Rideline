@@ -44,4 +44,8 @@
         <item name="colorControlHighlight">@color/colorCancelPrimary</item>
         <item name="android:textColor">@color/icons</item>
     </style>
+    <!--Overflow label text style-->
+    <style name="MyOverflowText" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">@color/colorCancelPrimary</item>
+    </style>
 </resources>

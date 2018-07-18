@@ -21,8 +21,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="5dp"
             android:paddingEnd="15dp"
+            android:paddingStart="5dp"
             android:paddingTop="10dp">
 
             <ProgressBar
@@ -36,7 +36,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/icons">
+                android:background="@color/icons"
+                android:layout_marginBottom="@dimen/white_space">
 
                 <ImageView
                     android:id="@+id/nameIc"
@@ -44,13 +45,14 @@
                     android:layout_height="24dp"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_user_accent" />
 
                 <android.support.design.widget.TextInputLayout
+                    android:id="@+id/txtNameLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginBottom="5dp"
                     android:layout_toEndOf="@+id/nameIc">
 
                     <android.support.design.widget.TextInputEditText
@@ -65,7 +67,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/icons">
+                android:background="@color/icons"
+                android:layout_marginBottom="@dimen/white_space">
 
                 <ImageView
                     android:id="@+id/lastNameIc"
@@ -73,17 +76,18 @@
                     android:layout_height="24dp"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_user_accent" />
 
                 <android.support.design.widget.TextInputLayout
+                    android:id="@+id/txtLastNamesLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginBottom="5dp"
                     android:layout_toEndOf="@+id/lastNameIc">
 
                     <android.support.design.widget.TextInputEditText
-                        android:id="@+id/txtLast_names"
+                        android:id="@+id/txtLastNames"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/hint_txtLast_names"
@@ -94,7 +98,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/icons">
+                android:background="@color/icons"
+                android:layout_marginBottom="@dimen/white_space">
 
                 <ImageView
                     android:id="@+id/emailIc"
@@ -102,14 +107,16 @@
                     android:layout_height="24dp"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_email" />
 
                 <android.support.design.widget.TextInputLayout
+                    android:id="@+id/txtEmailLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginBottom="5dp"
-                    android:layout_toEndOf="@+id/emailIc">
+                    android:layout_toEndOf="@+id/emailIc"
+                    >
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/txtEmail"
@@ -123,7 +130,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/icons">
+                android:background="@color/icons"
+                android:layout_marginBottom="@dimen/white_space">
 
                 <ImageView
                     android:id="@+id/passwordIc"
@@ -131,14 +139,14 @@
                     android:layout_height="24dp"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_password" />
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/layoutPassword"
+                    android:id="@+id/txtPasswordlayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginBottom="5dp"
                     android:layout_toEndOf="@+id/passwordIc"
                     app:passwordToggleEnabled="true">
 
@@ -155,7 +163,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/icons">
+                android:background="@color/icons"
+                android:layout_marginBottom="@dimen/white_space">
 
                 <ImageView
                     android:id="@+id/confirmPassIc"
@@ -163,14 +172,14 @@
                     android:layout_height="24dp"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_confirm_pass" />
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/layoutConfirmPassword"
+                    android:id="@+id/txtConfirmPasswordlayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginBottom="5dp"
                     android:layout_toEndOf="@+id/confirmPassIc"
                     app:passwordToggleEnabled="true">
 
@@ -196,16 +205,18 @@
                     android:layout_height="24dp"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_phone" />
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/telephone"
+                    android:id="@+id/txtTelephoneLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginBottom="5dp"
                     android:layout_toEndOf="@+id/ic_phone"
-                    app:passwordToggleEnabled="true">
+                    app:counterEnabled="true"
+                    app:counterMaxLength="8"
+                    app:counterOverflowTextAppearance="@style/MyOverflowText">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/txtTelephone"
@@ -221,59 +232,75 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:background="@color/icons">
+                android:background="@color/icons"
+                android:layout_marginBottom="@dimen/white_space">
+
                 <ImageView
                     android:id="@+id/originIc"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
+                    android:contentDescription="@null"
                     android:src="@drawable/ic_origin" />
-                <AutoCompleteTextView
-                    android:id="@+id/txtAddress"
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/txtAddressLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@+id/originIc"
                     android:layout_centerVertical="true"
-                    android:hint="@string/address"
-                    android:inputType="textAutoComplete"
-                    android:maxLines="1" />
+                    android:layout_toEndOf="@+id/originIc">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/txtAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/address"
+                        android:inputType="textAutoComplete"
+                        android:maxLines="1" />
+                </android.support.design.widget.TextInputLayout>
             </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:orientation="horizontal"
-                android:layout_gravity="center">
+                android:layout_marginBottom="@dimen/white_space">
+
                 <CheckBox
                     android:id="@+id/checkTerms"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="He leído y acepto los "
-                    android:textSize="13sp"/>
+                    android:contentDescription="@null"
+                    android:text="@string/terms"
+                    android:textSize="13sp" />
+
                 <TextView
                     android:id="@+id/txtTerms"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="términos y condiciones."
+                    android:layout_marginStart="3dp"
+                    android:text="@string/terms1"
                     android:textColor="@color/colorPrimaryDark"
-                    android:textSize="13sp"/>
+                    android:textSize="13sp" />
             </LinearLayout>
+
             <Button
                 android:id="@+id/btn_createAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:layout_marginBottom="@dimen/white_space"
                 android:padding="12dp"
                 android:text="@string/btn_createAccount"
                 android:theme="@style/RaisedButtonDark" />
         </LinearLayout>
     </ScrollView>
-
 </android.support.design.widget.CoordinatorLayout>
 
 

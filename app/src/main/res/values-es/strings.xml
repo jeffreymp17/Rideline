@@ -178,10 +178,20 @@
     <string name="publish">Publicar en</string>
     <string name="noHaveCommunities">Usted no pertenece a ninguna comunidad</string>
     <string name="goToCommunities">Crear comunidad o unirse</string>
-
     <string name="retry">Try again</string>
     <string name="write_message">Please write your message</string>
     <string name="version">Version 0.0.1</string>
     <string name="communityList">Lista de comunidades</string>
-
+    <string name="retry">Intenta de nuevo</string>
+    <string name="write_message">Escribir mensaje</string>
+    <string name="version">Version 0.0.1</string>
+    <string name="completeUserForm">Por favor complete la información del usuario</string>
+    <string name="terms">He leído y acepto los </string>
+    <string name="terms1">términos y condiciones.</string>
+    <string name="termsAndConditionsMessage">¡Debes aceptar los terminos y condiciones!</string>
+    <string name="requiredFieldMessage">¡Campo requerido!</string>
+    <string name="emailError">¡Este email ya se encuentra registrado!</string>
+    <string name="invalidEmail">¡Email invalido!</string>
+    <string name="textOnlyFieldMessage">¡Este campo solo acepta letras!</string>
+    <string name="phoneFieldMessage">¡No es un numero de teléfono valido!</string>
 </resources>

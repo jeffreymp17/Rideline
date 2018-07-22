@@ -14,7 +14,6 @@ import org.pixsee.fcm.Sender;
 import java.util.List;
 
 import static com.ridelineTeam.application.rideline.util.files.ConstantsKt.FIREBASE_SERVER_DEV;
-import static com.ridelineTeam.application.rideline.util.files.ConstantsKt.FIREBASE_SERVER_QA;
 
 /**
  * Se crean metodos para las notificaciones
@@ -30,15 +29,7 @@ public class NotificationHelper {
         notification.setSound(String.valueOf(RingtoneManager.TYPE_NOTIFICATION));
         return notification;
     }
-    private static Sender serverToSenderNotifications(){
-        Sender sender=null;
-        if(BuildConfig.FLAVOR.equals("dev")){
-            sender=new Sender(FIREBASE_SERVER_DEV);
-        }else if(BuildConfig.FLAVOR.equals("qa")){
-            sender=new Sender(FIREBASE_SERVER_QA);
-        }
-        return sender;
-    }
+
 
     public static void message(Sender fcm, String toClientToken, String tittle, String body){
         Message message = new Message.MessageBuilder()

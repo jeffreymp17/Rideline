@@ -1,39 +1,27 @@
 {
   "project_info": {
-    "project_number": "345500566659",
-    "firebase_url": "https://rideline-developmet.firebaseio.com",
-    "project_id": "rideline-developmet",
-    "storage_bucket": "rideline-developmet.appspot.com"
+    "project_number": "997229753615",
+    "firebase_url": "https://rideline-team.firebaseio.com",
+    "project_id": "rideline-team",
+    "storage_bucket": "rideline-team.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:345500566659:android:fdb75e1f1157726c",
+        "mobilesdk_app_id": "1:997229753615:android:2b013ca631ef07a9",
         "android_client_info": {
-          "package_name": "com.ridelineTeam.application.rideline.dev"
+          "package_name": "com.ridelineTeam.application.rideline"
         }
       },
       "oauth_client": [
         {
-          "client_id": "345500566659-mfghrhpn1e5k9ap4b123fmo1uod1913u.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.ridelineTeam.application.rideline.dev",
-            "certificate_hash": "ad209f037cf22d8cba8e2015bf2710afae8568fc"
-          }
-        },
-        {
-          "client_id": "345500566659-k5l29iqs7ou3vcomh5fh4brv6hcrf4ng.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "345500566659-k5l29iqs7ou3vcomh5fh4brv6hcrf4ng.apps.googleusercontent.com",
+          "client_id": "997229753615-u3fmje518p80pb902bo1pei8dfgh2bp4.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDaDoYpXaCu5hCpgBMbS9JqJQHHBPRnl2Q"
+          "current_key": "AIzaSyB4QfX6fVjp-PRxLQ0U8bW5Np3FEeHrDMk"
         }
       ],
       "services": {
@@ -41,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "345500566659-k5l29iqs7ou3vcomh5fh4brv6hcrf4ng.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

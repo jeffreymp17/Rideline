@@ -178,9 +178,6 @@
     <string name="publish">Publicar en</string>
     <string name="noHaveCommunities">Usted no pertenece a ninguna comunidad</string>
     <string name="goToCommunities">Crear comunidad o unirse</string>
-    <string name="retry">Try again</string>
-    <string name="write_message">Please write your message</string>
-    <string name="version">Version 0.0.1</string>
     <string name="communityList">Lista de comunidades</string>
     <string name="retry">Intenta de nuevo</string>
     <string name="write_message">Escribir mensaje</string>

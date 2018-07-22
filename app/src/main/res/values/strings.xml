@@ -1,7 +1,7 @@
 <resources>
 
     <string name="createAccountActivity">Create account</string>
-
+    <string name="app_name">Rideline-Team</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="firebase_server">"AAAAUHFwRIM:APA91bFVlNdK1sGKFg3i6GuAtSPtOwdiaaVvh-_c1bx-Xw1qC3cy2ZbWR1oY0ocMF0Gvn5beBxOkC0ZVwkc4KVhsY1UdMUZu7prM9mK3MHp-hWB9tXt5ivOZ9HCcTNF_6Zz527O6hsf2"</string>

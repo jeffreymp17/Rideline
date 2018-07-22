@@ -1,6 +1,7 @@
 package com.ridelineTeam.application.rideline.util.helpers
 
 import android.app.Activity
+import android.content.Context
 import android.content.IntentSender
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -34,7 +35,9 @@ class FragmentHelper {
             activity.supportActionBar!!.title = tittle
             activity.supportActionBar!!.setDisplayHomeAsUpEnabled(upButton)
         }
-
+         fun backButtonToFragment(toolbar:Toolbar,activity:Activity){
+            toolbar.setNavigationOnClickListener { activity.onBackPressed() }
+        }
         fun startGPS(activity: Activity) {
             val mLocationRequest = LocationRequest.create()
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)

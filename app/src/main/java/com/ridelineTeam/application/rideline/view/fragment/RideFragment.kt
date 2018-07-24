@@ -8,16 +8,14 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import co.ceryle.radiorealbutton.RadioRealButton
 import co.ceryle.radiorealbutton.RadioRealButtonGroup
 import com.google.android.gms.tasks.TaskCompletionSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.jaredrummler.materialspinner.MaterialSpinner
+import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.view.MapsActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
@@ -29,7 +27,9 @@ import com.ridelineTeam.application.rideline.model.Ride
 import com.ridelineTeam.application.rideline.model.User
 import com.ridelineTeam.application.rideline.model.enums.Status
 import com.ridelineTeam.application.rideline.model.enums.Type
+import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import es.dmoral.toasty.Toasty
+import kotlinx.android.synthetic.main.fragment_ride.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -48,11 +48,12 @@ class RideFragment : Fragment() {
     private var community: String = ""
     private var typeOfRide:Type = Type.REQUESTED
     private lateinit var userId: String
+    private lateinit var relativeSpinner: RelativeLayout
     private lateinit var arrayCommunitiesNames: ArrayList<String>
     private lateinit var arrayCommunitiesIds: ArrayList<String>
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-
+    private lateinit var btn_go_community:Button
     private lateinit var radioTypeRequest:RadioRealButton
     private lateinit var radioTypeOffer:RadioRealButton
     private lateinit var radioGroupType:RadioRealButtonGroup
@@ -66,6 +67,8 @@ class RideFragment : Fragment() {
         time = rootView.findViewById(R.id.time)
         spinnerRiders = rootView.findViewById(R.id.spinnerRiders)
         spinnerCommunities = rootView.findViewById(R.id.spinnerCommunities)
+        btn_go_community=rootView.findViewById(R.id.go_to_communitites)
+        relativeSpinner=rootView.findViewById(R.id.relative_spinnerCommnunity)
         database = FirebaseDatabase.getInstance()
         databaseReference = database.reference.child(USERS)
         arrayCommunitiesIds = ArrayList()
@@ -145,6 +148,12 @@ class RideFragment : Fragment() {
             spinnerCommunities.error = null
             community = arrayCommunitiesIds[position]
         })
+        btn_go_community.setOnClickListener {
+            FragmentHelper.changeFragment(CommunitiesFragment(),activity!!.supportFragmentManager)
+            (activity as MainActivity).supportActionBar!!.title=getString(R.string.communityList)
+
+
+        }
     }
 
     private fun validateFields(): Boolean {
@@ -187,7 +196,21 @@ class RideFragment : Fragment() {
             val dataSnapshot = dbTask.result
             val user = dataSnapshot.getValue(User::class.java)
             arrayCommunitiesIds = user!!.communities
-            getCommunitiesNames()
+            if(user!!.communities.isEmpty()){
+                relativeSpinner.visibility=View.GONE
+                txtPublishIn.visibility=View.GONE
+                btnNext.visibility=View.GONE
+                btn_go_community.visibility=View.VISIBLE
+                txtNoHaveCommunities.visibility=View.VISIBLE
+            }else{
+                relativeSpinner.visibility=View.VISIBLE
+                txtPublishIn.visibility=View.VISIBLE
+                btn_go_community.visibility=View.GONE
+                txtNoHaveCommunities.visibility=View.GONE
+                btnNext.visibility=View.VISIBLE
+                getCommunitiesNames()
+
+            }
         }
     }
 

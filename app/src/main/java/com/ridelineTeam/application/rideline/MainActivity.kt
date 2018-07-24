@@ -1,7 +1,6 @@
 package com.ridelineTeam.application.rideline
 
 import android.app.Activity
-import android.app.FragmentTransaction
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -22,7 +21,6 @@ import com.google.firebase.database.*
 import com.google.firebase.iid.FirebaseInstanceId
 import com.ridelineTeam.application.rideline.model.User
 import com.ridelineTeam.application.rideline.util.files.ACCESS_FINE_LOCATION
-import com.ridelineTeam.application.rideline.util.files.FIREBASE_SERVER
 import com.ridelineTeam.application.rideline.util.files.FIREBASE_SERVER_DEV
 import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
@@ -50,7 +48,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     companion object {
         val refreshedToken = FirebaseInstanceId.getInstance().token!!
         val fmc: Sender = Sender(FIREBASE_SERVER_DEV)
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,9 +100,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun updateTittle(fragment: Fragment) {
         val fragmentName = fragment.javaClass.name
         when (fragmentName) {
-            ProfileFragment::class.java.name -> title = "Profile"
-            RideFragment::class.java.name -> title = "Re"
-            CommunityFragment::class.java.name -> title = "Community"
+            ProfileFragment::class.java.name -> title = getString(R.string.profile)
+            RideFragment::class.java.name -> title = getString(R.string.ride)
+            CommunityFragment::class.java.name -> title = getString(R.string.community)
+            HomeFragment::class.java.name -> title = getString(R.string.app_name)
         }
     }
 
@@ -204,7 +202,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 userObject = p0.getValue(User::class.java)
 
                 userObject.apply {
-                    userName.text = userObject!!.name + " " + userObject!!.lastName
+                    val fullName = userObject!!.name + " " + userObject!!.lastName
+                    userName.text = fullName
                     email.text = userObject!!.email
                     if (userObject!!.pictureUrl.isEmpty()) {
                         Picasso.with(applicationContext).load(R.drawable.if_profle_1055000).fit().into(image)
@@ -237,11 +236,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     FragmentHelper.changeFragment(RideFragment(),supportFragmentManager)
                     if (supportActionBar != null) supportActionBar!!.title = getString(R.string.ride)
                 } else {
-                    Toasty.info(this@MainActivity, "You have a ride active", Toast.LENGTH_SHORT).show()
+                    Toasty.info(this@MainActivity, getString(R.string.rideActiveMessage), Toast.LENGTH_SHORT).show()
                 }
             }
         })
     }
+
 
     private fun logOut() {
         val builder = AlertDialog.Builder(this@MainActivity)

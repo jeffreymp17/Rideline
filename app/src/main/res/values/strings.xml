@@ -194,4 +194,8 @@
     <string name="textOnlyFieldMessage">This field alphabetic characters!</string>
     <string name="phoneFieldMessage">Invalid phone number!</string>
     <string name="communityList">List of communities</string>
+    <string name="rideActiveMessage">You have an active ride!</string>
+    <string name="passengerText">Passenger</string>
+    <string name="passengersText">Passengers</string>
+
 </resources>

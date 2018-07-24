@@ -11,6 +11,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.*
+import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.places.Places
@@ -21,6 +22,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.PlaceAutocompleteAdapter
 import com.ridelineTeam.application.rideline.util.files.USERS
@@ -60,6 +62,8 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
     private lateinit var placeAutocompleteAdapter: PlaceAutocompleteAdapter
     private lateinit var mGoogleApiClient: GoogleApiClient
     private lateinit var checkTerms:CheckBox
+    private lateinit var materialDialog: MaterialDialog
+
     private var latLongBounds = LatLngBounds(
             LatLng((-40).toDouble(), (-168).toDouble()),
             LatLng((71).toDouble(), (136).toDouble())
@@ -67,7 +71,13 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account)
+        mAuth = FirebaseAuth.getInstance()
+        isUserInSession()
         FragmentHelper.showToolbar(getString(R.string.createAccountActivity),true,findViewById(R.id.toolbar),this)
+        materialDialog = MaterialDialog.Builder(this)
+                .title("Cargando")
+                .content("Por favor espere...")
+                .progress(true, 0).build()
         initializeProperties()
     }
     override fun onStart() {
@@ -168,7 +178,6 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
         progressBar = findViewById(R.id.progressBar)
         btnCreateAccount = findViewById(R.id.btn_createAccount)
         txtTerms = findViewById(R.id.txtTerms)
-        mAuth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()
         dbReference = database.reference.child(USERS)
         checkTerms = findViewById(R.id.checkTerms)
@@ -276,6 +285,7 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
                         dbReference.child(user.id).setValue(user)
                         hideProgressBar()
                         startActivity(Intent(this, LoginActivity::class.java))
+                        finish()
                     }else {
                         hideProgressBar()
                         Toasty.error(this, task.exception!!.message!!,
@@ -285,11 +295,18 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
     }
 
     private fun showProgressBar(){
-        progressBar.visibility = View.VISIBLE
+        materialDialog.show()
         PermissionHelper.disableScreenInteraction(window)
     }
     private fun hideProgressBar(){
-        progressBar.visibility = View.GONE
+        materialDialog.dismiss()
         PermissionHelper.enableScreenInteraction(window)
+    }
+    private fun isUserInSession() {
+        val currentUser = mAuth.currentUser
+        if (currentUser != null && currentUser.isEmailVerified) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
     }
 }

@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.Toast
+import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -32,6 +33,8 @@ import com.ridelineTeam.application.rideline.model.enums.Type
 import com.ridelineTeam.application.rideline.util.files.*
 import com.ridelineTeam.application.rideline.util.helpers.MapDrawHelper
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
+import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
+import com.ridelineTeam.application.rideline.view.fragment.RideFragment
 import es.dmoral.toasty.Toasty
 
 
@@ -52,9 +55,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
 
     private val overview = 0
     private lateinit var ride: Ride
+    private lateinit var materialDialog: MaterialDialog
 
     private lateinit var placeAutocompleteAdapter: PlaceAutocompleteAdapter
     private lateinit var mGoogleApiClient: GoogleApiClient
+
 
     private var LAT_LONG_BOUNDS = LatLngBounds(
             LatLng((-40).toDouble(), (-168).toDouble()),
@@ -68,7 +73,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
-
+        materialDialog = MaterialDialog.Builder(this)
+                .title("Cargando")
+                .content("Por favor espere...")
+                .progress(true, 0).build()
         mGoogleApiClient = GoogleApiClient.Builder(this)
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
@@ -100,16 +108,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         txtDestination.setAdapter(placeAutocompleteAdapter)
         btnShowRoute.setOnClickListener { _ ->
             if (validateFields()) {
-                loadingBar.visibility = View.VISIBLE
+                showProgressBar()
                 val origin = txtOrigin.text.toString()
                 val destination = txtDestination.text.toString()
                 drawMap(origin, destination)
+                hideProgressBar()
             } else {
                 Toast.makeText(this, getString(R.string.completeFields), Toast.LENGTH_SHORT).show()
             }
         }
         btnCreate.setOnClickListener({ _ ->
             if (validateFields()) {
+                showProgressBar()
                 ride.origin = txtOrigin.text.toString()
                 ride.destination = txtDestination.text.toString()
                 ride.id = databaseReference.key!!
@@ -125,12 +135,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                                             .child(ride.user)
                                             .child("taked").setValue(1)
                                     startActivity(Intent(baseContext, MainActivity::class.java))
-
+                                    finish()
                                 }
                             }.addOnFailureListener{
                                 Toasty.error(applicationContext,"Error when save active ride",Toast.LENGTH_SHORT,true).show();
                             }
                 }
+                hideProgressBar()
             }
         })
     }
@@ -166,7 +177,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
             MapDrawHelper.addPolyline(results!!, mMap)
             MapDrawHelper.positionCamera(results.routes[overview], mMap)
             MapDrawHelper.addMarkersToMap(results, mMap)
-            loadingBar.visibility = View.GONE
         } catch (e: Exception) {
             txtOrigin.text = null
             txtDestination.text = null
@@ -238,6 +248,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
 
 
         })
+    }
+
+    private fun showProgressBar(){
+        materialDialog.show()
+        PermissionHelper.disableScreenInteraction(window)
+    }
+    private fun hideProgressBar(){
+        materialDialog.dismiss()
+        PermissionHelper.enableScreenInteraction(window)
     }
 
     private fun getCommunityForNotification(key: String) {

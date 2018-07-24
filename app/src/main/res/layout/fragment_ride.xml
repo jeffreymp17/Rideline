@@ -20,7 +20,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/white_space"
                     android:orientation="vertical">
                     <TextView
                         android:layout_width="match_parent"
@@ -40,24 +40,30 @@
                             android:layout_centerVertical="true"
                             android:layout_marginStart="10dp"
                             android:src="@drawable/ic_passengers" />
-                        <com.jaredrummler.materialspinner.MaterialSpinner
-                            android:id="@+id/spinnerRiders"
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/spinnerRidersLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_toEndOf="@+id/passengerIc"
-                            android:layout_centerVertical="true"
-                            android:textSize="16sp"
-                            app:ms_hint="@string/hint_passengerSpinner"
-                            app:ms_arrow_tint="@color/colorAccent"
-                            app:ms_dropdown_max_height="300dp"
-                            app:ms_hint_color="@color/secondaryText" />
+                            android:layout_toEndOf="@+id/passengerIc">
+                            <com.jaredrummler.materialspinner.MaterialSpinner
+                                android:id="@+id/spinnerRiders"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_toEndOf="@+id/passengerIc"
+                                android:layout_centerVertical="true"
+                                android:textSize="16sp"
+                                app:ms_hint="@string/hint_passengerSpinner"
+                                app:ms_arrow_tint="@color/colorAccent"
+                                app:ms_dropdown_max_height="300dp"
+                                app:ms_hint_color="@color/secondaryText" />
+                        </android.support.design.widget.TextInputLayout>
                     </RelativeLayout>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/white_space"
                     android:orientation="vertical">
 
                     <TextView
@@ -113,7 +119,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="@dimen/white_space"
                     android:orientation="vertical">
 
                     <CheckBox
@@ -131,11 +137,13 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/white_space"
                         android:orientation="horizontal"
                         android:baselineAligned="false"
                         android:weightSum="1">
 
                         <android.support.design.widget.TextInputLayout
+                            android:id="@+id/dateRideLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5">
@@ -149,7 +157,8 @@
                                 android:layout_height="30dp"
                                 android:layout_centerVertical="true"
                                 android:layout_marginStart="10dp"
-                                android:src="@drawable/ic_date" />
+                                android:src="@drawable/ic_date"
+                                android:contentDescription="@null" />
                             <EditText
                                 android:id="@+id/dateRide"
                                 android:layout_width="match_parent"
@@ -165,6 +174,7 @@
                             </RelativeLayout>
                         </android.support.design.widget.TextInputLayout>
                         <android.support.design.widget.TextInputLayout
+                            android:id="@+id/timeLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.5"
@@ -197,7 +207,7 @@
                     </LinearLayout>
                     <TextView
                         android:id="@+id/txtPublishIn"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="@dimen/white_space"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="5dp"
@@ -215,23 +225,28 @@
                             android:layout_centerVertical="true"
                             android:layout_marginStart="10dp"
                             android:src="@drawable/ic_community_accent" />
-                        <com.jaredrummler.materialspinner.MaterialSpinner
-                            android:id="@+id/spinnerCommunities"
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/spinnerCommunitiesLayout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="10dp"
-                            android:layout_toEndOf="@+id/communityIc"
                             android:layout_centerVertical="true"
-                            android:textSize="16sp"
-                            app:ms_hint="@string/hint_communitySpinner"
-                            app:ms_arrow_tint="@color/colorAccent"
-                            app:ms_dropdown_max_height="300dp"
-                            app:ms_hint_color="@color/secondaryText"/>
+                            android:layout_toEndOf="@+id/communityIc">
+                            <com.jaredrummler.materialspinner.MaterialSpinner
+                                android:id="@+id/spinnerCommunities"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:textSize="16sp"
+                                app:ms_hint="@string/hint_communitySpinner"
+                                app:ms_arrow_tint="@color/colorAccent"
+                                app:ms_dropdown_max_height="300dp"
+                                app:ms_hint_color="@color/secondaryText"/>
+                        </android.support.design.widget.TextInputLayout>
                     </RelativeLayout>
                     <TextView
                         android:visibility="gone"
                         android:id="@+id/txtNoHaveCommunities"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="@dimen/white_space"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="5dp"
@@ -240,23 +255,22 @@
                         android:textColor="@color/primaryText"
                         android:textSize="16sp"/>
                     <Button
-                        android:visibility="gone"
                         android:id="@+id/go_to_communitites"
-                        android:textColor="@color/icons"
-                        android:background="@color/colorPrimaryDark"
+                        android:visibility="gone"
                         android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginBottom="24dp"
                         android:layout_marginTop="24dp"
                         android:text="@string/goToCommunities"
                         android:theme="@style/RaisedButtonDark"
-                        android:layout_height="wrap_content" />
+                        />
                     <Button
                         android:id="@+id/btn_next"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right"
+                        android:layout_gravity="end"
                         android:layout_marginBottom="10dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="@dimen/white_space"
                         android:padding="12dp"
                         android:text="@string/btnNext"
                         android:theme="@style/RaisedButtonDark"
@@ -264,5 +278,4 @@
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
-
 </android.support.constraint.ConstraintLayout>

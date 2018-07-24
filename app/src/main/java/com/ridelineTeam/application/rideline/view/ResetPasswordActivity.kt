@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 
@@ -21,6 +22,7 @@ class ResetPasswordActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reset_password)
+        isUserInSession()
         FragmentHelper.showToolbar(getString(R.string.btn_resetPassword),true,findViewById(R.id.toolbar),this)
         txtEmail=findViewById(R.id.txtEmail)
         progressBar=findViewById(R.id.progressBar)
@@ -45,6 +47,13 @@ class ResetPasswordActivity : AppCompatActivity() {
             }
         }else{
             Toast.makeText(this,"please enter your email", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun isUserInSession() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null && currentUser.isEmailVerified) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
         }
     }
 }

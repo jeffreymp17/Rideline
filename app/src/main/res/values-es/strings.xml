@@ -191,4 +191,7 @@
     <string name="invalidEmail">¡Email invalido!</string>
     <string name="textOnlyFieldMessage">¡Este campo solo acepta letras!</string>
     <string name="phoneFieldMessage">¡No es un numero de teléfono valido!</string>
+    <string name="rideActiveMessage">Ya tienes un ride activo!</string>
+    <string name="passengerText">Pasajero</string>
+    <string name="passengersText">Pasajeros</string>
 </resources>

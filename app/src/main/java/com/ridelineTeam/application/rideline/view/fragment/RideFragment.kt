@@ -4,6 +4,7 @@ package com.ridelineTeam.application.rideline.view.fragment
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.TextInputLayout
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -28,10 +29,15 @@ import com.ridelineTeam.application.rideline.model.User
 import com.ridelineTeam.application.rideline.model.enums.Status
 import com.ridelineTeam.application.rideline.model.enums.Type
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
+import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
 import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.fragment_ride.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
+import com.afollestad.materialdialogs.MaterialDialog
+
+
 
 
 /**
@@ -40,9 +46,13 @@ import java.util.*
 class RideFragment : Fragment() {
 
     private lateinit var dateRide: EditText
+    private lateinit var dateRideLayout: TextInputLayout
     private lateinit var time: EditText
+    private lateinit var timeLayout: TextInputLayout
     private lateinit var spinnerRiders: MaterialSpinner
+    private lateinit var spinnerRidersLayout: TextInputLayout
     private lateinit var spinnerCommunities: MaterialSpinner
+    private lateinit var spinnerCommunitiesLayout: TextInputLayout
     private lateinit var btnNext: Button
     private var passenger: Int = 0
     private var community: String = ""
@@ -53,26 +63,40 @@ class RideFragment : Fragment() {
     private lateinit var arrayCommunitiesIds: ArrayList<String>
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private lateinit var btn_go_community:Button
+    private lateinit var btnGoCommunity:Button
     private lateinit var radioTypeRequest:RadioRealButton
     private lateinit var radioTypeOffer:RadioRealButton
     private lateinit var radioGroupType:RadioRealButtonGroup
+    private lateinit var materialDialog: MaterialDialog
 
     private lateinit var roundTripItem:CheckBox
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView: View = inflater.inflate(R.layout.fragment_ride, container, false)
-        dateRide = rootView.findViewById(R.id.dateRide)
-        btnNext = rootView.findViewById(R.id.btn_next)
-        time = rootView.findViewById(R.id.time)
-        spinnerRiders = rootView.findViewById(R.id.spinnerRiders)
-        spinnerCommunities = rootView.findViewById(R.id.spinnerCommunities)
-        btn_go_community=rootView.findViewById(R.id.go_to_communitites)
-        relativeSpinner=rootView.findViewById(R.id.relative_spinnerCommnunity)
+    override  fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         database = FirebaseDatabase.getInstance()
         databaseReference = database.reference.child(USERS)
         arrayCommunitiesIds = ArrayList()
         arrayCommunitiesNames = ArrayList()
+        materialDialog = MaterialDialog.Builder(context!!)
+                .title("Cargando")
+                .content("Por favor espere...")
+                .progress(true, 0).build()
+
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val rootView: View = inflater.inflate(R.layout.fragment_ride, container, false)
+        dateRide = rootView.findViewById(R.id.dateRide)
+        dateRideLayout = rootView.findViewById(R.id.dateRideLayout)
+        btnNext = rootView.findViewById(R.id.btn_next)
+        time = rootView.findViewById(R.id.time)
+        timeLayout = rootView.findViewById(R.id.timeLayout)
+        spinnerRiders = rootView.findViewById(R.id.spinnerRiders)
+        spinnerRidersLayout = rootView.findViewById(R.id.spinnerRidersLayout)
+        spinnerCommunities = rootView.findViewById(R.id.spinnerCommunities)
+        spinnerCommunitiesLayout = rootView.findViewById(R.id.spinnerCommunitiesLayout)
+        btnGoCommunity=rootView.findViewById(R.id.go_to_communitites)
+        relativeSpinner=rootView.findViewById(R.id.relative_spinnerCommnunity)
         radioGroupType = rootView.findViewById(R.id.radioGroupType)
         radioTypeRequest = rootView.findViewById(R.id.radioTypeRequest)
         radioTypeOffer = rootView.findViewById(R.id.radioTypeOffer)
@@ -81,16 +105,23 @@ class RideFragment : Fragment() {
         return rootView
     }
 
+    override fun onResume() {
+        super.onResume()
+        showProgressBar()
+        cantCreateRideWhenActive()
+        hideProgressBar()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        spinnerRiders.setItems(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+        spinnerRiders.setItems(createPassengersItems())
         val user = FirebaseAuth.getInstance().currentUser
         userId = user!!.uid
         dateRide.setOnClickListener { _ ->
             val datePickerFragment = DatePickerFragment.newInstance({ _, year, month, day ->
                 val selectedDate = "$day/${(month + 1)}/$year"
                 dateRide.setText(selectedDate)
-                dateRide.error = null
+                dateRideLayout.error = null
             })
             datePickerFragment.show(activity!!.fragmentManager, "Datepicker")
         }
@@ -101,11 +132,13 @@ class RideFragment : Fragment() {
             val timePickerDialog = TimePickerDialog(context,
                     TimePickerDialog.OnTimeSetListener { _, hourOfDay, minutes ->
                         if(minutes<10){
-                            time.setText(hourOfDay.toString() + ":" +"0"+ minutes)
+                            val timeText = hourOfDay.toString() + ":" +"0"+ minutes
+                            time.setText(timeText)
                         }else{
-                            time.setText(hourOfDay.toString() + ":" + minutes)
-
+                            val timeText=hourOfDay.toString() + ":" + minutes
+                            time.setText(timeText)
                         }
+                        timeLayout.error=null
                     },
                     hour, minute, true)
             timePickerDialog.show()
@@ -118,6 +151,7 @@ class RideFragment : Fragment() {
             }
         }
         btnNext.setOnClickListener { _ ->
+            showProgressBar()
             if (validateFields()) {
                 val fullDate = dateRide.text.toString()+" "+time.text.toString()
                 if (validateDateAndHour(fullDate)){
@@ -137,18 +171,20 @@ class RideFragment : Fragment() {
                             .putExtra("rideObject", ride))
                 }
             }
+            hideProgressBar()
         }
 
         spinnerRiders.setOnItemSelectedListener({ _, _, _, item ->
-            passenger = Integer.parseInt(item.toString())
-            spinnerRiders.error = null
+            val itemParts = item.toString().split(" ")
+            passenger = Integer.parseInt(itemParts[0])
+            spinnerRidersLayout.error = null
         })
 
         spinnerCommunities.setOnItemSelectedListener({ _, position, _, _ ->
-            spinnerCommunities.error = null
+            spinnerCommunitiesLayout.error = null
             community = arrayCommunitiesIds[position]
         })
-        btn_go_community.setOnClickListener {
+        btnGoCommunity.setOnClickListener {
             FragmentHelper.changeFragment(CommunitiesFragment(),activity!!.supportFragmentManager)
             (activity as MainActivity).supportActionBar!!.title=getString(R.string.communityList)
 
@@ -159,21 +195,22 @@ class RideFragment : Fragment() {
     private fun validateFields(): Boolean {
         return when {
             passenger == 0 -> {
-                spinnerRiders.error = "Required field."
+                spinnerRidersLayout.error = getString(R.string.requiredFieldMessage)
                 false
             }
             dateRide.text.toString().trim().isEmpty() -> {
-                dateRide.error = "Required field."
-                false
-            }
-            community == "" -> {
-                spinnerCommunities.error = "Required field."
+               dateRideLayout.error = getString(R.string.requiredFieldMessage)
                 false
             }
             time.text.toString().trim().isEmpty()->{
-                time.error="Required field."
+                timeLayout.error = getString(R.string.requiredFieldMessage)
                 false
             }
+            community == "" -> {
+                spinnerCommunitiesLayout.error = getString(R.string.requiredFieldMessage)
+                false
+            }
+
             else -> true
         }
     }
@@ -196,16 +233,16 @@ class RideFragment : Fragment() {
             val dataSnapshot = dbTask.result
             val user = dataSnapshot.getValue(User::class.java)
             arrayCommunitiesIds = user!!.communities
-            if(user!!.communities.isEmpty()){
+            if(user.communities.isEmpty()){
                 relativeSpinner.visibility=View.GONE
                 txtPublishIn.visibility=View.GONE
                 btnNext.visibility=View.GONE
-                btn_go_community.visibility=View.VISIBLE
+                btnGoCommunity.visibility=View.VISIBLE
                 txtNoHaveCommunities.visibility=View.VISIBLE
             }else{
                 relativeSpinner.visibility=View.VISIBLE
                 txtPublishIn.visibility=View.VISIBLE
-                btn_go_community.visibility=View.GONE
+                btnGoCommunity.visibility=View.GONE
                 txtNoHaveCommunities.visibility=View.GONE
                 btnNext.visibility=View.VISIBLE
                 getCommunitiesNames()
@@ -238,7 +275,7 @@ class RideFragment : Fragment() {
     }
 
     private fun validateDateAndHour(fullDate:String):Boolean{
-        val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm")
+        val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         val dateFormat = DateTimeAndStringHelper.dateFormat(fullDate)
         val date =  formatter.parse(dateFormat)
         val currentDate = Date()
@@ -251,4 +288,41 @@ class RideFragment : Fragment() {
             true
         }
     }
+    private fun createPassengersItems():ArrayList<String>{
+        val items:ArrayList<String> = ArrayList()
+        for (i in 1..12){
+            val value:String = if(i==1) "$i ${getString(R.string.passengerText)}"
+            else "$i ${getString(R.string.passengersText)}"
+            items.add(value)
+        }
+        return items
+    }
+
+    private fun cantCreateRideWhenActive() {
+
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val reference: DatabaseReference = databaseReference
+        reference.child(currentUser!!.uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(dataError: DatabaseError) {
+                Toasty.error(activity!!.applicationContext, dataError.message, Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val user = dataSnapshot.getValue(User::class.java)
+                if (user!!.activeRide != null) {
+                    FragmentHelper.changeFragment(HomeFragment(),fragmentManager!!)
+                    Toasty.info(activity!!.applicationContext, getString(R.string.rideActiveMessage), Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+    }
+    private fun showProgressBar(){
+        materialDialog.show()
+        PermissionHelper.disableScreenInteraction(activity!!.window)
+    }
+    private fun hideProgressBar(){
+        materialDialog.dismiss()
+        PermissionHelper.enableScreenInteraction(activity!!.window)
+    }
+
 }// Required empty public constructor

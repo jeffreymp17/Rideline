@@ -15,7 +15,9 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.ridelineTeam.application.rideline.MainActivity;
 import com.ridelineTeam.application.rideline.R;
+import com.ridelineTeam.application.rideline.model.Community;
 import com.ridelineTeam.application.rideline.model.Ride;
+import com.ridelineTeam.application.rideline.view.fragment.ChatCommunityActivity;
 
 import java.util.ArrayList;
 
@@ -74,6 +76,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.InboxStyle style=new NotificationCompat.InboxStyle();
         notifications.add(body);
         for (int i=0; i < notifications.size(); i++) {
+            Log.d("-------------_>","NOTI:"+notifications);
             Log.d("Count",""+i);
             style.addLine(notifications.get(i));
         }
@@ -90,6 +93,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentTitle(title)
                 .setContentIntent(pendingIntent)
                 .setContentText(body)
+                .setOnlyAlertOnce(true)
                 .setWhen(System.currentTimeMillis())
                 .setLargeIcon(bmp)
                 .setGroupSummary(true)

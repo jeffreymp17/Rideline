@@ -200,7 +200,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                 for (users in data.children) {
                     usersIds.add(users.value.toString())
                 }
-                getTokens(usersIds)
+                var users=usersIds.filterNot { it==MainActivity.userId }
+                getTokens(users as ArrayList<String>)
                 Log.d("USERS", "LIST--->$usersIds")
             }
 

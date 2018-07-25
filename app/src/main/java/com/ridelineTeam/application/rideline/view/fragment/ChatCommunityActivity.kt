@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.text.format.Time
 import android.util.Log
@@ -40,16 +41,14 @@ class ChatCommunityActivity : AppCompatActivity() {
     private lateinit var userId:String
     private lateinit var RecyclerChat: RecyclerView
     private lateinit var adpater: ChatCommunityAdapter.ChatCommunityAdapterRecycler
-    private var listOfTokens = ArrayList<String>()
-    private var usersIds = ArrayList<String>()
     private  var user: FirebaseUser? = null
     private val token= MyFirebaseInstanceIDService().onTokenRefresh()
-
-
+    private lateinit var toolbar: Toolbar
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_community)
+        toolbar=findViewById(R.id.toolbar)
         community = intent.getSerializableExtra("community") as Community
         FragmentHelper.showToolbar(community.name,true,findViewById(R.id.toolbar),this)
         Log.d("DATA", "---------->$community")
@@ -65,6 +64,7 @@ class ChatCommunityActivity : AppCompatActivity() {
         }
         Log.d("id", community.id)
         Log.d("myToken","$token")
+        FragmentHelper.backButtonToFragment(toolbar,ChatCommunityActivity@this)
 
     }
 
@@ -144,7 +144,7 @@ class ChatCommunityActivity : AppCompatActivity() {
 
     }
     private fun getCommunityUsers(message:String) {
-        usersIds.clear()
+        var usersIds = ArrayList<String>()
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(COMMUNITIES).child(community.id).child(COMMUNITY_USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -156,14 +156,15 @@ class ChatCommunityActivity : AppCompatActivity() {
                 for (users in data.children) {
                     usersIds.add(users.value.toString())
                 }
-                getTokens(usersIds,message)
-                Log.d("USERS", "LIST--->$usersIds")
+               var users= usersIds.filterNot{ it == userId }
+                getTokens(users as ArrayList<String>,message)
             }
 
 
         })
     }
     private fun getTokens(list: ArrayList<String>,message:String) {
+        var listOfTokens = ArrayList<String>()
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {

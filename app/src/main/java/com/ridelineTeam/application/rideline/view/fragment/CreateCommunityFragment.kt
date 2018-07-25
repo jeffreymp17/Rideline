@@ -4,6 +4,7 @@ package com.ridelineTeam.application.rideline.view.fragment
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ class CreateCommunityFragment : Fragment() {
     private lateinit var btnCreateCommunity: Button
     private lateinit var  database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_create_community, container, false)
         txtCommunityName =  rootView.findViewById(R.id.txtCommunityName)
@@ -37,6 +39,10 @@ class CreateCommunityFragment : Fragment() {
         database = FirebaseDatabase.getInstance()
         databaseReference = database.reference.child(COMMUNITIES).push()
         return rootView
+    }
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar!!.title=getString(R.string.new_community)
     }
 
     override fun onStart() {
@@ -49,6 +55,7 @@ class CreateCommunityFragment : Fragment() {
                     name= txtCommunityName.text.toString().toLowerCase()
                     description=txtCommunityDescription.text.toString().capitalize().replace("\n","")
                     createdBy=user!!.uid
+                    admin=user.uid
                     users.add(user.uid)
                     createdDate= SimpleDateFormat(DATE_FORMAT).format(Date())
                     id=databaseReference.key.toString()

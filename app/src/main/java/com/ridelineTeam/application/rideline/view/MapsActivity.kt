@@ -34,7 +34,6 @@ import com.ridelineTeam.application.rideline.util.files.*
 import com.ridelineTeam.application.rideline.util.helpers.MapDrawHelper
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
 import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
-import com.ridelineTeam.application.rideline.view.fragment.RideFragment
 import es.dmoral.toasty.Toasty
 
 
@@ -61,7 +60,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
     private lateinit var mGoogleApiClient: GoogleApiClient
 
 
-    private var LAT_LONG_BOUNDS = LatLngBounds(
+    private var latLongBounds = LatLngBounds(
             LatLng((-40).toDouble(), (-168).toDouble()),
             LatLng((71).toDouble(), (136).toDouble())
     )
@@ -74,8 +73,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         materialDialog = MaterialDialog.Builder(this)
-                .title("Cargando")
-                .content("Por favor espere...")
+                .title(getString(R.string.loading))
+                .content(getString(R.string.please_wait))
                 .progress(true, 0).build()
         mGoogleApiClient = GoogleApiClient.Builder(this)
                 .addApi(Places.GEO_DATA_API)
@@ -84,7 +83,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                 .build()
         val filter = AutocompleteFilter.Builder()
                 .setCountry("CR")
-        placeAutocompleteAdapter = PlaceAutocompleteAdapter(this, mGoogleApiClient, LAT_LONG_BOUNDS,filter.build())
+        placeAutocompleteAdapter = PlaceAutocompleteAdapter(this, mGoogleApiClient, latLongBounds,filter.build())
         txtOrigin = findViewById(R.id.txtOrigin)
         txtDestination = findViewById(R.id.txtDestination)
         btnShowRoute = findViewById(R.id.btn_ShowRoute)
@@ -138,7 +137,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                                     finish()
                                 }
                             }.addOnFailureListener{
-                                Toasty.error(applicationContext,"Error when save active ride",Toast.LENGTH_SHORT,true).show();
+                                Toasty.error(applicationContext,"Error when save active ride",Toast.LENGTH_SHORT,true).show()
                             }
                 }
                 hideProgressBar()

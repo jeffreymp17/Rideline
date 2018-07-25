@@ -7,7 +7,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
+import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
@@ -94,7 +96,7 @@ class ProfileFragment : Fragment() {
         profile_picture = rootView.findViewById(R.id.my_picture_profile)
         //btn_cancel_ride=rootView.findViewById(R.id.btnCancelCard)
         btn_edit.setOnClickListener {
-            showChangeLangDialog()
+            showChangeLangDialog(container)
         }
         imageCircle.setOnClickListener {
             showGallery()
@@ -116,7 +118,24 @@ class ProfileFragment : Fragment() {
         getUserProfile()
         return rootView
     }
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar!!.title=getString(R.string.profile)
+    }
+    override fun onStart() {
+        super.onStart()
+        test()
+    }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == GALLERY_INTENT && resultCode == Activity.RESULT_OK) {
+            uri = data!!.data
+            photoRef = uri.lastPathSegment
+            picture_bytes = ImageHelper.resizeBytesImage(context, imageCircle, data)
+            uploadProfileImage(data)
+        }
+    }
     private fun showGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -202,7 +221,7 @@ class ProfileFragment : Fragment() {
                 Log.d("DATA", "-----------$data")
                 for (done in data.children) {
 
-                    if (done.child("status").value!!.equals(Status.FINISHED.toString())) {
+                    if (done.child("status").value!! == Status.FINISHED.toString()) {
                         finished++
                     }
                     isDone++
@@ -216,21 +235,6 @@ class ProfileFragment : Fragment() {
         })
     }
 
-    override fun onStart() {
-        super.onStart()
-        test()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == GALLERY_INTENT && resultCode == Activity.RESULT_OK) {
-            uri = data!!.data
-            photoRef = uri.lastPathSegment
-            picture_bytes = ImageHelper.resizeBytesImage(context, imageCircle, data)
-            uploadProfileImage(data)
-        }
-    }
-
     //EDIT AND CHNAGE DATA IN FIREBASE
     private fun newProfile(newName: String, newLastNames: String,
                            newStatus:String) {
@@ -241,10 +245,10 @@ class ProfileFragment : Fragment() {
     }
 
     ///DIALOG TO CONFIRM CHANGE INFORMATION
-    private fun showChangeLangDialog() {
+    private fun showChangeLangDialog(viewGroup: ViewGroup?) {
         val dialogBuilder = AlertDialog.Builder(context!!)
         val inflater = this.layoutInflater
-        val dialogView = inflater.inflate(R.layout.edit_profile,null)
+        val dialogView = inflater.inflate(R.layout.edit_profile,viewGroup,false)
         dialogBuilder.setView(dialogView)
 
         val txtName: EditText = dialogView.findViewById(R.id.txtProfile_name)
@@ -331,7 +335,7 @@ class ProfileFragment : Fragment() {
             typeCard.text = resources.getString(R.string.radioTypeRequest)
             val passengerText = resources.getString(R.string.passengers)+" "+ride.riders.toString()
             passengerCard.text = passengerText
-            rideImage.background = resources.getDrawable(R.drawable.como)
+            rideImage.background = ResourcesCompat.getDrawable(resources,R.drawable.como,null)
         }else{
             typeCard.text = resources.getString(R.string.radioTypeOffer)
             database.reference.child(RIDES).child(ride.id).addListenerForSingleValueEvent(object :ValueEventListener{
@@ -350,7 +354,7 @@ class ProfileFragment : Fragment() {
                     passengerCard.text = passengerText
                 }
             })
-            rideImage.background = resources.getDrawable(R.drawable.taxi)
+            rideImage.background = ResourcesCompat.getDrawable(resources,R.drawable.taxi,null)
         }
         val destinationText = StringBuilder()
             destinationText

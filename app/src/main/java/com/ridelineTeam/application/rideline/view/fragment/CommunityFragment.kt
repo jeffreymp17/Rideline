@@ -4,19 +4,18 @@ package com.ridelineTeam.application.rideline.view.fragment
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.*
 import android.widget.SearchView
 import android.widget.Toast
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.CommunityAdapter.CommunityAdapterRecycler
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
-import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 
 
@@ -31,6 +30,11 @@ class CommunityFragment : Fragment() {
     private lateinit var fab:FloatingActionButton
     private lateinit var valueEventListener: ValueEventListener
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val rootView =inflater.inflate(R.layout.fragment_community, container, false)
@@ -43,29 +47,20 @@ class CommunityFragment : Fragment() {
         })
         return rootView
     }
-    private fun loadCommunities(){
-        val linearLayoutManager = LinearLayoutManager(context)
-        linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        recycler.layoutManager = linearLayoutManager
-        adapter = CommunityAdapterRecycler(context, databaseReference, activity)
-        recycler.adapter = adapter
-    }
 
     override fun onStart() {
         super.onStart()
         loadCommunities()
     }
+
     override fun onStop() {
         super.onStop()
         this.adapter.cleanupListener()
-
-
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar!!.title=getString(R.string.my_communities)
     }
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater!!.inflate(R.menu.menu_search,menu)
@@ -78,14 +73,21 @@ class CommunityFragment : Fragment() {
         return when (item!!.itemId) {
             R.id.action_search -> true
             R.id.action_view_commnunities ->{
-
                 FragmentHelper.changeFragment(CommunitiesFragment(),activity!!.supportFragmentManager)
-                (activity as MainActivity).supportActionBar!!.title=getString(R.string.communityList)
                 return true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    private fun loadCommunities(){
+        val linearLayoutManager = LinearLayoutManager(context)
+        linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
+        recycler.layoutManager = linearLayoutManager
+        adapter = CommunityAdapterRecycler(context, databaseReference, activity)
+        recycler.adapter = adapter
+    }
+
     private fun searchResult(searchView: SearchView) {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
@@ -136,5 +138,5 @@ class CommunityFragment : Fragment() {
         this@CommunityFragment.recycler.adapter = adapter
 
     }
-    }// Required empty public constructor
+}// Required empty public constructor
 

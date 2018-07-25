@@ -7,6 +7,10 @@
     <string name="firebase_server">"AAAAUHFwRIM:APA91bFVlNdK1sGKFg3i6GuAtSPtOwdiaaVvh-_c1bx-Xw1qC3cy2ZbWR1oY0ocMF0Gvn5beBxOkC0ZVwkc4KVhsY1UdMUZu7prM9mK3MHp-hWB9tXt5ivOZ9HCcTNF_6Zz527O6hsf2"</string>
     <string name="action_settings">Settings</string>
     <string name="community">Community</string>
+    <string name="communities">Communities</string>
+    <string name="my_communities">My communities</string>
+    <string name="communityList">All communities</string>
+    <string name="new_community">New community</string>
     <string name="more">More</string>
     <string name="about_us">About us</string>
     <string name="logout">Logout</string>
@@ -193,9 +197,16 @@
     <string name="invalidEmail">Invalid email!</string>
     <string name="textOnlyFieldMessage">This field alphabetic characters!</string>
     <string name="phoneFieldMessage">Invalid phone number!</string>
-    <string name="communityList">List of communities</string>
     <string name="rideActiveMessage">You have an active ride!</string>
     <string name="passengerText">Passenger</string>
     <string name="passengersText">Passengers</string>
+
+    <string name="loading">Loading</string>
+    <string name ="please_wait">Please wait…</string>
+    <string name="leave_community_message">"Are you sure you want to leave the community?"</string>
+    <string name="leave_delete_community_message">You\'re the only one member, when you leave the
+        community will be deleted! \nContinue?</string>
+    <string name="leave_community_error">An error occurred while leaving community, try again!</string>
+    <string name="leave_community_success">"You have been leaves the community!"</string>
 
 </resources>

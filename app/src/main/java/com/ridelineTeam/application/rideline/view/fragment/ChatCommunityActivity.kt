@@ -1,5 +1,6 @@
 package com.ridelineTeam.application.rideline.view.fragment
 
+import android.app.Activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -40,8 +41,10 @@ class ChatCommunityActivity : AppCompatActivity() {
     private lateinit var adpater: ChatCommunityAdapter.ChatCommunityAdapterRecycler
     private var listOfTokens = ArrayList<String>()
     private var usersIds = ArrayList<String>()
-  private  var user: FirebaseUser? = null
-
+    private  var user: FirebaseUser? = null
+    companion object {
+        var activityInstance: Activity? = null
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_community)
@@ -51,8 +54,7 @@ class ChatCommunityActivity : AppCompatActivity() {
         database= FirebaseDatabase.getInstance()
         databaseReference=database.reference.child(COMMUNITIES)
         RecyclerChat=findViewById(R.id.recycler_chat)
-
-         user = FirebaseAuth.getInstance().currentUser
+        user = FirebaseAuth.getInstance().currentUser
         userId = user!!.uid
         txtMessage=findViewById(R.id.txtMessage)
         btn_send=findViewById(R.id.send)
@@ -60,7 +62,7 @@ class ChatCommunityActivity : AppCompatActivity() {
             sendMessage()
         }
         Log.d("id", community.id)
-
+        activityInstance = this
     }
 
 

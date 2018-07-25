@@ -4,24 +4,19 @@ package com.ridelineTeam.application.rideline.view.fragment
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.gms.tasks.TaskCompletionSource
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.CommunityAdapter
 import com.ridelineTeam.application.rideline.model.Community
-import com.ridelineTeam.application.rideline.model.User
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
 import com.ridelineTeam.application.rideline.util.files.NAME
-import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
-import kotlinx.android.synthetic.main.fragment_ride.*
 import java.util.ArrayList
 
 
@@ -53,6 +48,14 @@ class CommunitiesFragment : Fragment() {
         })
         return rootView
     }
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar!!.title=getString(R.string.communityList)
+    }
+    override fun onStart() {
+        super.onStart()
+        loadCommunities()
+    }
     private fun loadCommunities(){
         val query:Query =databaseReference.orderByChild(NAME)
         val linearLayoutManager = LinearLayoutManager(context)
@@ -62,12 +65,6 @@ class CommunitiesFragment : Fragment() {
         recycler.adapter = adapter
 
 
-    }
-
-
-    override fun onStart() {
-        super.onStart()
-        loadCommunities()
     }
 
 }// Required empty public constructor

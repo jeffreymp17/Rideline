@@ -8,9 +8,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.ridelineTeam.application.rideline.MainActivity;
@@ -20,6 +25,8 @@ import com.ridelineTeam.application.rideline.model.Ride;
 import com.ridelineTeam.application.rideline.view.fragment.ChatCommunityActivity;
 
 import java.util.ArrayList;
+
+import static com.ridelineTeam.application.rideline.util.files.ConstantsKt.COMMUNITIES;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -81,7 +88,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             style.addLine(notifications.get(i));
         }
         style.setBigContentTitle(title);
-        style.setSummaryText(""+notifications.size()+getResources().getString(R.string.inboxMessages));
+        style.setSummaryText(""+notifications.size()+ getResources().getString(R.string.inboxMessages));
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.if_citycons_car_1342944);
         Intent intent=new Intent(this,MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

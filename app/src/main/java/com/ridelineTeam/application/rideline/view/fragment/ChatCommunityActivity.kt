@@ -90,6 +90,7 @@ class ChatCommunityActivity : AppCompatActivity() {
 
     private fun sendMessage(){
         if(!TextUtils.isEmpty(txtMessage.text.trim().toString())) {
+            btn_send.isEnabled=false
             val messages = Messages()
             messages.apply {
                 userName = userId
@@ -101,6 +102,7 @@ class ChatCommunityActivity : AppCompatActivity() {
                     txtMessage.setText("")
                     getCommunityUsers(messages.message)
                     loadConversation()
+                    btn_send.isEnabled=true
                 }
             }
         }else{

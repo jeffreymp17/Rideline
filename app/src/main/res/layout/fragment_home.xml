@@ -10,6 +10,13 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/noRidesText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No hay rides publicados"
+            android:textAlignment="center"
+            android:textSize="20sp" />
 
         <com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
             android:id="@+id/mainRecycler"

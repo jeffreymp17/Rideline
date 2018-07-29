@@ -12,7 +12,9 @@ import android.text.format.Time
 import android.util.Log
 import android.view.*
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
+import android.widget.Toolbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -42,6 +44,7 @@ class ChatCommunityActivity : AppCompatActivity() {
     private var listOfTokens = ArrayList<String>()
     private var usersIds = ArrayList<String>()
     private  var user: FirebaseUser? = null
+    private lateinit var toolbar: android.support.v7.widget.Toolbar
     companion object {
         var activityInstance: Activity? = null
     }
@@ -49,7 +52,7 @@ class ChatCommunityActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_community)
         community = intent.getSerializableExtra("community") as Community
-        FragmentHelper.showToolbar(community.name,true,findViewById(R.id.toolbar),this)
+        //FragmentHelper.showToolbar(community.name,true,findViewById(R.id.toolbar),this)
         Log.d("DATA", "---------->$community")
         database= FirebaseDatabase.getInstance()
         databaseReference=database.reference.child(COMMUNITIES)
@@ -62,6 +65,17 @@ class ChatCommunityActivity : AppCompatActivity() {
             sendMessage()
         }
         Log.d("id", community.id)
+
+        toolbar=findViewById(R.id.chat_toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        super.setTitle("")
+        val mTitleTextView = findViewById<TextView>(R.id.chat_toolbar_title)
+        mTitleTextView.text=community.name
+        mTitleTextView.setOnClickListener({
+            val intent = Intent(this@ChatCommunityActivity,CommunityDetailActivity::class.java)
+            intent.putExtra("community", community)
+            startActivity(intent)        })
         activityInstance = this
     }
 

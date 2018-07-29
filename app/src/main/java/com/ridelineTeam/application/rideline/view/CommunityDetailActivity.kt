@@ -82,7 +82,7 @@ class CommunityDetailActivity : AppCompatActivity() {
         drawDetail()
         collapsibleTittle(collapsibleLayout)
         btnLeaveCommunity.setOnClickListener({_->
-            leaveCommunity()
+            verifyIsHaveAnActiveRide()
         })
     }
     private fun getCreator(){
@@ -249,6 +249,35 @@ class CommunityDetailActivity : AppCompatActivity() {
                 user.communities=communities
                 mutableData.value=user
                 return Transaction.success(mutableData)
+            }
+        })
+    }
+    private fun verifyIsHaveAnActiveRide(){
+        val currentUser = FirebaseAuth.getInstance().currentUser!!.uid
+        val db = database.reference.child(USERS).child(currentUser)
+        db.runTransaction(object:Transaction.Handler {
+            override fun onComplete(databaseError: DatabaseError?, boolean: Boolean, p2: DataSnapshot?) {
+                if (databaseError!=null){
+                    Toasty.error(applicationContext,getString(R.string.leave_community_error)
+                            ,Toast.LENGTH_LONG).show()
+                }
+                Log.d("BOLEAN",boolean.toString())
+                if (boolean){
+                    leaveCommunity()
+                }
+                else{
+                    Toasty.info(applicationContext,"Tienes un ride activo en esta comunidad, " +
+                            "debes esperar que finalize o cancelarlo si quieres salir.",Toast.LENGTH_LONG).show()
+                }
+
+            }
+
+            override fun doTransaction(mutableData: MutableData): Transaction.Result {
+                val user = mutableData.getValue(User::class.java)
+                return if (user!!.activeRide !=null && user.activeRide!!.community==community.id)
+                    Transaction.abort()
+                else
+                    Transaction.success(mutableData)
             }
         })
     }

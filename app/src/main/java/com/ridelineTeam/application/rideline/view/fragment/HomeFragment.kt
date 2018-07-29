@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.*
+import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -30,6 +31,7 @@ class HomeFragment : Fragment() {
     private lateinit var user: FirebaseUser
     private lateinit var arrayCommunity:ArrayList<String>
     private lateinit var recycler: MultiSnapRecyclerView
+    private lateinit var noRidesText:TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +44,7 @@ class HomeFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         val rootView: View = inflater.inflate(R.layout.fragment_home, container, false)
         recycler = rootView.findViewById(R.id.mainRecycler)
+        noRidesText = rootView.findViewById(R.id.noRidesText)
         return  rootView
     }
 
@@ -71,7 +74,7 @@ class HomeFragment : Fragment() {
                 linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
                 recycler.layoutManager = linearLayoutManager
                 adapter = RideAdapter.RideAdapterRecycler(context!!.applicationContext,
-                        databaseReference, activity, query1, arrayCommunity, user.uid)
+                        databaseReference, activity, query1, arrayCommunity, user.uid,noRidesText)
                 recycler.adapter = adapter
             }
 

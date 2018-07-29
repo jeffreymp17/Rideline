@@ -86,10 +86,12 @@ public class RideAdapter {
         private String userId;
         private Activity activity;
         private String fullName;
+        private TextView noRidesText;
 
 
         public RideAdapterRecycler(final Context context, DatabaseReference reference,
-                                   Activity activity, Query query, ArrayList<String> communites, final String userId) {
+                                   Activity activity, Query query, ArrayList<String> communites, final String userId,
+                                   TextView textView) {
             this.cleanupListener();
             this.context = context;
             this.databaseReference = reference;
@@ -97,6 +99,7 @@ public class RideAdapter {
             this.Rides = new ArrayList<>();
             this.RidesIds = new ArrayList<>();
             this.userId = userId;
+            this.noRidesText = textView;
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
             ChildEventListener childEventListener = new ChildEventListener() {
@@ -206,6 +209,10 @@ public class RideAdapter {
         @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
         public void onBindViewHolder(@NonNull final RideViewHolder holder, int position) {
+            if (Rides.isEmpty())
+                this.noRidesText.setVisibility(View.VISIBLE);
+            else
+                this.noRidesText.setVisibility(View.GONE);
             final Ride ride = Rides.get(position);
             getUserTakeRide();
             Log.d("OnBind", ride.toString());

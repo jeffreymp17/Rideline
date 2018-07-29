@@ -85,7 +85,6 @@
 
         <activity
             android:name=".view.fragment.ChatCommunityActivity"
-            android:launchMode="singleInstance"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -154,7 +154,7 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:theme="@style/RaisedButtonCancel"
-                android:text="Cancel"
+                android:text="@string/cancel"
                 android:visibility="gone"/>
         </RelativeLayout>
         <View

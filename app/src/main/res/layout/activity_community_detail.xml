@@ -54,7 +54,7 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="?android:attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -90,15 +90,17 @@
                 </LinearLayout>
 
                 <Button
-                    android:layout_marginTop="10dp"
+                    android:id="@+id/btnLeaveCommunity"
+                    android:layout_marginTop="@dimen/white_space"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/leaveGroup"
                     android:textColor="@color/dangerColor"
                     android:textAlignment="textStart"
                     android:drawablePadding="15dp"
-                    android:paddingStart="16dp"
                     android:textAllCaps="false"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"
                     android:drawableStart="@drawable/ic_menu_logout"
                     android:drawableTint="@color/dangerColor"
                     android:theme="@style/RaisedButtonWhite"

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -78,8 +79,8 @@ class RideFragment : Fragment() {
         arrayCommunitiesIds = ArrayList()
         arrayCommunitiesNames = ArrayList()
         materialDialog = MaterialDialog.Builder(context!!)
-                .title("Cargando")
-                .content("Por favor espere...")
+                .title(getString(R.string.loading))
+                .content(getString(R.string.please_wait))
                 .progress(true, 0).build()
 
     }
@@ -110,6 +111,10 @@ class RideFragment : Fragment() {
         showProgressBar()
         cantCreateRideWhenActive()
         hideProgressBar()
+    }
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar!!.title=getString(R.string.ride)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

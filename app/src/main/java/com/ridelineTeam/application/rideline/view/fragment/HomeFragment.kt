@@ -3,9 +3,11 @@ package com.ridelineTeam.application.rideline.view.fragment
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.*
+import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -27,24 +29,37 @@ class HomeFragment : Fragment() {
     private lateinit var databaseReference: DatabaseReference
     private  var adapter: RideAdapter.RideAdapterRecycler?=null
     private lateinit var user: FirebaseUser
-    private lateinit var id: String
-private lateinit var arrayCommunity:ArrayList<String>
+    private lateinit var arrayCommunity:ArrayList<String>
     private lateinit var recycler: MultiSnapRecyclerView
+    private lateinit var noRidesText:TextView
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        val rootView: View = inflater.inflate(R.layout.fragment_home, container, false)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         database = FirebaseDatabase.getInstance()
         databaseReference = database.reference.child(RIDES)
         user = FirebaseAuth.getInstance().currentUser!!
-        id = user.uid
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        val rootView: View = inflater.inflate(R.layout.fragment_home, container, false)
         recycler = rootView.findViewById(R.id.mainRecycler)
+        noRidesText = rootView.findViewById(R.id.noRidesText)
         return  rootView
+    }
+
+    override fun onStart() {
+        super.onStart()
+        getOnlyMyRides()
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar!!.title=getString(R.string.app_name)
     }
     private fun getOnlyMyRides() {
       arrayCommunity = ArrayList()
-        val query = database.reference.child(USERS).child(id)
+        val query = database.reference.child(USERS).child(user.uid)
         query.child("communities").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
             }
@@ -58,18 +73,11 @@ private lateinit var arrayCommunity:ArrayList<String>
                 val linearLayoutManager = LinearLayoutManager(context!!.applicationContext)
                 linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
                 recycler.layoutManager = linearLayoutManager
-                adapter = RideAdapter.RideAdapterRecycler(context!!.applicationContext, databaseReference, activity, query1, arrayCommunity,id)
+                adapter = RideAdapter.RideAdapterRecycler(context!!.applicationContext,
+                        databaseReference, activity, query1, arrayCommunity, user.uid,noRidesText)
                 recycler.adapter = adapter
             }
 
         })
-    }
-    override fun onStart() {
-        super.onStart()
-        getOnlyMyRides()
-    }
-    override fun onStop() {
-        super.onStop()
-      // this.adapter!!.cleanupListener()
     }
 }// Required empty public constructor

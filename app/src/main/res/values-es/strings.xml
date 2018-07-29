@@ -6,6 +6,10 @@
     <string name="firebase_server">"AAAA1-xAnLY:APA91bEPbvcEW59x-m0c8MZ0JXiYzkqNST2SATVkkPQv2aQRWM2tS0VG5PKIdezueibP02nntFahlOSR-UB8lTZEjF7H7JvOrd0vLKZlwcv-2lO8zocPPn2Dx35UOmA8n_sXLKeN-fdu"</string>
     <string name="action_settings">Configuraciones</string>
     <string name="community">Comunidad</string>
+    <string name="communities">Comunidades</string>
+    <string name="my_communities">Mis comunidades</string>
+    <string name="communityList">Todas las comunidades</string>
+    <string name="new_community">Nueva comunidad</string>
     <string name="more">Mas</string>
     <string name="about_us">Acerca de nosotros</string>
     <string name="logout">Cerrar Sesión</string>
@@ -177,7 +181,6 @@
     <string name="publish">Publicar en</string>
     <string name="noHaveCommunities">Usted no pertenece a ninguna comunidad</string>
     <string name="goToCommunities">Crear comunidad o unirse</string>
-    <string name="communityList">Lista de comunidades</string>
     <string name="retry">Intenta de nuevo</string>
     <string name="write_message">Escribir mensaje</string>
     <string name="version">Version 0.0.1</string>
@@ -189,10 +192,11 @@
     <string name="emailError">¡Este email ya se encuentra registrado!</string>
     <string name="invalidEmail">¡Email invalido!</string>
     <string name="textOnlyFieldMessage">¡Este campo solo acepta letras!</string>
-    <string name="phoneFieldMessage">¡No es un numero de teléfono valido!</string>
+    <string name="phoneFieldMessage">¡No es un número de teléfono valido!</string>
     <string name="rideActiveMessage">Ya tienes un ride activo!</string>
     <string name="passengerText">Pasajero</string>
     <string name="passengersText">Pasajeros</string>
+
     <string name="loading">Cargando</string>
     <string name="please_wait">Por favor espere...</string>
     <string name="personal_information">Editar información</string>
@@ -201,7 +205,12 @@
     <string name="profileUpdate">Datos actualizados</string>
     <string name="cancel_ride">Cancelar ride</string>
     <string name="ride_cancel_message">Desea usted cancelar el ride?</string>
-    <string name="cancel_ride_notification">ha cancelado el viaje
-</string>
+    <string name="cancel_ride_notification">ha cancelado el viaje</string>
     <string name="has_canceled">ha cancelado</string>
+    <string name="leave_community_message">"¿Estas seguro que quieres salir de esta comunidad?"</string>
+    <string name="leave_delete_community_message">¡Eres el único miembro de esta comunidad,
+        al salir esta será eliminada! \n¿Continuar?</string>
+    <string name="leave_community_error">¡Ocurrió un error al salir de la comunidad, intente de nuevo!</string>
+    <string name="leave_community_success">"¡Has salido de la communidad!"</string>
+    <string name="no_longer_belong_community">Ya no perteneces a esta comunidad</string>
 </resources>

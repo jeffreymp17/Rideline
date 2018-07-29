@@ -193,4 +193,15 @@
     <string name="rideActiveMessage">Ya tienes un ride activo!</string>
     <string name="passengerText">Pasajero</string>
     <string name="passengersText">Pasajeros</string>
+    <string name="loading">Cargando</string>
+    <string name="please_wait">Por favor espere...</string>
+    <string name="personal_information">Editar información</string>
+    <string name="done">Listo</string>
+    <string name="cancel">Cancelar</string>
+    <string name="profileUpdate">Datos actualizados</string>
+    <string name="cancel_ride">Cancelar ride</string>
+    <string name="ride_cancel_message">Desea usted cancelar el ride?</string>
+    <string name="cancel_ride_notification">ha cancelado el viaje
+</string>
+    <string name="has_canceled">ha cancelado</string>
 </resources>

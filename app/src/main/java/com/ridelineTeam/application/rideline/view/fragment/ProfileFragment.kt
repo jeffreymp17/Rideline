@@ -16,6 +16,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.afollestad.materialdialogs.MaterialDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -30,6 +31,7 @@ import com.ridelineTeam.application.rideline.model.enums.Type
 import com.ridelineTeam.application.rideline.util.files.*
 import com.ridelineTeam.application.rideline.util.helpers.ImageHelper
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
+import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
 import com.squareup.picasso.Picasso
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
 import de.hdodenhof.circleimageview.CircleImageView
@@ -72,6 +74,7 @@ class ProfileFragment : Fragment() {
     private lateinit var hour: TextView
     private lateinit var card: CardView
     private lateinit var noActiveRideText:TextView
+    private lateinit var materialDialog: MaterialDialog
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -114,6 +117,10 @@ class ProfileFragment : Fragment() {
 
         //community_name.movementMethod = ScrollingMovementMethod()
         getUserProfile()
+        materialDialog = MaterialDialog.Builder(context!!)
+                .title(R.string.loading)
+                .content(R.string.please_wait)
+                .progress(true, 0).build()
         return rootView
     }
 
@@ -227,8 +234,22 @@ class ProfileFragment : Fragment() {
             uri = data!!.data
             photoRef = uri.lastPathSegment
             picture_bytes = ImageHelper.resizeBytesImage(context, imageCircle, data)
-            uploadProfileImage(data)
+            if(user!!.pictureUrl!=null&& user!!.pictureUrl != ""){
+                deleteProfilePicture(user!!.pictureUrl)
+            }
+            showProgressBar()
+            uploadProfileImage()
         }
+    }
+    private fun deleteProfilePicture(imageUrl:String){
+        val deletePhoto:StorageReference = FirebaseStorage.getInstance().reference.child(PROFILE_PICTURES)
+         deletePhoto.storage.getReferenceFromUrl(imageUrl).delete().addOnSuccessListener {
+            Log.d("FOUND", "onSuccess: deleted file")
+        }.addOnFailureListener {
+            Log.d("NOT FOUND", "onFailure: did not delete file")
+
+        }
+
     }
 
     //EDIT AND CHNAGE DATA IN FIREBASE
@@ -237,7 +258,7 @@ class ProfileFragment : Fragment() {
         reference.child(id).child("name").setValue(newName)
         reference.child(id).child("lastName").setValue(newLastNames)
         reference.child(id).child("status").setValue(newStatus)
-        Toasty.success(context!!, "Updated successful", Toast.LENGTH_SHORT, true).show()
+        Toasty.success(context!!, getString(R.string.profileUpdate), Toast.LENGTH_SHORT, true).show()
     }
 
     ///DIALOG TO CONFIRM CHANGE INFORMATION
@@ -256,8 +277,8 @@ class ProfileFragment : Fragment() {
             txtStatus.setText(user!!.status,TextView.BufferType.EDITABLE)
         }
 
-        dialogBuilder.setTitle("Edit your information")
-        dialogBuilder.setPositiveButton("Done") { _, _ ->
+        dialogBuilder.setTitle(R.string.personal_information)
+        dialogBuilder.setPositiveButton(R.string.done) { _, _ ->
             if (!TextUtils.isEmpty(txtName.text) && !TextUtils.isEmpty(txtLastName.text)) {
                 newProfile(txtName.text.toString(), txtLastName.text.toString()
                         ,txtStatus.text.toString())
@@ -265,7 +286,7 @@ class ProfileFragment : Fragment() {
             }
 
         }
-        dialogBuilder.setNegativeButton("Cancel") { _, _ ->
+        dialogBuilder.setNegativeButton(R.string.cancel) { _, _ ->
 
         }
 
@@ -274,7 +295,7 @@ class ProfileFragment : Fragment() {
     }
 
     //THIS METHOD UPLOAD PROFILE PICTORE IN FIREABSE SERVER
-    private fun uploadProfileImage(data: Intent?) {
+    private fun uploadProfileImage() {
         reference = database.reference.child(USERS).child(id)
         sReference = fireStorage.reference.child(PROFILE_PICTURES).child(photoRef)
         sReference.putBytes(picture_bytes).addOnSuccessListener {
@@ -282,12 +303,11 @@ class ProfileFragment : Fragment() {
                 sReference.downloadUrl.addOnSuccessListener({ uri ->
                     with(reference) {
                         child("pictureUrl").setValue(uri.toString())
-                        imageCircle.setImageURI(data!!.data)
 
                     }
-
+                    Picasso.with(context).load(uri.toString()).into(imageCircle)
+                    hideProgressBar()
                 })
-
             }
 
         }
@@ -374,9 +394,9 @@ class ProfileFragment : Fragment() {
     private fun cancelRideDialog(ride:Ride) {
         val builder = AlertDialog.Builder(activity!!)
         // Set the alert dialog title
-        builder.setTitle("Cancel ride")
+        builder.setTitle(R.string.cancel_ride)
         // Display a message on alert dialog
-        builder.setMessage("Do you want to cancel the ride?")
+        builder.setMessage(R.string.ride_cancel_message)
         // Set a positive button and its click listener on alert dialog
         builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
             if (Type.REQUESTED == ride.type){
@@ -420,7 +440,7 @@ class ProfileFragment : Fragment() {
                         val tokens = ArrayList<String>()
                         rideData.passengers.values.mapTo(tokens) { it.token }
                         NotificationHelper.messageToCommunity(MainActivity.fmc,tokens,activity!!.resources.getString(R.string.ride_canceled),
-                                currentUser.displayName+" has canceled the ride",ride)
+                                currentUser.displayName+ R.string.cancel_ride_notification,ride)
                         db.child(ride.user).child("activeRide").removeValue()
                         for (passenger in rideData.passengers.values){
                             db.child(passenger.id).child("activeRide").removeValue()
@@ -444,7 +464,7 @@ class ProfileFragment : Fragment() {
                                         val rideUser = dataSnapshot.getValue(User::class.java)
                                         NotificationHelper.message(MainActivity.fmc,rideUser!!.token,
                                                 activity!!.resources.getString(R.string.ride_canceled),
-                                                currentUser.displayName+"has canceled")
+                                                currentUser.displayName+ R.string.has_canceled)
                                         db.child(currentUser.uid).child("activeRide").removeValue()
                                         db.child(currentUser.uid).child("taked").setValue(0)
                                         database.reference.child(RIDES).child(ride.id).child("status").setValue(Status.ACTIVE)
@@ -457,6 +477,14 @@ class ProfileFragment : Fragment() {
                 }
             }
         })
+    }
+    private fun showProgressBar(){
+        materialDialog.show()
+        PermissionHelper.disableScreenInteraction(activity!!.window)
+    }
+    private fun hideProgressBar(){
+        materialDialog.dismiss()
+        PermissionHelper.enableScreenInteraction(activity!!.window)
     }
 
 

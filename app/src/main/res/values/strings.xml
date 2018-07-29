@@ -179,8 +179,6 @@
     <string name="finished">Finished</string>
     <string name="publish">Publish in</string>
     <string name="retry">Try again</string>
-    <string name="noHaveCommunities">Does not belong to any community</string>
-    <string name="goToCommunities">Go to communities</string>
     <string name="write_message">Please write your message</string>
     <string name="title_activity_maps2">Map</string>
     <string name="version">Version 0.0.1</string>
@@ -197,5 +195,6 @@
     <string name="rideActiveMessage">You have an active ride!</string>
     <string name="passengerText">Passenger</string>
     <string name="passengersText">Passengers</string>
+    <string name="inboxMessages">new messages</string>
 
 </resources>

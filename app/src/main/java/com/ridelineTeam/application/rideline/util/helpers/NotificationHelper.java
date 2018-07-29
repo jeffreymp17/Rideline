@@ -5,6 +5,7 @@ import android.content.Context;
 import android.media.RingtoneManager;
 
 import com.ridelineTeam.application.rideline.BuildConfig;
+import com.ridelineTeam.application.rideline.model.Community;
 import com.ridelineTeam.application.rideline.model.Ride;
 
 import org.pixsee.fcm.Message;
@@ -50,6 +51,7 @@ public class NotificationHelper {
                 .addData("destination",ride.getDestination())
                 .addData("community",ride.getCommunity())
                 .notification(new Notification(tittle,body))
+                .toTopic("ride")
                 .priority(Message.Priority.HIGH)
                 .build();
 

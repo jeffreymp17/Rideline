@@ -1,12 +1,14 @@
 package com.ridelineTeam.application.rideline.view.fragment
 
 import android.app.Activity
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.text.format.Time
 import android.util.Log
@@ -21,6 +23,7 @@ import com.google.firebase.database.*
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.ChatCommunityAdapter
+import com.ridelineTeam.application.rideline.cloudMessageServices.MyFirebaseInstanceIDService
 import com.ridelineTeam.application.rideline.model.Community
 import com.ridelineTeam.application.rideline.model.Messages
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
@@ -41,22 +44,25 @@ class ChatCommunityActivity : AppCompatActivity() {
     private lateinit var userId:String
     private lateinit var RecyclerChat: RecyclerView
     private lateinit var adpater: ChatCommunityAdapter.ChatCommunityAdapterRecycler
-    private var listOfTokens = ArrayList<String>()
-    private var usersIds = ArrayList<String>()
+    
     private  var user: FirebaseUser? = null
-    private lateinit var toolbar: android.support.v7.widget.Toolbar
+    private val token= MyFirebaseInstanceIDService().onTokenRefresh()
+    private lateinit var toolbar: Toolbar
     companion object {
         var activityInstance: Activity? = null
     }
+    @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_community)
+        toolbar=findViewById(R.id.toolbar)
         community = intent.getSerializableExtra("community") as Community
         //FragmentHelper.showToolbar(community.name,true,findViewById(R.id.toolbar),this)
         Log.d("DATA", "---------->$community")
         database= FirebaseDatabase.getInstance()
         databaseReference=database.reference.child(COMMUNITIES)
         RecyclerChat=findViewById(R.id.recycler_chat)
+
         user = FirebaseAuth.getInstance().currentUser
         userId = user!!.uid
         txtMessage=findViewById(R.id.txtMessage)
@@ -65,6 +71,8 @@ class ChatCommunityActivity : AppCompatActivity() {
             sendMessage()
         }
         Log.d("id", community.id)
+        Log.d("myToken","$token")
+        FragmentHelper.backButtonToFragment(toolbar,ChatCommunityActivity@this)
 
         toolbar=findViewById(R.id.chat_toolbar)
         setSupportActionBar(toolbar)
@@ -100,7 +108,8 @@ class ChatCommunityActivity : AppCompatActivity() {
 
 
     private fun sendMessage(){
-        if(!TextUtils.isEmpty(txtMessage.text.toString())) {
+        if(!TextUtils.isEmpty(txtMessage.text.trim().toString())) {
+            btn_send.isEnabled=false
             val messages = Messages()
             messages.apply {
                 userName = userId
@@ -109,9 +118,10 @@ class ChatCommunityActivity : AppCompatActivity() {
             }
             databaseReference.child(community.id).child("messages").push().setValue(messages).addOnCompleteListener {
                 if (it.isSuccessful) {
-                    txtMessage.text.clear()
+                    txtMessage.setText("")
                     getCommunityUsers(messages.message)
                     loadConversation()
+                    btn_send.isEnabled=true
                 }
             }
         }else{
@@ -155,6 +165,7 @@ class ChatCommunityActivity : AppCompatActivity() {
 
     }
     private fun getCommunityUsers(message:String) {
+        var usersIds = ArrayList<String>()
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(COMMUNITIES).child(community.id).child(COMMUNITY_USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -166,15 +177,15 @@ class ChatCommunityActivity : AppCompatActivity() {
                 for (users in data.children) {
                     usersIds.add(users.value.toString())
                 }
-                getTokens(usersIds,message)
-                Log.d("USERS", "LIST--->$usersIds")
+               var users= usersIds.filterNot{ it == userId }
+                getTokens(users as ArrayList<String>,message)
             }
 
 
         })
     }
     private fun getTokens(list: ArrayList<String>,message:String) {
-
+        var listOfTokens = ArrayList<String>()
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -183,13 +194,15 @@ class ChatCommunityActivity : AppCompatActivity() {
 
             override fun onDataChange(userToken: DataSnapshot) {
                 for (items in list) {
-                    listOfTokens.add(userToken.child(items).child(TOKEN).value.toString())
+                        listOfTokens.add(userToken.child(items).child(TOKEN).value.toString())
+                }
+                Log.d("Tokens in data change","$listOfTokens")
+                NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens, "${community.name}"
+                        , "${user!!.displayName} $message")
                 }
 
-                NotificationHelper.messageToCommunity(MainActivity.Companion.fmc, listOfTokens, "${community.name}"
-                            , "${user!!.displayName}:$message")
-                }
         })
+
 }
 
 }

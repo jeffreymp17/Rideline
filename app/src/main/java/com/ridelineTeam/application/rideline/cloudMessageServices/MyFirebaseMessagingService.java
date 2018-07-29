@@ -8,17 +8,29 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.ridelineTeam.application.rideline.MainActivity;
 import com.ridelineTeam.application.rideline.R;
+import com.ridelineTeam.application.rideline.model.Community;
 import com.ridelineTeam.application.rideline.model.Ride;
+import com.ridelineTeam.application.rideline.view.fragment.ChatCommunityActivity;
+
+import java.util.ArrayList;
+
+import static com.ridelineTeam.application.rideline.util.files.ConstantsKt.COMMUNITIES;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
+    ArrayList<String> notifications = new ArrayList<>();
 
 
     @Override
@@ -68,6 +80,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     private void showNotification(String title, String body) {
+        NotificationCompat.InboxStyle style=new NotificationCompat.InboxStyle();
+        notifications.add(body);
+        for (int i=0; i < notifications.size(); i++) {
+            Log.d("-------------_>","NOTI:"+notifications);
+            Log.d("Count",""+i);
+            style.addLine(notifications.get(i));
+        }
+        style.setBigContentTitle(title);
+        style.setSummaryText(""+notifications.size()+ getResources().getString(R.string.inboxMessages));
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.if_citycons_car_1342944);
         Intent intent=new Intent(this,MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -79,16 +100,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentTitle(title)
                 .setContentIntent(pendingIntent)
                 .setContentText(body)
+                .setOnlyAlertOnce(true)
                 .setWhen(System.currentTimeMillis())
                 .setLargeIcon(bmp)
+                .setGroupSummary(true)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
+                .setStyle(style)
                 .setAutoCancel(true)
                 .setTimeoutAfter(1000)
+                .setGroup("community")
                 .setSound(uriRingtone).setContentIntent(pendingIntent);
 
         NotificationManager notification=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        notification.notify(0,builder.build());
+        notification.notify(2,builder.build());
+
     }
 }

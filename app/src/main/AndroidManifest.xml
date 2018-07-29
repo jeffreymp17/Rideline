@@ -82,13 +82,20 @@
         <activity
             android:name=".view.RideDetailActivity"
             android:label="@string/title_activity_ride_detail" />
-        <activity android:name=".view.CommunityDetailActivity" />
+
         <activity
             android:name=".view.fragment.ChatCommunityActivity"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.ridelineTeam.application.rideline.MainActivity" />
+        </activity>
+        <activity
+            android:name=".view.CommunityDetailActivity"
+            android:parentActivityName=".view.fragment.ChatCommunityActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ridelineTeam.application.rideline.view.fragment.ChatCommunityActivity" />
         </activity>
         <activity
             android:name=".view.AboutActivity"

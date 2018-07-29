@@ -14,6 +14,7 @@ import android.widget.*
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.location.places.AutocompleteFilter
 import com.google.android.gms.location.places.Places
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
@@ -75,8 +76,8 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
         isUserInSession()
         FragmentHelper.showToolbar(getString(R.string.createAccountActivity),true,findViewById(R.id.toolbar),this)
         materialDialog = MaterialDialog.Builder(this)
-                .title("Cargando")
-                .content("Por favor espere...")
+                .title(getString(R.string.loading))
+                .content(getString(R.string.please_wait))
                 .progress(true, 0).build()
         initializeProperties()
     }
@@ -158,8 +159,10 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
                 .addApi(Places.PLACE_DETECTION_API)
                 .enableAutoManage(this, this)
                 .build()
+        val filter = AutocompleteFilter.Builder()
+                .setCountry("CR")
         placeAutocompleteAdapter = PlaceAutocompleteAdapter(this,mGoogleApiClient,
-                latLongBounds,null)
+                latLongBounds,filter.build())
         txtName = findViewById(R.id.txtName)
         txtNameLayout = findViewById(R.id.txtNameLayout)
         txtLastName = findViewById(R.id.txtLastNames)

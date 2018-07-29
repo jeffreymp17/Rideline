@@ -54,7 +54,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        init()
+        var displayingFragment:Fragment = HomeFragment()
+        if(intent.getStringExtra("fragment")!=null){
+            val fragmentName =intent.getStringExtra("fragment")
+            displayingFragment = getDisplayingFragment(fragmentName)
+        }
+        init(displayingFragment)
 
         /*try{
             if (AppStatus.getInstance(applicationContext).isOnline) {}
@@ -70,7 +75,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
-    private fun init() {
+    private fun init(displayingFragment:Fragment) {
         toolbar = findViewById(R.id.toolbar)
         user = FirebaseAuth.getInstance().currentUser!!
 
@@ -85,7 +90,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         userName = navigationView.getHeaderView(0).findViewById(R.id.nav_complete_name)
         email = navigationView.getHeaderView(0).findViewById(R.id.email_nav)
         image = navigationView.getHeaderView(0).findViewById(R.id.nav_image)
-        FragmentHelper.changeFragment(HomeFragment(),supportFragmentManager)
+        FragmentHelper.changeFragment(displayingFragment,supportFragmentManager)
         supportFragmentManager.addOnBackStackChangedListener {
             val fragment = supportFragmentManager.findFragmentById(R.id.containerMain)
             if (fragment != null) {
@@ -98,15 +103,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         getUserProfile()
     }
 
-    private fun updateTittle(fragment: Fragment) {
-        val fragmentName = fragment.javaClass.name
-        when (fragmentName) {
-            ProfileFragment::class.java.name -> title = getString(R.string.profile)
-            RideFragment::class.java.name -> title = getString(R.string.ride)
-            CommunityFragment::class.java.name -> title = getString(R.string.community)
-            HomeFragment::class.java.name -> title = getString(R.string.app_name)
-        }
-    }
 
     override fun onBackPressed() {
         when {
@@ -119,26 +115,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
-        var titleNav = getString(R.string.app_name)
         when (item.itemId) {
             R.id.nav_home -> {
                 FragmentHelper.changeFragment(HomeFragment(),supportFragmentManager)
-                titleNav = getString(R.string.app_name)
+                //titleNav = getString(R.string.app_name)
             }
             R.id.nav_profile -> {
                 FragmentHelper.changeFragment(ProfileFragment(),supportFragmentManager)
-                titleNav = getString(R.string.profile)
+                //titleNav = getString(R.string.profile)
             }
             R.id.nav_ride -> {
                 cantCreateRideWhenActive()
             }
             R.id.nav_community -> {
-                titleNav = if(userObject!!.communities.isEmpty()){
+                if(userObject!!.communities.isEmpty()){
                     FragmentHelper.changeFragment(CommunitiesFragment(),supportFragmentManager)
-                    getString(R.string.community)
                 }else{
                     FragmentHelper.changeFragment(CommunityFragment(),supportFragmentManager)
-                    getString(R.string.community)
                 }
 
             }
@@ -148,12 +141,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_logout -> {
                 logOut()
             }
-            else -> {
-                titleNav = getString(R.string.app_name)
-            }
         }
-        if (supportActionBar != null) supportActionBar!!.title = titleNav
-            drawer_layout.closeDrawer(GravityCompat.START)
+        drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
 
@@ -235,12 +224,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val user = dataSnapshot.getValue(User::class.java)
                 if (user!!.activeRide == null) {
                     FragmentHelper.changeFragment(RideFragment(),supportFragmentManager)
-                    if (supportActionBar != null) supportActionBar!!.title = getString(R.string.ride)
                 } else {
                     Toasty.info(this@MainActivity, getString(R.string.rideActiveMessage), Toast.LENGTH_SHORT).show()
                 }
             }
         })
+    }
+    private fun updateTittle(fragment: Fragment) {
+        val fragmentName = fragment.javaClass.name
+        when (fragmentName) {
+            ProfileFragment::class.java.name -> title = getString(R.string.profile)
+            RideFragment::class.java.name -> title = getString(R.string.ride)
+            CommunityFragment::class.java.name -> title = getString(R.string.community)
+            HomeFragment::class.java.name -> title = getString(R.string.app_name)
+        }
+    }
+    private fun getDisplayingFragment(fragmentName: String):Fragment {
+        return when (fragmentName) {
+            ProfileFragment::class.java.name -> ProfileFragment()
+            RideFragment::class.java.name -> RideFragment()
+            CommunityFragment::class.java.name -> CommunityFragment()
+            else -> HomeFragment()
+        }
     }
 
 

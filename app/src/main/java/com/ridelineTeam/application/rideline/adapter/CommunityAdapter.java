@@ -310,7 +310,7 @@ public class CommunityAdapter {
                     db.child(key).child("users").setValue(community.getUsers());
 
                     final DatabaseReference reference = databaseReference.getDatabase().getReference().child(USERS);
-                    reference.child(community.getCreatedBy()).addListenerForSingleValueEvent(
+                    reference.child(community.getAdmin()).addListenerForSingleValueEvent(
                             new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

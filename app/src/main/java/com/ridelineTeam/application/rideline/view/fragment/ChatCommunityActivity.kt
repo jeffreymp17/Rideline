@@ -1,5 +1,6 @@
 package com.ridelineTeam.application.rideline.view.fragment
 
+import android.app.Activity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
@@ -13,7 +14,9 @@ import android.text.format.Time
 import android.util.Log
 import android.view.*
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
+import android.widget.Toolbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -41,21 +44,26 @@ class ChatCommunityActivity : AppCompatActivity() {
     private lateinit var userId:String
     private lateinit var RecyclerChat: RecyclerView
     private lateinit var adpater: ChatCommunityAdapter.ChatCommunityAdapterRecycler
+    
     private  var user: FirebaseUser? = null
     private val token= MyFirebaseInstanceIDService().onTokenRefresh()
     private lateinit var toolbar: Toolbar
+    companion object {
+        var activityInstance: Activity? = null
+    }
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_community)
         toolbar=findViewById(R.id.toolbar)
         community = intent.getSerializableExtra("community") as Community
-        FragmentHelper.showToolbar(community.name,true,findViewById(R.id.toolbar),this)
+        //FragmentHelper.showToolbar(community.name,true,findViewById(R.id.toolbar),this)
         Log.d("DATA", "---------->$community")
         database= FirebaseDatabase.getInstance()
         databaseReference=database.reference.child(COMMUNITIES)
         RecyclerChat=findViewById(R.id.recycler_chat)
-         user = FirebaseAuth.getInstance().currentUser
+
+        user = FirebaseAuth.getInstance().currentUser
         userId = user!!.uid
         txtMessage=findViewById(R.id.txtMessage)
         btn_send=findViewById(R.id.send)
@@ -66,6 +74,17 @@ class ChatCommunityActivity : AppCompatActivity() {
         Log.d("myToken","$token")
         FragmentHelper.backButtonToFragment(toolbar,ChatCommunityActivity@this)
 
+        toolbar=findViewById(R.id.chat_toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        super.setTitle("")
+        val mTitleTextView = findViewById<TextView>(R.id.chat_toolbar_title)
+        mTitleTextView.text=community.name
+        mTitleTextView.setOnClickListener({
+            val intent = Intent(this@ChatCommunityActivity,CommunityDetailActivity::class.java)
+            intent.putExtra("community", community)
+            startActivity(intent)        })
+        activityInstance = this
     }
 
 

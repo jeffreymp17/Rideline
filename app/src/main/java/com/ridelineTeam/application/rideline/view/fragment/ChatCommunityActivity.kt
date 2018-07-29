@@ -16,7 +16,6 @@ import android.view.*
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.Toolbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -47,7 +46,7 @@ class ChatCommunityActivity : AppCompatActivity() {
     
     private  var user: FirebaseUser? = null
     private val token= MyFirebaseInstanceIDService().onTokenRefresh()
-    private lateinit var toolbar: Toolbar
+    private lateinit var toolbar: android.support.v7.widget.Toolbar
     companion object {
         var activityInstance: Activity? = null
     }

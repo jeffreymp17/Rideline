@@ -82,7 +82,7 @@ class ChatCommunityActivity : AppCompatActivity() {
             intent.putExtra("community", community)
             startActivity(intent)
         })
-        //FragmentHelper.backButtonToFragment(toolbar,ChatCommunityActivity@this)
+        FragmentHelper.backButtonToFragment(toolbar,ChatCommunityActivity@this)
         activityInstance = this
     }
 

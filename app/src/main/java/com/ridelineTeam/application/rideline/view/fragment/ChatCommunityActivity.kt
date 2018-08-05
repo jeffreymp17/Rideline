@@ -54,7 +54,6 @@ class ChatCommunityActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_community)
-        toolbar=findViewById(R.id.toolbar)
         community = intent.getSerializableExtra("community") as Community
         //FragmentHelper.showToolbar(community.name,true,findViewById(R.id.toolbar),this)
         Log.d("DATA", "---------->$community")
@@ -71,7 +70,6 @@ class ChatCommunityActivity : AppCompatActivity() {
         }
         Log.d("id", community.id)
         Log.d("myToken","$token")
-        FragmentHelper.backButtonToFragment(toolbar,ChatCommunityActivity@this)
 
         toolbar=findViewById(R.id.chat_toolbar)
         setSupportActionBar(toolbar)
@@ -82,7 +80,9 @@ class ChatCommunityActivity : AppCompatActivity() {
         mTitleTextView.setOnClickListener({
             val intent = Intent(this@ChatCommunityActivity,CommunityDetailActivity::class.java)
             intent.putExtra("community", community)
-            startActivity(intent)        })
+            startActivity(intent)
+        })
+        //FragmentHelper.backButtonToFragment(toolbar,ChatCommunityActivity@this)
         activityInstance = this
     }
 

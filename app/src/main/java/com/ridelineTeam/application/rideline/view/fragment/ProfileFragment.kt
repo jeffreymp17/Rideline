@@ -44,7 +44,7 @@ import es.dmoral.toasty.Toasty
  * A simple [Fragment] subclass.
  */
 class ProfileFragment : Fragment() {
-    private lateinit var profile_picture: CircleImageView
+    private lateinit var profilePicture: CircleImageView
     private lateinit var name: TextView
     private lateinit var place: TextView
     private lateinit var email: TextView
@@ -52,12 +52,12 @@ class ProfileFragment : Fragment() {
     private lateinit var reference: DatabaseReference
     private lateinit var database: FirebaseDatabase
     private lateinit var id: String
-    private lateinit var picture_bytes: ByteArray
+    private lateinit var pictureBytes: ByteArray
     private lateinit var photoRef: String
     private lateinit var fireStorage: FirebaseStorage
     private lateinit var sReference: StorageReference
     private lateinit var cardView: CardView
-    private lateinit var btn_edit: FloatingActionButton
+    private lateinit var btnEdit: FloatingActionButton
     private lateinit var recycler: MultiSnapRecyclerView
     private lateinit var adapter: ProfileAdapter.ProfileAdapterRecycler
     private var user: User? = null
@@ -83,7 +83,7 @@ class ProfileFragment : Fragment() {
         val rootView: View = inflater.inflate(R.layout.fragment_profile, container, false)
         database = FirebaseDatabase.getInstance()
         val user = FirebaseAuth.getInstance().currentUser
-        btn_edit = rootView.findViewById(R.id.edit_profile)
+        btnEdit = rootView.findViewById(R.id.edit_profile)
         cardView = rootView.findViewById(R.id.cardViewRide)
         id = user!!.uid
         fireStorage = FirebaseStorage.getInstance()
@@ -96,9 +96,9 @@ class ProfileFragment : Fragment() {
         place = rootView.findViewById(R.id.profile_place)
         email = rootView.findViewById(R.id.user_email)
         //done = rootView.findViewById(R.id.count)
-        profile_picture = rootView.findViewById(R.id.my_picture_profile)
+        profilePicture = rootView.findViewById(R.id.my_picture_profile)
         //btn_cancel_ride=rootView.findViewById(R.id.btnCancelCard)
-        btn_edit.setOnClickListener {
+        btnEdit.setOnClickListener {
             showChangeLangDialog(container)
         }
         imageCircle.setOnClickListener {
@@ -129,20 +129,7 @@ class ProfileFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         (activity as AppCompatActivity).supportActionBar!!.title=getString(R.string.profile)
     }
-    override fun onStart() {
-        super.onStart()
-        test()
-    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == GALLERY_INTENT && resultCode == Activity.RESULT_OK) {
-            uri = data!!.data
-            photoRef = uri.lastPathSegment
-            picture_bytes = ImageHelper.resizeBytesImage(context, imageCircle, data)
-            uploadProfileImage(data)
-        }
-    }
     private fun showGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -252,8 +239,8 @@ class ProfileFragment : Fragment() {
         if (requestCode == GALLERY_INTENT && resultCode == Activity.RESULT_OK) {
             uri = data!!.data
             photoRef = uri.lastPathSegment
-            picture_bytes = ImageHelper.resizeBytesImage(context, imageCircle, data)
-            if(user!!.pictureUrl!=null&& user!!.pictureUrl != ""){
+            pictureBytes = ImageHelper.resizeBytesImage(context, imageCircle, data)
+            if(user!!.pictureUrl != ""){
                 deleteProfilePicture(user!!.pictureUrl)
             }
             showProgressBar()
@@ -317,7 +304,7 @@ class ProfileFragment : Fragment() {
     private fun uploadProfileImage() {
         reference = database.reference.child(USERS).child(id)
         sReference = fireStorage.reference.child(PROFILE_PICTURES).child(photoRef)
-        sReference.putBytes(picture_bytes).addOnSuccessListener {
+        sReference.putBytes(pictureBytes).addOnSuccessListener {
             if (it.task.isComplete) {
                 sReference.downloadUrl.addOnSuccessListener({ uri ->
                     with(reference) {

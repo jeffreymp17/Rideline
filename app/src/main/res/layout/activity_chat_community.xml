@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     tools:context="com.ridelineTeam.application.rideline.view.fragment.ChatCommunityActivity">
+
     <include layout="@layout/chat_toolbar"/>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_chat"

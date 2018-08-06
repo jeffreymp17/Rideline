@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import es.dmoral.toasty.Toasty;
 
@@ -58,6 +59,7 @@ public class RideAdapter {
         private TextView passengerCard;
         private ImageView rideImage;
         private Button btnGoCard;
+        private Button btnCancelCard;
         private TextView hour;
         private FrameLayout frameLayoutCard;
 
@@ -69,6 +71,7 @@ public class RideAdapter {
             passengerCard = view.findViewById(R.id.passengerCard);
             rideImage = view.findViewById(R.id.typeRideImage);
             btnGoCard = view.findViewById(R.id.btnGoCard);
+            btnCancelCard = view.findViewById(R.id.btnCancelCard);
             destination = view.findViewById(R.id.txtDestination);
             origin = view.findViewById(R.id.txtOrigin);
             hour = view.findViewById(R.id.rideHour);
@@ -90,7 +93,7 @@ public class RideAdapter {
 
 
         public RideAdapterRecycler(final Context context, DatabaseReference reference,
-                                   Activity activity, Query query, ArrayList<String> communites, final String userId,
+                                   Activity activity, Query query, ArrayList<String> communities, final String userId,
                                    TextView textView) {
             this.cleanupListener();
             this.context = context;
@@ -100,14 +103,14 @@ public class RideAdapter {
             this.RidesIds = new ArrayList<>();
             this.userId = userId;
             this.noRidesText = textView;
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm",Locale.getDefault());
 
             ChildEventListener childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
                     Log.d("RideAdapter", "onChildAdded " + dataSnapshot.getKey());
-                    for (int i = 0; i < communites.size(); i++) {
-                        if (communites.get(i).equals(dataSnapshot.child("community").getValue())) {
+                    for (int i = 0; i < communities.size(); i++) {
+                        if (communities.get(i).equals(dataSnapshot.child("community").getValue())) {
                             Ride ride = dataSnapshot.getValue(Ride.class);
                             String rideDate = null;
                             try {
@@ -125,6 +128,7 @@ public class RideAdapter {
                                     notifyItemInserted(Rides.size() - 1);
                                 }
                                 else{
+                                    assert ride != null;
                                     ProfileFragment.Companion.changeStatusWhenTimeOver(ride,activity);
                                 }
                             } catch (ParseException e) {
@@ -237,7 +241,7 @@ public class RideAdapter {
             });
             if (ride.getUser().equals(userId)) {
                 holder.btnGoCard.setVisibility(View.GONE);
-                //getMenuItem();
+                holder.btnCancelCard.setVisibility(View.VISIBLE);
             }
 
             String originText= activity.getResources().getString(R.string.originText)
@@ -286,7 +290,10 @@ public class RideAdapter {
                 addPassenger(ride);
 
             });
-            disabledGoButton(userId, holder);
+            holder.btnCancelCard.setOnClickListener(v ->
+                    ProfileFragment.Companion.cancelRideDialog(ride,activity));
+
+            disabledGoButton(userId, holder,ride);
         }
 
         private void addPassenger(Ride ride){
@@ -314,7 +321,7 @@ public class RideAdapter {
             return Rides.size();
         }
 
-        public void cleanupListener() {
+        private void cleanupListener() {
             if (childEventListener != null) {
                 Log.d("CLEAN", "LIMPIANDO LISTENER");
                 databaseReference.removeEventListener(childEventListener);
@@ -378,21 +385,22 @@ public class RideAdapter {
                     .setValue(1)
                     .addOnCompleteListener(task -> holder.btnGoCard.setEnabled(false));
         }
-        private void disabledGoButton(String userId, RideViewHolder holder) {
+        private void disabledGoButton(String userId, RideViewHolder holder, Ride ride) {
             DatabaseReference db = databaseReference.getDatabase().getReference().child(USERS);
             db.child(userId).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     User user = dataSnapshot.getValue(User.class);
                     if (user != null) {
-                        if (user.getTaked() == 1) {
-                            holder.btnGoCard.setEnabled(false);
-                            holder.btnGoCard.setVisibility(View.INVISIBLE);
-                            Log.d("FALSE", "------" + user.getTaked());
+                        if (user.getTaked() == 1 && user.getActiveRide()!=null) {
+                            holder.btnGoCard.setVisibility(View.GONE);
+                            if (user.getActiveRide().getId().equals(ride.getId())){
+                                holder.btnCancelCard.setVisibility(View.VISIBLE);
+                            }
                         }
                         else{
-                            holder.btnGoCard.setEnabled(true);
                             holder.btnGoCard.setVisibility(View.VISIBLE);
+                            holder.btnCancelCard.setVisibility(View.GONE);
                         }
                     }
                 }

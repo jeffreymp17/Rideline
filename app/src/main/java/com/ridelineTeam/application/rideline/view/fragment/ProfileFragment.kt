@@ -78,7 +78,6 @@ class ProfileFragment : Fragment() {
     private lateinit var noActiveRideText:TextView
     private lateinit var materialDialog: MaterialDialog
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView: View = inflater.inflate(R.layout.fragment_profile, container, false)
         database = FirebaseDatabase.getInstance()
@@ -92,12 +91,9 @@ class ProfileFragment : Fragment() {
         recycler = rootView.findViewById(R.id.recycler_profile)
         reference = database.reference.child(USERS)
         name = rootView.findViewById(R.id.profile_name)
-        //community_name = rootView.findViewById(R.id.user_communities)
         place = rootView.findViewById(R.id.profile_place)
         email = rootView.findViewById(R.id.user_email)
-        //done = rootView.findViewById(R.id.count)
         profilePicture = rootView.findViewById(R.id.my_picture_profile)
-        //btn_cancel_ride=rootView.findViewById(R.id.btnCancelCard)
         btnEdit.setOnClickListener {
             showChangeLangDialog(container)
         }
@@ -117,7 +113,6 @@ class ProfileFragment : Fragment() {
         hour = rootView.findViewById(R.id.rideHour)
         noActiveRideText = rootView.findViewById(R.id.noActiveRideText)
 
-        //community_name.movementMethod = ScrollingMovementMethod()
         getUserProfile()
         materialDialog = MaterialDialog.Builder(context!!)
                 .title(R.string.loading)
@@ -129,13 +124,28 @@ class ProfileFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         (activity as AppCompatActivity).supportActionBar!!.title=getString(R.string.profile)
     }
-
+    override fun onStart() {
+        super.onStart()
+        statistics()
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == GALLERY_INTENT && resultCode == Activity.RESULT_OK) {
+            uri = data!!.data
+            photoRef = uri.lastPathSegment
+            pictureBytes = ImageHelper.resizeBytesImage(context, imageCircle, data)
+            if(user!!.pictureUrl != ""){
+                deleteProfilePicture(user!!.pictureUrl)
+            }
+            showProgressBar()
+            uploadProfileImage()
+        }
+    }
     private fun showGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         startActivityForResult(intent, GALLERY_INTENT)
     }
-
     //GET DATA FROM CURRENT USER
     private fun getUserProfile() {
         id = FirebaseAuth.getInstance().currentUser!!.uid
@@ -187,9 +197,8 @@ class ProfileFragment : Fragment() {
 
         })
     }
-
     //RIDES REQUESTS AND OFFERED FROM CURRENT USER
-    private fun test() {
+    private fun statistics() {
         val ref = database.reference.child(RIDES)
         val query = ref.orderByChild("user").equalTo(id)
         val linearLayoutManager = LinearLayoutManager(context)
@@ -199,7 +208,6 @@ class ProfileFragment : Fragment() {
         recycler.adapter = adapter
         counterWhenIsDone()
     }
-
     //COUNT RIDES TOTAL AND IS DONE
     private fun counterWhenIsDone() {
         var isDone = 0
@@ -228,25 +236,6 @@ class ProfileFragment : Fragment() {
             }
         })
     }
-
-    override fun onStart() {
-        super.onStart()
-        test()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == GALLERY_INTENT && resultCode == Activity.RESULT_OK) {
-            uri = data!!.data
-            photoRef = uri.lastPathSegment
-            pictureBytes = ImageHelper.resizeBytesImage(context, imageCircle, data)
-            if(user!!.pictureUrl != ""){
-                deleteProfilePicture(user!!.pictureUrl)
-            }
-            showProgressBar()
-            uploadProfileImage()
-        }
-    }
     private fun deleteProfilePicture(imageUrl:String){
         val deletePhoto:StorageReference = FirebaseStorage.getInstance().reference.child(PROFILE_PICTURES)
          deletePhoto.storage.getReferenceFromUrl(imageUrl).delete().addOnSuccessListener {
@@ -257,7 +246,6 @@ class ProfileFragment : Fragment() {
         }
 
     }
-
     //EDIT AND CHNAGE DATA IN FIREBASE
     private fun newProfile(newName: String, newLastNames: String,
                            newStatus:String) {
@@ -266,7 +254,6 @@ class ProfileFragment : Fragment() {
         reference.child(id).child("status").setValue(newStatus)
         Toasty.success(context!!, getString(R.string.profileUpdate), Toast.LENGTH_SHORT, true).show()
     }
-
     ///DIALOG TO CONFIRM CHANGE INFORMATION
     private fun showChangeLangDialog(viewGroup: ViewGroup?) {
         val dialogBuilder = AlertDialog.Builder(context!!)
@@ -299,7 +286,6 @@ class ProfileFragment : Fragment() {
         val b = dialogBuilder.create()
         b.show()
     }
-
     //THIS METHOD UPLOAD PROFILE PICTORE IN FIREABSE SERVER
     private fun uploadProfileImage() {
         reference = database.reference.child(USERS).child(id)
@@ -318,7 +304,6 @@ class ProfileFragment : Fragment() {
 
         }
     }
-
     ///GET NAME OF COMMUNITIES
     private fun userCommunities(key: String) {
         val query = database.reference.child(COMMUNITIES).child(key)
@@ -336,7 +321,6 @@ class ProfileFragment : Fragment() {
         })
 
     }
-
     private  fun drawActiveRideCard(ride: Ride?){
         dateCard.text = ride!!.date
         database.reference.child(USERS).child(ride.user)
@@ -393,97 +377,10 @@ class ProfileFragment : Fragment() {
         hour.text = ride.time
         btnCancelCard.visibility=View.VISIBLE
         btnCancelCard.setOnClickListener{
-            cancelRideDialog(ride)
+            cancelRideDialog(ride,activity!!)
         }
     }
 
-    private fun cancelRideDialog(ride:Ride) {
-        val builder = AlertDialog.Builder(activity!!)
-        // Set the alert dialog title
-        builder.setTitle(R.string.cancel_ride)
-        // Display a message on alert dialog
-        builder.setMessage(R.string.ride_cancel_message)
-        // Set a positive button and its click listener on alert dialog
-        builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
-            if (Type.REQUESTED == ride.type){
-                cancelRequestedRide(ride)
-            }
-            else{
-                cancelRequestedRide(ride)
-            }
-        }
-        // Display a negative button on alert dialog
-        builder.setNegativeButton(getString(R.string.no)) { _, _ ->
-        }
-        // Finally, make the alert dialog using builder
-        val dialog: AlertDialog = builder.create()
-        // Display the alert dialog on app interface
-        dialog.show()
-    }
-
-    private fun cancelRequestedRide(ride:Ride){
-        val db = database.reference.child(USERS)
-        database.reference.child(RIDES).child(ride.id).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(databaseError: DatabaseError) {
-                Toasty.error(activity!!.applicationContext,databaseError.message,Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val rideData = dataSnapshot.getValue(Ride::class.java)
-                //Si no hay pasajeros o alguien mas en el ride solo lo cancela
-                if(rideData?.passengers == null ||rideData.passengers.isEmpty()){
-                    db.child(ride.user).child("activeRide").removeValue()
-                    db.child(ride.user).child("taked").setValue(0)
-                    database.reference.child(RIDES).child(ride.id).child("status").setValue(Status.CANCELED)
-                    Toasty.success(activity!!.applicationContext,
-                            activity!!.resources.getString(R.string.ride_canceled),
-                            Toast.LENGTH_SHORT).show()
-                }
-                else{
-                    val currentUser = FirebaseAuth.getInstance().currentUser
-                    //si el que cancela el ride es el mismo usuario que lo publico.
-                    if (ride.user == currentUser!!.uid){
-                        val tokens = ArrayList<String>()
-                        rideData.passengers.values.mapTo(tokens) { it.token }
-                        NotificationHelper.messageToCommunity(MainActivity.fmc,tokens,activity!!.resources.getString(R.string.ride_canceled),
-                                currentUser.displayName+ R.string.cancel_ride_notification,ride)
-                        db.child(ride.user).child("activeRide").removeValue()
-                        for (passenger in rideData.passengers.values){
-                            db.child(passenger.id).child("activeRide").removeValue()
-                            db.child(passenger.id).child("taked").setValue(0)
-                        }
-                        database.reference.child(RIDES).child(ride.id).child("status")
-                                .setValue(Status.CANCELED)
-                        database.reference.child(RIDES).child(ride.id).child("passengers")
-                                .removeValue()
-
-                    }
-                    //cuando un usuario distinto al que publico el ride lo cancela.
-                    else{
-                        database.reference.child(USERS).child(ride.user)
-                                .addListenerForSingleValueEvent(object : ValueEventListener {
-                                    override fun onCancelled(databaseError: DatabaseError) {
-                                        Toasty.error(activity!!.applicationContext,databaseError.message,Toast.LENGTH_SHORT).show()
-                                    }
-
-                                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                        val rideUser = dataSnapshot.getValue(User::class.java)
-                                        NotificationHelper.message(MainActivity.fmc,rideUser!!.token,
-                                                activity!!.resources.getString(R.string.ride_canceled),
-                                                currentUser.displayName+ R.string.has_canceled)
-                                        db.child(currentUser.uid).child("activeRide").removeValue()
-                                        db.child(currentUser.uid).child("taked").setValue(0)
-                                        database.reference.child(RIDES).child(ride.id).child("status").setValue(Status.ACTIVE)
-                                        database.reference.child(RIDES).child(ride.id)
-                                                .child("passengers")
-                                                .child(currentUser.uid).removeValue()
-                                    }
-                                })
-                    }
-                }
-            }
-        })
-    }
     private fun showProgressBar(){
         materialDialog.show()
         PermissionHelper.disableScreenInteraction(activity!!.window)
@@ -493,8 +390,94 @@ class ProfileFragment : Fragment() {
         PermissionHelper.enableScreenInteraction(activity!!.window)
     }
 
-
     companion object {
+         fun cancelRideDialog(ride:Ride,activity: Activity) {
+            val builder = AlertDialog.Builder(activity)
+            // Set the alert dialog title
+            builder.setTitle(R.string.cancel_ride)
+            // Display a message on alert dialog
+            builder.setMessage(R.string.ride_cancel_message)
+            // Set a positive button and its click listener on alert dialog
+            builder.setPositiveButton(activity.resources.getString(R.string.yes)) { _, _ ->
+                cancelRequestedRide(ride,activity)
+            }
+            // Display a negative button on alert dialog
+            builder.setNegativeButton(activity.resources.getString(R.string.no)) { _, _ ->
+            }
+            // Finally, make the alert dialog using builder
+            val dialog: AlertDialog = builder.create()
+            // Display the alert dialog on app interface
+            dialog.show()
+        }
+        private fun cancelRequestedRide(ride:Ride,activity: Activity){
+            val database = FirebaseDatabase.getInstance()
+            val db = database.reference.child(USERS)
+            database.reference.child(RIDES).child(ride.id).addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Toasty.error(activity.applicationContext,databaseError.message,Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val rideData = dataSnapshot.getValue(Ride::class.java)
+                    //Si no hay pasajeros o alguien mas en el ride solo lo cancela
+                    if(rideData?.passengers == null ||rideData.passengers.isEmpty()){
+                        db.child(ride.user).child("activeRide").removeValue()
+                        db.child(ride.user).child("taked").setValue(0)
+                        database.reference.child(RIDES).child(ride.id).child("status").setValue(Status.CANCELED)
+                        Toasty.success(activity.applicationContext,
+                                activity.resources.getString(R.string.ride_canceled),
+                                Toast.LENGTH_SHORT).show()
+                    }
+                    else{
+                        val currentUser = FirebaseAuth.getInstance().currentUser
+                        //si el que cancela el ride es el mismo usuario que lo publico.
+                        if (ride.user == currentUser!!.uid){
+                            val tokens = ArrayList<String>()
+                            rideData.passengers.values.mapTo(tokens) { it.token }
+                            NotificationHelper.messageToCommunity(MainActivity.fmc,tokens,activity.resources.getString(R.string.ride_canceled),
+                                    currentUser.displayName+ R.string.cancel_ride_notification,ride)
+                            db.child(ride.user).child("activeRide").removeValue()
+                            for (passenger in rideData.passengers.values){
+                                db.child(passenger.id).child("activeRide").removeValue()
+                                db.child(passenger.id).child("taked").setValue(0)
+                            }
+                            database.reference.child(RIDES).child(ride.id).child("status")
+                                    .setValue(Status.CANCELED)
+                            database.reference.child(RIDES).child(ride.id).child("passengers")
+                                    .removeValue()
+                            Toasty.success(activity.applicationContext,
+                                    activity.resources.getString(R.string.ride_canceled),
+                                    Toast.LENGTH_SHORT).show()
+                        }
+                        //cuando un usuario distinto al que publico el ride lo cancela.
+                        else{
+                            database.reference.child(USERS).child(ride.user)
+                                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                                        override fun onCancelled(databaseError: DatabaseError) {
+                                            Toasty.error(activity.applicationContext,databaseError.message,Toast.LENGTH_SHORT).show()
+                                        }
+
+                                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                            val rideUser = dataSnapshot.getValue(User::class.java)
+                                            NotificationHelper.message(MainActivity.fmc,rideUser!!.token,
+                                                    activity.resources.getString(R.string.ride_canceled),
+                                                    currentUser.displayName+ R.string.has_canceled)
+                                            db.child(currentUser.uid).child("activeRide").removeValue()
+                                            db.child(currentUser.uid).child("taked").setValue(0)
+                                            database.reference.child(RIDES).child(ride.id).child("status").setValue(Status.ACTIVE)
+                                            database.reference.child(RIDES).child(ride.id)
+                                                    .child("passengers")
+                                                    .child(currentUser.uid).removeValue()
+                                            Toasty.success(activity.applicationContext,
+                                                    activity.resources.getString(R.string.ride_canceled),
+                                                    Toast.LENGTH_SHORT).show()
+                                        }
+                                    })
+                        }
+                    }
+                }
+            })
+        }
         fun changeStatusWhenTimeOver(ride:Ride, activity:Activity){
             val database = FirebaseDatabase.getInstance()
             val db = database.reference.child(USERS)

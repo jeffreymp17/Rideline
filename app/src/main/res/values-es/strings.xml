@@ -204,7 +204,7 @@
     <string name="cancel">Cancelar</string>
     <string name="profileUpdate">Datos actualizados</string>
     <string name="cancel_ride">Cancelar ride</string>
-    <string name="ride_cancel_message">Desea usted cancelar el ride?</string>
+    <string name="ride_cancel_message">¿Desea cancelar el ride?</string>
     <string name="cancel_ride_notification">ha cancelado el viaje</string>
     <string name="has_canceled">ha cancelado</string>
     <string name="leave_community_message">"¿Estas seguro que quieres salir de esta comunidad?"</string>

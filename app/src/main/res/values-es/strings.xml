@@ -213,4 +213,5 @@
     <string name="leave_community_error">¡Ocurrió un error al salir de la comunidad, intente de nuevo!</string>
     <string name="leave_community_success">"¡Has salido de la communidad!"</string>
     <string name="no_longer_belong_community">Ya no perteneces a esta comunidad</string>
+    <string name="chat_subtitle">Toca para info. de la comunidad</string>
 </resources>

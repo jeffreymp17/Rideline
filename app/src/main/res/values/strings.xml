@@ -216,5 +216,6 @@
         community will be deleted! \nContinue?</string>
     <string name="leave_community_error">An error occurred while leaving community, try again!</string>
     <string name="leave_community_success">"You have been leaves the community!"</string>
+    <string name="chat_subtitle">Tap to see community info</string>
 
 </resources>

@@ -39,7 +39,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
        String message= remoteMessage.getNotification().getClickAction();
        Log.d("MESSAGE","CLICK_ACTION:"+message);
         if(remoteMessage.getNotification()!=null){
-            if(!remoteMessage.getData().isEmpty()){
+            if(remoteMessage.getData().equals("riders")){
                 Ride ride=new Ride();
                 ride.setCommunity(remoteMessage.getData().get("community"));
                 ride.setOrigin(remoteMessage.getData().get("origin"));
@@ -47,9 +47,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 showNotification(remoteMessage.getNotification().getTitle(),
                         remoteMessage.getNotification().getBody(),ride);
             }
-            else{
-                showNotification(remoteMessage.getNotification().getTitle(),
-                        remoteMessage.getNotification().getBody());
+             else{
+                 String key=remoteMessage.getData().get("communityChat");
+                 showNotification(remoteMessage.getNotification().getTitle(),
+                         remoteMessage.getNotification().getBody(),key);
             }
         }
     }
@@ -91,6 +92,44 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         style.setSummaryText(""+notifications.size()+ getResources().getString(R.string.inboxMessages));
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.if_citycons_car_1342944);
         Intent intent=new Intent(this,MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent=PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        Uri uriRingtone= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder builder=new NotificationCompat.Builder(this);
+        builder.setSmallIcon(R.drawable.ride_thumb)
+                .setColor(getResources().getColor(R.color.colorPrimary))
+                .setContentTitle(title)
+                .setContentIntent(pendingIntent)
+                .setContentText(body)
+                .setOnlyAlertOnce(true)
+                .setWhen(System.currentTimeMillis())
+                .setLargeIcon(bmp)
+                .setGroupSummary(true)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
+                .setStyle(style)
+                .setAutoCancel(true)
+                .setTimeoutAfter(1000)
+                .setGroup("community")
+                .setSound(uriRingtone).setContentIntent(pendingIntent);
+
+        NotificationManager notification=(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        notification.notify(2,builder.build());
+
+    }
+    private void showNotification(String title, String body,String community) {
+        NotificationCompat.InboxStyle style=new NotificationCompat.InboxStyle();
+        notifications.add(body);
+        for (int i=0; i < notifications.size(); i++) {
+            Log.d("-------------_>","NOTI:"+notifications);
+            Log.d("Count",""+i);
+            style.addLine(notifications.get(i));
+        }
+        style.setBigContentTitle(title);
+        style.setSummaryText(""+notifications.size()+ getResources().getString(R.string.inboxMessages));
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.if_citycons_car_1342944);
+        Intent intent=new Intent(this,ChatCommunityActivity.class);
+        intent.putExtra("communityKey",community);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent=PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
         Uri uriRingtone= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);

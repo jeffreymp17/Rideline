@@ -73,10 +73,11 @@ public class NotificationHelper {
                 .build();
         fcm.send(message);
     }
-    public static void messageToCommunity(Sender fcm, List<String> tokens, String tittle, String body){
+    public static void messageToCommunity(Sender fcm, List<String> tokens, String tittle, String body,String communityKey){
         Message message = new Message.MessageBuilder()
                 .addRegistrationToken(tokens)
                 .notification(notification(tittle,body))
+                .addData("communityChat",communityKey)
                 .priority(Message.Priority.HIGH)
                 .build();
         fcm.send(message);

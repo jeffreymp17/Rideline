@@ -8,12 +8,13 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.text.format.Time
 import android.util.Log
 import android.view.*
+import android.view.animation.AlphaAnimation
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
@@ -22,7 +23,6 @@ import com.google.firebase.database.*
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.ChatCommunityAdapter
-import com.ridelineTeam.application.rideline.cloudMessageServices.MyFirebaseInstanceIDService
 import com.ridelineTeam.application.rideline.model.Community
 import com.ridelineTeam.application.rideline.model.Messages
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
@@ -33,21 +33,26 @@ import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
 import com.ridelineTeam.application.rideline.view.CommunityDetailActivity
 import es.dmoral.toasty.Toasty
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ChatCommunityActivity : AppCompatActivity() {
-    private lateinit var  community: Community
+    private lateinit var community: Community
     private lateinit var txtMessage: EditText
-    private lateinit var btn_send: FloatingActionButton
+    private lateinit var btnSend: FloatingActionButton
     private lateinit var databaseReference: DatabaseReference
     private lateinit var database: FirebaseDatabase
     private lateinit var userId:String
-    private lateinit var RecyclerChat: RecyclerView
-    private lateinit var adpater: ChatCommunityAdapter.ChatCommunityAdapterRecycler
-    
+    private lateinit var recyclerChat: RecyclerView
+    private lateinit var adapter: ChatCommunityAdapter.ChatCommunityAdapterRecycler
+    private lateinit var titleTextView:TextView
+    private lateinit var subtitleTextView:TextView
+
     private  var user: FirebaseUser? = null
-    private val token= MyFirebaseInstanceIDService().onTokenRefresh()
+    //private val token= MyFirebaseInstanceIDService().onTokenRefresh()
     private lateinit var toolbar: android.support.v7.widget.Toolbar
     companion object {
+        @SuppressLint("StaticFieldLeak")
         var activityInstance: Activity? = null
     }
     @SuppressLint("LongLogTag")
@@ -55,35 +60,36 @@ class ChatCommunityActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_community)
         community = intent.getSerializableExtra("community") as Community
-        //FragmentHelper.showToolbar(community.name,true,findViewById(R.id.toolbar),this)
-        Log.d("DATA", "---------->$community")
-        database= FirebaseDatabase.getInstance()
-        databaseReference=database.reference.child(COMMUNITIES)
-        RecyclerChat=findViewById(R.id.recycler_chat)
+        database = FirebaseDatabase.getInstance()
+        databaseReference = database.reference.child(COMMUNITIES)
+        recyclerChat = findViewById(R.id.recycler_chat)
+        titleTextView = findViewById(R.id.chat_toolbar_title)
+        subtitleTextView = findViewById(R.id.chat_toolbar_subtitle)
 
         user = FirebaseAuth.getInstance().currentUser
         userId = user!!.uid
         txtMessage=findViewById(R.id.txtMessage)
-        btn_send=findViewById(R.id.send)
-        btn_send.setOnClickListener {
+
+        btnSend=findViewById(R.id.send)
+        btnSend.setOnClickListener {
             sendMessage()
         }
-        Log.d("id", community.id)
-        Log.d("myToken","$token")
 
         toolbar=findViewById(R.id.chat_toolbar)
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         super.setTitle("")
-        val mTitleTextView = findViewById<TextView>(R.id.chat_toolbar_title)
-        mTitleTextView.text=community.name
-        mTitleTextView.setOnClickListener({
+        titleTextView.text=community.name
+        subtitleTextView.text = getString(R.string.chat_subtitle)
+        val tittleLayout = findViewById<LinearLayout>(R.id.titleLayout)
+        tittleLayout.setOnClickListener({
             val intent = Intent(this@ChatCommunityActivity,CommunityDetailActivity::class.java)
             intent.putExtra("community", community)
             startActivity(intent)
         })
         FragmentHelper.backButtonToFragment(toolbar,ChatCommunityActivity@this)
         activityInstance = this
+        subtitleAnimation()
     }
 
 
@@ -108,7 +114,7 @@ class ChatCommunityActivity : AppCompatActivity() {
 
     private fun sendMessage(){
         if(!TextUtils.isEmpty(txtMessage.text.trim().toString())) {
-            btn_send.isEnabled=false
+            btnSend.isEnabled=false
             val messages = Messages()
             messages.apply {
                 userName = userId
@@ -120,7 +126,7 @@ class ChatCommunityActivity : AppCompatActivity() {
                     txtMessage.setText("")
                     getCommunityUsers(messages.message)
                     loadConversation()
-                    btn_send.isEnabled=true
+                    btnSend.isEnabled=true
                 }
             }
         }else{
@@ -131,12 +137,12 @@ class ChatCommunityActivity : AppCompatActivity() {
         val time = Time()
         time.setToNow()
         if(time.minute<10){
-           return time.hour.toString() + ":" + "${0}${time.minute} "
+            return time.hour.toString() + ":" + "${0}${time.minute} "
 
         }
         return time.hour.toString() + ":" + time.minute
-
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -158,13 +164,13 @@ class ChatCommunityActivity : AppCompatActivity() {
         val linearLayoutManager = LinearLayoutManager(this@ChatCommunityActivity.applicationContext)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         linearLayoutManager.stackFromEnd=true
-        RecyclerChat.layoutManager = linearLayoutManager
-        adpater= ChatCommunityAdapter.ChatCommunityAdapterRecycler(this,ref,this@ChatCommunityActivity,userId)
-        RecyclerChat.adapter = adpater
+        recyclerChat.layoutManager = linearLayoutManager
+        adapter= ChatCommunityAdapter.ChatCommunityAdapterRecycler(this,ref,this@ChatCommunityActivity,userId)
+        recyclerChat.adapter = adapter
 
     }
     private fun getCommunityUsers(message:String) {
-        var usersIds = ArrayList<String>()
+        val usersIds = ArrayList<String>()
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(COMMUNITIES).child(community.id).child(COMMUNITY_USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -176,7 +182,7 @@ class ChatCommunityActivity : AppCompatActivity() {
                 for (users in data.children) {
                     usersIds.add(users.value.toString())
                 }
-               var users= usersIds.filterNot{ it == userId }
+               val users= usersIds.filterNot{ it == userId }
                 getTokens(users as ArrayList<String>,message)
             }
 
@@ -184,7 +190,7 @@ class ChatCommunityActivity : AppCompatActivity() {
         })
     }
     private fun getTokens(list: ArrayList<String>,message:String) {
-        var listOfTokens = ArrayList<String>()
+        val listOfTokens = ArrayList<String>()
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -196,12 +202,19 @@ class ChatCommunityActivity : AppCompatActivity() {
                         listOfTokens.add(userToken.child(items).child(TOKEN).value.toString())
                 }
                 Log.d("Tokens in data change","$listOfTokens")
-                NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens, "${community.name}"
+                NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens, community.name
                         , "${user!!.displayName} $message")
                 }
 
         })
-
-}
-
+    }
+    private fun subtitleAnimation(){
+        val anim = AlphaAnimation(1f, 0.1f)
+        anim.duration = 3000
+        subtitleTextView.startAnimation(anim)
+        anim.fillAfter=true
+        android.os.Handler().postDelayed({
+            subtitleTextView.visibility = View.GONE
+        },3000)
+    }
 }

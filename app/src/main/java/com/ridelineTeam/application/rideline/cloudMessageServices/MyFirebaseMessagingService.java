@@ -48,7 +48,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         remoteMessage.getNotification().getBody(),ride);
             }
              else{
-                 String key=remoteMessage.getData().get("communityChat");
+                String key=remoteMessage.getData().get("communityChat");
                  showNotification(remoteMessage.getNotification().getTitle(),
                          remoteMessage.getNotification().getBody(),key);
             }

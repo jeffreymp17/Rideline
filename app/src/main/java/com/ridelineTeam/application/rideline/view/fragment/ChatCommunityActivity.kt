@@ -35,7 +35,7 @@ import com.ridelineTeam.application.rideline.view.CommunityDetailActivity
 import es.dmoral.toasty.Toasty
 
 class ChatCommunityActivity : AppCompatActivity() {
-    private  var community: Community? =null
+    private  var community: Community? =Community()
     private lateinit var txtMessage: EditText
     private lateinit var btn_send: FloatingActionButton
     private lateinit var databaseReference: DatabaseReference
@@ -43,7 +43,6 @@ class ChatCommunityActivity : AppCompatActivity() {
     private lateinit var userId: String
     private lateinit var RecyclerChat: RecyclerView
     private lateinit var adpater: ChatCommunityAdapter.ChatCommunityAdapterRecycler
-
     private var user: FirebaseUser? = null
     private val token = MyFirebaseInstanceIDService().onTokenRefresh()
     private lateinit var toolbar: android.support.v7.widget.Toolbar
@@ -74,9 +73,8 @@ class ChatCommunityActivity : AppCompatActivity() {
                         }
 
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            val c=dataSnapshot.getValue(Community::class.java)
-                            community=c as Community
-                            Log.d("NOTIFICATON ", "COMMUNITY$community")
+                            community=dataSnapshot.getValue(Community::class.java)
+                            Log.d("NOTIFICATON ", "COMMUNITY::---------------------------------------------------------$community")
                         }
 
                     })
@@ -108,8 +106,6 @@ class ChatCommunityActivity : AppCompatActivity() {
         activityInstance = this
 
     }
-
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.main, menu)
@@ -170,16 +166,6 @@ class ChatCommunityActivity : AppCompatActivity() {
     private fun loadConversation() {
         val ref: DatabaseReference = FirebaseDatabase.getInstance().reference.child(COMMUNITIES)
                 .child(community!!.id).child("messages")
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
-
-            override fun onDataChange(p0: DataSnapshot) {
-                Log.d("CONVERSATIONS", "ADD" + p0.value)
-            }
-
-        })
         val linearLayoutManager = LinearLayoutManager(this@ChatCommunityActivity.applicationContext)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         linearLayoutManager.stackFromEnd = true

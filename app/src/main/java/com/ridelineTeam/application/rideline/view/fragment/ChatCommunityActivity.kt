@@ -8,12 +8,13 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.text.format.Time
 import android.util.Log
 import android.view.*
+import android.view.animation.AlphaAnimation
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
@@ -22,7 +23,6 @@ import com.google.firebase.database.*
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.ChatCommunityAdapter
-import com.ridelineTeam.application.rideline.cloudMessageServices.MyFirebaseInstanceIDService
 import com.ridelineTeam.application.rideline.model.Community
 import com.ridelineTeam.application.rideline.model.Messages
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
@@ -33,11 +33,13 @@ import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
 import com.ridelineTeam.application.rideline.view.CommunityDetailActivity
 import es.dmoral.toasty.Toasty
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ChatCommunityActivity : AppCompatActivity() {
     private  var community: Community? =Community()
     private lateinit var txtMessage: EditText
-    private lateinit var btn_send: FloatingActionButton
+    private lateinit var btnSend: FloatingActionButton
     private lateinit var databaseReference: DatabaseReference
     private lateinit var database: FirebaseDatabase
     private lateinit var userId: String
@@ -48,6 +50,7 @@ class ChatCommunityActivity : AppCompatActivity() {
     private lateinit var toolbar: android.support.v7.widget.Toolbar
 
     companion object {
+        @SuppressLint("StaticFieldLeak")
         var activityInstance: Activity? = null
     }
 
@@ -55,11 +58,12 @@ class ChatCommunityActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_community)
-        //FragmentHelper.showToolbar(community.name,true,findViewById(R.id.toolbar),this)
-        //  Log.d("DATA", "---------->$community")
+        community = intent.getSerializableExtra("community") as Community
         database = FirebaseDatabase.getInstance()
         databaseReference = database.reference.child(COMMUNITIES)
-        RecyclerChat = findViewById(R.id.recycler_chat)
+        recyclerChat = findViewById(R.id.recycler_chat)
+        titleTextView = findViewById(R.id.chat_toolbar_title)
+        subtitleTextView = findViewById(R.id.chat_toolbar_subtitle)
         val intentActivity = intent
         if (intentActivity.hasExtra("community")) {
             community = intent.getSerializableExtra("community") as Community
@@ -78,14 +82,14 @@ class ChatCommunityActivity : AppCompatActivity() {
                         }
 
                     })
-
-
         }
+
         user = FirebaseAuth.getInstance().currentUser
         userId = user!!.uid
-        txtMessage = findViewById(R.id.txtMessage)
-        btn_send = findViewById(R.id.send)
-        btn_send.setOnClickListener {
+        txtMessage=findViewById(R.id.txtMessage)
+
+        btnSend=findViewById(R.id.send)
+        btnSend.setOnClickListener {
             sendMessage()
         }
         Log.d("id", community!!.id)
@@ -104,8 +108,9 @@ class ChatCommunityActivity : AppCompatActivity() {
         })
         FragmentHelper.backButtonToFragment(toolbar, ChatCommunityActivity@ this)
         activityInstance = this
-
+        subtitleAnimation()
     }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.main, menu)
@@ -155,8 +160,8 @@ class ChatCommunityActivity : AppCompatActivity() {
 
         }
         return time.hour.toString() + ":" + time.minute
-
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -174,8 +179,7 @@ class ChatCommunityActivity : AppCompatActivity() {
         RecyclerChat.adapter = adpater
 
     }
-
-    private fun getCommunityUsers(message: String) {
+   private fun getCommunityUsers(message: String) {
         var usersIds = ArrayList<String>()
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(COMMUNITIES).child(community!!.id).child(COMMUNITY_USERS)
@@ -192,13 +196,12 @@ class ChatCommunityActivity : AppCompatActivity() {
                 //  getTokens(users as ArrayList<String>,message)
                 getTokens(usersIds, message)
             }
-
-
         })
     }
 
+
     private fun getTokens(list: ArrayList<String>, message: String) {
-        var listOfTokens = ArrayList<String>()
+        val listOfTokens = ArrayList<String>()
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -215,8 +218,19 @@ class ChatCommunityActivity : AppCompatActivity() {
             }
 
         })
-
     }
+
+    private fun subtitleAnimation(){
+        val anim = AlphaAnimation(1f, 0.1f)
+        anim.duration = 3000
+        subtitleTextView.startAnimation(anim)
+        anim.fillAfter=true
+        android.os.Handler().postDelayed({
+            subtitleTextView.visibility = View.GONE
+        },3000)
+    }
+
+
     private fun communityNotification(key:String){
         val ref:DatabaseReference = database.reference.child(COMMUNITIES).child(key)
         ref.addValueEventListener(object : ValueEventListener {
@@ -229,8 +243,6 @@ class ChatCommunityActivity : AppCompatActivity() {
                 community=c as Community
                 Log.d("NOTIFICATON ", "COMMUNITY$community")
             }
-
         })
     }
-
 }

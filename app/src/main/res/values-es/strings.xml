@@ -204,7 +204,7 @@
     <string name="cancel">Cancelar</string>
     <string name="profileUpdate">Datos actualizados</string>
     <string name="cancel_ride">Cancelar ride</string>
-    <string name="ride_cancel_message">Desea usted cancelar el ride?</string>
+    <string name="ride_cancel_message">¿Desea cancelar el ride?</string>
     <string name="cancel_ride_notification">ha cancelado el viaje</string>
     <string name="has_canceled">ha cancelado</string>
     <string name="leave_community_message">"¿Estas seguro que quieres salir de esta comunidad?"</string>
@@ -213,4 +213,5 @@
     <string name="leave_community_error">¡Ocurrió un error al salir de la comunidad, intente de nuevo!</string>
     <string name="leave_community_success">"¡Has salido de la communidad!"</string>
     <string name="no_longer_belong_community">Ya no perteneces a esta comunidad</string>
+    <string name="chat_subtitle">Toca para info. de la comunidad</string>
 </resources>

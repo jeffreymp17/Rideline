@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.*
 import android.view.animation.AlphaAnimation
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
@@ -88,13 +89,15 @@ class ChatCommunityActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         super.setTitle("")
-        val mTitleTextView = findViewById<TextView>(R.id.chat_toolbar_title)
-        mTitleTextView.text = community!!.name
-        mTitleTextView.setOnClickListener({
-            val intent = Intent(this@ChatCommunityActivity, CommunityDetailActivity::class.java)
+        titleTextView.text=community!!.name
+        subtitleTextView.text = getString(R.string.chat_subtitle)
+        val tittleLayout = findViewById<LinearLayout>(R.id.titleLayout)
+        tittleLayout.setOnClickListener({
+            val intent = Intent(this@ChatCommunityActivity,CommunityDetailActivity::class.java)
             intent.putExtra("community", community)
             startActivity(intent)
         })
+
         FragmentHelper.backButtonToFragment(toolbar, ChatCommunityActivity@ this)
         subtitleAnimation()
         loadConversation()
@@ -154,6 +157,7 @@ class ChatCommunityActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        subtitleAnimation()
     }
 
     private fun loadConversation() {
@@ -212,13 +216,14 @@ class ChatCommunityActivity : AppCompatActivity() {
                 }
                 Log.d("Tokens in data change", "$listOfTokens")
                 NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens, community!!.name
-                        , "${user!!.displayName} $message", community!!.id)
+                        , "${user!!.displayName} $message", community!!.id,this@ChatCommunityActivity)
             }
 
         })
     }
 
     private fun subtitleAnimation(){
+        subtitleTextView.visibility = View.VISIBLE
         val anim = AlphaAnimation(1f, 0.1f)
         anim.duration = 3000
         subtitleTextView.startAnimation(anim)

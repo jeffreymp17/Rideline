@@ -209,7 +209,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                 for (users in data.children) {
                     usersIds.add(users.value.toString())
                 }
-                var users=usersIds.filterNot { it==MainActivity.userId }
+                val users=usersIds.filterNot { it==MainActivity.userId }
                 getTokens(users as ArrayList<String>)
                 Log.d("USERS", "LIST--->$usersIds")
             }
@@ -232,14 +232,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                 }
                 if (ride.type.toString() == Type.OFFERED.toString()) {
                     NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens,
-                            resources.getString(R.string.new_ride_offered)
-                            , resources.getString(R.string.new_ride_offered_body)+" "+communityDescription
-                            , ride)
+                            resources.getString(R.string.new_ride_offered),
+                            resources.getString(R.string.new_ride_offered_body)+" "+communityDescription,
+                            this@MapsActivity)
                 } else {
                     NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens,
-                            resources.getString(R.string.new_ride_requested)
-                            , resources.getString(R.string.new_ride_requested_body)+" "+communityDescription
-                            , ride)
+                            resources.getString(R.string.new_ride_requested),
+                            resources.getString(R.string.new_ride_requested_body)+" "+communityDescription,
+                            this@MapsActivity)
 
                 }
 

@@ -14,7 +14,6 @@ import android.util.Log
 import android.view.*
 import android.view.animation.AlphaAnimation
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
@@ -23,6 +22,7 @@ import com.google.firebase.database.*
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.ChatCommunityAdapter
+import com.ridelineTeam.application.rideline.cloudMessageServices.MyFirebaseInstanceIDService
 import com.ridelineTeam.application.rideline.model.Community
 import com.ridelineTeam.application.rideline.model.Messages
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
@@ -33,7 +33,6 @@ import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
 import com.ridelineTeam.application.rideline.view.CommunityDetailActivity
 import es.dmoral.toasty.Toasty
-import java.text.SimpleDateFormat
 import java.util.*
 
 class ChatCommunityActivity : AppCompatActivity() {
@@ -43,8 +42,10 @@ class ChatCommunityActivity : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var database: FirebaseDatabase
     private lateinit var userId: String
-    private lateinit var RecyclerChat: RecyclerView
-    private lateinit var adpater: ChatCommunityAdapter.ChatCommunityAdapterRecycler
+    private lateinit var recyclerChat: RecyclerView
+    private lateinit var adapter: ChatCommunityAdapter.ChatCommunityAdapterRecycler
+    private lateinit var titleTextView:TextView
+    private lateinit var subtitleTextView:TextView
     private var user: FirebaseUser? = null
     private val token = MyFirebaseInstanceIDService().onTokenRefresh()
     private lateinit var toolbar: android.support.v7.widget.Toolbar
@@ -132,7 +133,7 @@ class ChatCommunityActivity : AppCompatActivity() {
 
     private fun sendMessage() {
         if (!TextUtils.isEmpty(txtMessage.text.trim().toString())) {
-            btn_send.isEnabled = false
+            btnSend.isEnabled = false
             val messages = Messages()
             messages.apply {
                 userName = userId
@@ -144,7 +145,7 @@ class ChatCommunityActivity : AppCompatActivity() {
                     txtMessage.setText("")
                     getCommunityUsers(messages.message)
                     loadConversation()
-                    btn_send.isEnabled = true
+                    btnSend.isEnabled = true
                 }
             }
         } else {
@@ -184,13 +185,13 @@ class ChatCommunityActivity : AppCompatActivity() {
         val linearLayoutManager = LinearLayoutManager(this@ChatCommunityActivity.applicationContext)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         linearLayoutManager.stackFromEnd = true
-        RecyclerChat.layoutManager = linearLayoutManager
-        adpater = ChatCommunityAdapter.ChatCommunityAdapterRecycler(this, ref, this@ChatCommunityActivity, userId)
-        RecyclerChat.adapter = adpater
+        recyclerChat.layoutManager = linearLayoutManager
+        adapter = ChatCommunityAdapter.ChatCommunityAdapterRecycler(this, ref, this@ChatCommunityActivity, userId)
+        recyclerChat.adapter = adapter
 
     }
    private fun getCommunityUsers(message: String) {
-        var usersIds = ArrayList<String>()
+        val usersIds = ArrayList<String>()
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(COMMUNITIES).child(community!!.id).child(COMMUNITY_USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -223,7 +224,7 @@ class ChatCommunityActivity : AppCompatActivity() {
                     listOfTokens.add(userToken.child(items).child(TOKEN).value.toString())
                 }
                 Log.d("Tokens in data change", "$listOfTokens")
-                NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens, "${community!!.name}"
+                NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens, community!!.name
                         , "${user!!.displayName} $message", community!!.id)
             }
 

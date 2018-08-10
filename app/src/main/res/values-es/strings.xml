@@ -214,4 +214,5 @@
     <string name="leave_community_success">"¡Has salido de la communidad!"</string>
     <string name="no_longer_belong_community">Ya no perteneces a esta comunidad</string>
     <string name="chat_subtitle">Toca para info. de la comunidad</string>
+    <string name="load_notificatio_error">Message could not loaded</string>
 </resources>

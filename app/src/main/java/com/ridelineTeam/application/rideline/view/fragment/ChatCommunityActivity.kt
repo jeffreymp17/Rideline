@@ -59,43 +59,31 @@ class ChatCommunityActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_community)
-        community = intent.getSerializableExtra("community") as Community
+       // community = intent.getSerializableExtra("community") as Community
         database = FirebaseDatabase.getInstance()
         databaseReference = database.reference.child(COMMUNITIES)
+        user = FirebaseAuth.getInstance().currentUser
+        userId = user!!.uid
+        activityInstance = this
         recyclerChat = findViewById(R.id.recycler_chat)
         titleTextView = findViewById(R.id.chat_toolbar_title)
         subtitleTextView = findViewById(R.id.chat_toolbar_subtitle)
         val intentActivity = intent
         if (intentActivity.hasExtra("community")) {
             community = intent.getSerializableExtra("community") as Community
+            init()
         }else if (intentActivity.hasExtra("communityKey")) {
             val key = intent.getStringExtra("communityKey")
-            Log.d("NOTIFICATON ", "${databaseReference}COMMUNITY:$key")
-
-                    databaseReference.child(key).addValueEventListener(object : ValueEventListener {
-                        override fun onCancelled(p0: DatabaseError) {
-                            Log.d("cancel ", "COMMUNITY:$community")
-                        }
-
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            community=dataSnapshot.getValue(Community::class.java)
-                            Log.d("NOTIFICATON ", "COMMUNITY$community")
-                        }
-
-                    })
+            communityNotification(key)
         }
+    }
 
-        user = FirebaseAuth.getInstance().currentUser
-        userId = user!!.uid
-        txtMessage=findViewById(R.id.txtMessage)
-
-        btnSend=findViewById(R.id.send)
+    private fun init() {
+        txtMessage = findViewById(R.id.txtMessage)
+        btnSend = findViewById(R.id.send)
         btnSend.setOnClickListener {
             sendMessage()
         }
-        Log.d("id", community!!.id)
-        Log.d("myToken", "$token")
-
         toolbar = findViewById(R.id.chat_toolbar)
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -108,8 +96,8 @@ class ChatCommunityActivity : AppCompatActivity() {
             startActivity(intent)
         })
         FragmentHelper.backButtonToFragment(toolbar, ChatCommunityActivity@ this)
-        activityInstance = this
         subtitleAnimation()
+        loadConversation()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -166,7 +154,6 @@ class ChatCommunityActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        loadConversation()
     }
 
     private fun loadConversation() {
@@ -243,16 +230,20 @@ class ChatCommunityActivity : AppCompatActivity() {
 
 
     private fun communityNotification(key:String){
-        val ref:DatabaseReference = database.reference.child(COMMUNITIES).child(key)
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
+        databaseReference.child(key).runTransaction(object:Transaction.Handler {
+            override fun onComplete(databaseError: DatabaseError?, boolean: Boolean, p2: DataSnapshot?) {
+                if (databaseError != null) {
+                    Toasty.error(applicationContext, getString(R.string.load_notificatio_error)
+                            , Toast.LENGTH_LONG).show()
+                }
 
+                if (boolean)
+                      init()
             }
 
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val c=dataSnapshot.getValue(Community::class.java)
-                community=c as Community
-                Log.d("NOTIFICATON ", "COMMUNITY$community")
+            override fun doTransaction(mutableData: MutableData): Transaction.Result {
+                community=mutableData.getValue(Community::class.java)
+                return Transaction.success(mutableData)
             }
         })
     }

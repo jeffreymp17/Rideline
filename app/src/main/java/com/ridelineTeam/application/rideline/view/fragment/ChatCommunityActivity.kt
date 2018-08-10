@@ -74,7 +74,7 @@ class ChatCommunityActivity : AppCompatActivity() {
 
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             community=dataSnapshot.getValue(Community::class.java)
-                            Log.d("NOTIFICATON ", "COMMUNITY::---------------------------------------------------------$community")
+                            Log.d("NOTIFICATON ", "COMMUNITY$community")
                         }
 
                     })
@@ -106,6 +106,7 @@ class ChatCommunityActivity : AppCompatActivity() {
         activityInstance = this
 
     }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.main, menu)
@@ -166,6 +167,16 @@ class ChatCommunityActivity : AppCompatActivity() {
     private fun loadConversation() {
         val ref: DatabaseReference = FirebaseDatabase.getInstance().reference.child(COMMUNITIES)
                 .child(community!!.id).child("messages")
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                Log.d("CONVERSATIONS", "ADD" + p0.value)
+            }
+
+        })
         val linearLayoutManager = LinearLayoutManager(this@ChatCommunityActivity.applicationContext)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         linearLayoutManager.stackFromEnd = true

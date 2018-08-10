@@ -319,7 +319,7 @@ public class CommunityAdapter {
                                         NotificationHelper.message(com.ridelineTeam.application.rideline.MainActivity.Companion.getFmc(),
                                                 user1.getToken(), activity.getResources().getString(R.string.join_title),
                                                 user.getDisplayName() + " "+
-                                                activity.getResources().getString(R.string.join_body),activity);
+                                                activity.getResources().getString(R.string.join_body));
                                     }
                                 }
 

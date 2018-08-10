@@ -233,20 +233,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                 if (ride.type.toString() == Type.OFFERED.toString()) {
                     NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens,
                             resources.getString(R.string.new_ride_offered),
-                            resources.getString(R.string.new_ride_offered_body)+" "+communityDescription,
-                            this@MapsActivity)
+                            resources.getString(R.string.new_ride_offered_body)+" "+communityDescription)
                 } else {
                     NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens,
                             resources.getString(R.string.new_ride_requested),
-                            resources.getString(R.string.new_ride_requested_body)+" "+communityDescription,
-                            this@MapsActivity)
+                            resources.getString(R.string.new_ride_requested_body)+" "+communityDescription)
 
                 }
-
-
             }
-
-
         })
     }
 

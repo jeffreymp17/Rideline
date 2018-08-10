@@ -23,7 +23,6 @@ import com.google.firebase.database.*
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.ChatCommunityAdapter
-import com.ridelineTeam.application.rideline.cloudMessageServices.MyFirebaseInstanceIDService
 import com.ridelineTeam.application.rideline.model.Community
 import com.ridelineTeam.application.rideline.model.Messages
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
@@ -48,7 +47,6 @@ class ChatCommunityActivity : AppCompatActivity() {
     private lateinit var titleTextView:TextView
     private lateinit var subtitleTextView:TextView
     private var user: FirebaseUser? = null
-    private val token = MyFirebaseInstanceIDService().onTokenRefresh()
     private lateinit var toolbar: android.support.v7.widget.Toolbar
 
     companion object {
@@ -60,7 +58,7 @@ class ChatCommunityActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_community)
-       // community = intent.getSerializableExtra("community") as Community
+
         database = FirebaseDatabase.getInstance()
         databaseReference = database.reference.child(COMMUNITIES)
         user = FirebaseAuth.getInstance().currentUser
@@ -69,6 +67,7 @@ class ChatCommunityActivity : AppCompatActivity() {
         recyclerChat = findViewById(R.id.recycler_chat)
         titleTextView = findViewById(R.id.chat_toolbar_title)
         subtitleTextView = findViewById(R.id.chat_toolbar_subtitle)
+
         val intentActivity = intent
         if (intentActivity.hasExtra("community")) {
             community = intent.getSerializableExtra("community") as Community
@@ -164,8 +163,9 @@ class ChatCommunityActivity : AppCompatActivity() {
         val ref: DatabaseReference = FirebaseDatabase.getInstance().reference.child(COMMUNITIES)
                 .child(community!!.id).child("messages")
         ref.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toasty.error(applicationContext, databaseError.message
+                        , Toast.LENGTH_SHORT).show()
             }
 
             override fun onDataChange(p0: DataSnapshot) {
@@ -186,20 +186,21 @@ class ChatCommunityActivity : AppCompatActivity() {
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(COMMUNITIES).child(community!!.id).child(COMMUNITY_USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
 
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toasty.error(applicationContext, databaseError.message
+                        , Toast.LENGTH_SHORT).show()
             }
 
             override fun onDataChange(data: DataSnapshot) {
                 for (users in data.children) {
                     usersIds.add(users.value.toString())
                 }
-                // var users= usersIds.filterNot{ it == userId }
-                //  getTokens(users as ArrayList<String>,message)
-                getTokens(usersIds, message)
+                val users= usersIds.filterNot{ it == userId }
+                getTokens(users as ArrayList<String>,message)
             }
         })
-    }
+   }
 
 
     private fun getTokens(list: ArrayList<String>, message: String) {
@@ -207,7 +208,9 @@ class ChatCommunityActivity : AppCompatActivity() {
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toasty.error(applicationContext, databaseError.message
+                        , Toast.LENGTH_SHORT).show()
             }
 
             override fun onDataChange(userToken: DataSnapshot) {
@@ -216,7 +219,7 @@ class ChatCommunityActivity : AppCompatActivity() {
                 }
                 Log.d("Tokens in data change", "$listOfTokens")
                 NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens, community!!.name
-                        , "${user!!.displayName} $message", community!!.id,this@ChatCommunityActivity)
+                        , "${user!!.displayName} $message", community!!.id)
             }
 
         })

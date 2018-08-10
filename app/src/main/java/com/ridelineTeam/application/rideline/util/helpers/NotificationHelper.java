@@ -1,16 +1,10 @@
 package com.ridelineTeam.application.rideline.util.helpers;
 
-
 import android.app.Activity;
-import android.media.RingtoneManager;
-
-import com.ridelineTeam.application.rideline.R;
-import com.ridelineTeam.application.rideline.model.Ride;
 import org.pixsee.fcm.Message;
-import org.pixsee.fcm.Notification;
 import org.pixsee.fcm.Sender;
-
 import java.util.List;
+
 
 
 /**
@@ -19,38 +13,33 @@ import java.util.List;
  * */
 public class NotificationHelper {
 
-    //CREA LA NOTIFICACION QUE VA SER ENVIA CON LOS PARAMETROS QUE DESEE EN EL CUERPO Y TITULO.
-    private static Notification notification(String tittle,String body, Activity activity){
-        Notification notification = new Notification(tittle, body);
-        notification.setIcon(activity.getResources().getString(R.string.notification_icon));
-        notification.setSound(String.valueOf(RingtoneManager.TYPE_NOTIFICATION));
-        return notification;
-    }
-
-    public static void message(Sender fcm, String toClientToken, String tittle, String body, Activity activity){
+    public static void message(Sender fcm, String toClientToken, String title, String body){
         Message message = new Message.MessageBuilder()
                 .toToken(toClientToken) // single android/ios device
-                .notification(notification(tittle,body,activity))
+                .addData("title",title)
+                .addData("body",body)
                 .priority(Message.Priority.HIGH)
                 .build();
         fcm.send(message);
     }
 
     //CREA EL MENSAJE QUE ENVIARA A LAS COMUNIDADES A LAS QUE PERTENEZCA
-    public static void messageToCommunity(Sender fcm, List<String> tokens, String tittle, String body,Activity activity){
+    public static void messageToCommunity(Sender fcm, List<String> tokens, String title, String body){
         Message message = new Message.MessageBuilder()
                 .addRegistrationToken(tokens)
-                .notification(notification(tittle,body,activity))
+                .addData("title",title)
+                .addData("body",body)
                 .priority(Message.Priority.HIGH)
                 .build();
         fcm.send(message);
     }
-    public static void messageToCommunity(Sender fcm, List<String> tokens, String tittle,
-                                          String body,String communityKey,Activity activity){
+    public static void messageToCommunity(Sender fcm, List<String> tokens, String title,
+                                          String body,String communityKey){
         Message message = new Message.MessageBuilder()
                 .addRegistrationToken(tokens)
-                .notification(notification(tittle,body,activity))
-                .addData("communityChat",communityKey)
+                .addData("community_key",communityKey)
+                .addData("title",title)
+                .addData("body",body)
                 .priority(Message.Priority.HIGH)
                 .build();
         fcm.send(message);

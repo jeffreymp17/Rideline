@@ -436,8 +436,7 @@ class ProfileFragment : Fragment() {
                             rideData.passengers.values.mapTo(tokens) { it.token }
                             NotificationHelper.messageToCommunity(MainActivity.fmc,
                                     tokens,activity.resources.getString(R.string.ride_canceled),
-                                    currentUser.displayName + activity.resources.getString(R.string.cancel_ride_notification),
-                                    activity)
+                                    currentUser.displayName + activity.resources.getString(R.string.cancel_ride_notification))
                             db.child(ride.user).child("activeRide").removeValue()
                             for (passenger in rideData.passengers.values){
                                 db.child(passenger.id).child("activeRide").removeValue()
@@ -463,8 +462,7 @@ class ProfileFragment : Fragment() {
                                             val rideUser = dataSnapshot.getValue(User::class.java)
                                             NotificationHelper.message(MainActivity.fmc,rideUser!!.token,
                                                     activity.resources.getString(R.string.ride_canceled),
-                                                    currentUser.displayName+ activity.resources.getString(R.string.has_canceled),
-                                                    activity)
+                                                    currentUser.displayName+ activity.resources.getString(R.string.has_canceled))
                                             db.child(currentUser.uid).child("activeRide").removeValue()
                                             db.child(currentUser.uid).child("taked").setValue(0)
                                             database.reference.child(RIDES).child(ride.id).child("status").setValue(Status.ACTIVE)
@@ -494,7 +492,7 @@ class ProfileFragment : Fragment() {
                     val tokens = ArrayList<String>()
                     rideData!!.passengers.values.mapTo(tokens) { it.token }
                     NotificationHelper.messageToCommunity(MainActivity.fmc,tokens,activity.resources.getString(R.string.ride_timeout_tittle),
-                            activity.resources.getString(R.string.ride_timeout_body),activity)
+                            activity.resources.getString(R.string.ride_timeout_body))
                     db.child(ride.user).addListenerForSingleValueEvent(object : ValueEventListener{
                         override fun onCancelled(databaseError: DatabaseError) {
                             Toasty.error(activity.applicationContext,databaseError.message,Toast.LENGTH_SHORT).show()
@@ -503,7 +501,7 @@ class ProfileFragment : Fragment() {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             val user = dataSnapshot.getValue(User::class.java)
                             NotificationHelper.message(MainActivity.fmc,user!!.token,activity.resources.getString(R.string.ride_timeout_tittle),
-                                    activity.resources.getString(R.string.ride_timeout_body),activity)
+                                    activity.resources.getString(R.string.ride_timeout_body))
                         }
 
                     })

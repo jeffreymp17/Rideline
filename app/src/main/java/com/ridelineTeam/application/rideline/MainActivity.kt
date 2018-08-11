@@ -54,6 +54,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        if (intent.extras!= null){
+            for (key in intent.extras.keySet()){
+                if (key == "communityChat"){
+                    startActivity(Intent(this, ChatCommunityActivity::class.java))
+                }
+
+            }
+        }
         var displayingFragment:Fragment = HomeFragment()
         if(intent.getStringExtra("fragment")!=null){
             val fragmentName =intent.getStringExtra("fragment")

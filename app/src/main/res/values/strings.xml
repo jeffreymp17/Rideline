@@ -1,4 +1,5 @@
 <resources>
+    <string name="notification_icon">avatar</string>
 
     <string name="createAccountActivity">Create account</string>
     <string name="app_name">Rideline-Team</string>
@@ -217,5 +218,6 @@
     <string name="leave_community_error">An error occurred while leaving community, try again!</string>
     <string name="leave_community_success">"You have been leaves the community!"</string>
     <string name="chat_subtitle">Tap to see community info</string>
+    <string name="load_notificatio_error">Message could not loaded</string>
 
 </resources>

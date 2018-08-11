@@ -351,16 +351,13 @@ public class RideAdapter {
                     if (ride.getType().equals(Type.OFFERED)) {
                         NotificationHelper.message(com.ridelineTeam.application.rideline.MainActivity.Companion.getFmc()
                                 , token,  activity.getResources().getString(R.string.ride_taken),
-                                activity.getResources().getString(R.string.ride_taken_body) + fullName
-                                , ride);
+                                activity.getResources().getString(R.string.ride_taken_body) +" "+ fullName);
                     } else {
                         NotificationHelper.message(com.ridelineTeam.application.rideline.MainActivity.Companion.getFmc()
                                 , token, activity.getResources().getString(R.string.ride_accepted),
-                                activity.getResources().getString(R.string.ride_accepted_body) + fullName,
-                                ride);
+                                activity.getResources().getString(R.string.ride_accepted_body) +" "+ fullName);
 
                     }
-
                 }
 
                 @Override

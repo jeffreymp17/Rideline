@@ -33,7 +33,6 @@ import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
 import com.ridelineTeam.application.rideline.view.CommunityDetailActivity
 import es.dmoral.toasty.Toasty
-import java.text.SimpleDateFormat
 import java.util.*
 
 class ChatCommunityActivity : AppCompatActivity() {
@@ -43,10 +42,11 @@ class ChatCommunityActivity : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var database: FirebaseDatabase
     private lateinit var userId: String
-    private lateinit var RecyclerChat: RecyclerView
-    private lateinit var adpater: ChatCommunityAdapter.ChatCommunityAdapterRecycler
+    private lateinit var recyclerChat: RecyclerView
+    private lateinit var adapter: ChatCommunityAdapter.ChatCommunityAdapterRecycler
+    private lateinit var titleTextView:TextView
+    private lateinit var subtitleTextView:TextView
     private var user: FirebaseUser? = null
-    private val token = MyFirebaseInstanceIDService().onTokenRefresh()
     private lateinit var toolbar: android.support.v7.widget.Toolbar
 
     companion object {
@@ -58,57 +58,48 @@ class ChatCommunityActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_community)
-        community = intent.getSerializableExtra("community") as Community
+
         database = FirebaseDatabase.getInstance()
         databaseReference = database.reference.child(COMMUNITIES)
+        user = FirebaseAuth.getInstance().currentUser
+        userId = user!!.uid
+        activityInstance = this
         recyclerChat = findViewById(R.id.recycler_chat)
         titleTextView = findViewById(R.id.chat_toolbar_title)
         subtitleTextView = findViewById(R.id.chat_toolbar_subtitle)
+
         val intentActivity = intent
         if (intentActivity.hasExtra("community")) {
             community = intent.getSerializableExtra("community") as Community
+            init()
         }else if (intentActivity.hasExtra("communityKey")) {
             val key = intent.getStringExtra("communityKey")
-            Log.d("NOTIFICATON ", "${databaseReference}COMMUNITY:$key")
-
-                    databaseReference.child(key).addValueEventListener(object : ValueEventListener {
-                        override fun onCancelled(p0: DatabaseError) {
-                            Log.d("cancel ", "COMMUNITY:$community")
-                        }
-
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            community=dataSnapshot.getValue(Community::class.java)
-                            Log.d("NOTIFICATON ", "COMMUNITY::---------------------------------------------------------$community")
-                        }
-
-                    })
+            communityNotification(key)
         }
+    }
 
-        user = FirebaseAuth.getInstance().currentUser
-        userId = user!!.uid
-        txtMessage=findViewById(R.id.txtMessage)
-
-        btnSend=findViewById(R.id.send)
+    private fun init() {
+        txtMessage = findViewById(R.id.txtMessage)
+        btnSend = findViewById(R.id.send)
         btnSend.setOnClickListener {
             sendMessage()
         }
-        Log.d("id", community!!.id)
-        Log.d("myToken", "$token")
-
         toolbar = findViewById(R.id.chat_toolbar)
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         super.setTitle("")
-        val mTitleTextView = findViewById<TextView>(R.id.chat_toolbar_title)
-        mTitleTextView.text = community!!.name
-        mTitleTextView.setOnClickListener({
-            val intent = Intent(this@ChatCommunityActivity, CommunityDetailActivity::class.java)
+        titleTextView.text=community!!.name
+        subtitleTextView.text = getString(R.string.chat_subtitle)
+        val tittleLayout = findViewById<LinearLayout>(R.id.titleLayout)
+        tittleLayout.setOnClickListener({
+            val intent = Intent(this@ChatCommunityActivity,CommunityDetailActivity::class.java)
             intent.putExtra("community", community)
             startActivity(intent)
         })
+
         FragmentHelper.backButtonToFragment(toolbar, ChatCommunityActivity@ this)
-        activityInstance = this
         subtitleAnimation()
+        loadConversation()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -132,7 +123,7 @@ class ChatCommunityActivity : AppCompatActivity() {
 
     private fun sendMessage() {
         if (!TextUtils.isEmpty(txtMessage.text.trim().toString())) {
-            btn_send.isEnabled = false
+            btnSend.isEnabled = false
             val messages = Messages()
             messages.apply {
                 userName = userId
@@ -144,7 +135,7 @@ class ChatCommunityActivity : AppCompatActivity() {
                     txtMessage.setText("")
                     getCommunityUsers(messages.message)
                     loadConversation()
-                    btn_send.isEnabled = true
+                    btnSend.isEnabled = true
                 }
             }
         } else {
@@ -165,39 +156,51 @@ class ChatCommunityActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        loadConversation()
+        subtitleAnimation()
     }
 
     private fun loadConversation() {
         val ref: DatabaseReference = FirebaseDatabase.getInstance().reference.child(COMMUNITIES)
                 .child(community!!.id).child("messages")
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toasty.error(applicationContext, databaseError.message
+                        , Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                Log.d("CONVERSATIONS", "ADD" + p0.value)
+            }
+
+        })
         val linearLayoutManager = LinearLayoutManager(this@ChatCommunityActivity.applicationContext)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         linearLayoutManager.stackFromEnd = true
-        RecyclerChat.layoutManager = linearLayoutManager
-        adpater = ChatCommunityAdapter.ChatCommunityAdapterRecycler(this, ref, this@ChatCommunityActivity, userId)
-        RecyclerChat.adapter = adpater
+        recyclerChat.layoutManager = linearLayoutManager
+        adapter = ChatCommunityAdapter.ChatCommunityAdapterRecycler(this, ref, this@ChatCommunityActivity, userId)
+        recyclerChat.adapter = adapter
 
     }
    private fun getCommunityUsers(message: String) {
-        var usersIds = ArrayList<String>()
+        val usersIds = ArrayList<String>()
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(COMMUNITIES).child(community!!.id).child(COMMUNITY_USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
 
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toasty.error(applicationContext, databaseError.message
+                        , Toast.LENGTH_SHORT).show()
             }
 
             override fun onDataChange(data: DataSnapshot) {
                 for (users in data.children) {
                     usersIds.add(users.value.toString())
                 }
-                // var users= usersIds.filterNot{ it == userId }
-                //  getTokens(users as ArrayList<String>,message)
-                getTokens(usersIds, message)
+                val users= usersIds.filterNot{ it == userId }
+                getTokens(users as ArrayList<String>,message)
             }
         })
-    }
+   }
 
 
     private fun getTokens(list: ArrayList<String>, message: String) {
@@ -205,7 +208,9 @@ class ChatCommunityActivity : AppCompatActivity() {
         val ref: DatabaseReference = database.reference
         val query: Query = ref.child(USERS)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toasty.error(applicationContext, databaseError.message
+                        , Toast.LENGTH_SHORT).show()
             }
 
             override fun onDataChange(userToken: DataSnapshot) {
@@ -213,7 +218,7 @@ class ChatCommunityActivity : AppCompatActivity() {
                     listOfTokens.add(userToken.child(items).child(TOKEN).value.toString())
                 }
                 Log.d("Tokens in data change", "$listOfTokens")
-                NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens, "${community!!.name}"
+                NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens, community!!.name
                         , "${user!!.displayName} $message", community!!.id)
             }
 
@@ -221,6 +226,7 @@ class ChatCommunityActivity : AppCompatActivity() {
     }
 
     private fun subtitleAnimation(){
+        subtitleTextView.visibility = View.VISIBLE
         val anim = AlphaAnimation(1f, 0.1f)
         anim.duration = 3000
         subtitleTextView.startAnimation(anim)
@@ -232,16 +238,20 @@ class ChatCommunityActivity : AppCompatActivity() {
 
 
     private fun communityNotification(key:String){
-        val ref:DatabaseReference = database.reference.child(COMMUNITIES).child(key)
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
+        databaseReference.child(key).runTransaction(object:Transaction.Handler {
+            override fun onComplete(databaseError: DatabaseError?, boolean: Boolean, p2: DataSnapshot?) {
+                if (databaseError != null) {
+                    Toasty.error(applicationContext, getString(R.string.load_notificatio_error)
+                            , Toast.LENGTH_LONG).show()
+                }
 
+                if (boolean)
+                      init()
             }
 
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val c=dataSnapshot.getValue(Community::class.java)
-                community=c as Community
-                Log.d("NOTIFICATON ", "COMMUNITY$community")
+            override fun doTransaction(mutableData: MutableData): Transaction.Result {
+                community=mutableData.getValue(Community::class.java)
+                return Transaction.success(mutableData)
             }
         })
     }

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
@@ -23,6 +24,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
     private static final Integer CHAT_ID = 121;
     private static final Integer NORMAL_CHAT = 122;
+    private static final String NOTIFICATION_CHANNEL="RIDELINE_APPLICATION";
     private static Notification.InboxStyle inboxStyle = new Notification.InboxStyle();
     private static int value = 0;
 
@@ -63,7 +65,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         assert notificationManager != null;
         assert builder != null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+        {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL, TAG, importance);
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            assert notificationManager != null;
+            builder.setChannelId(NOTIFICATION_CHANNEL);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
         notificationManager.notify("Rideline",NORMAL_CHAT,builder.build());
+
 
     }
     private void showNotificationInboxStyle(String title,String body,String community){
@@ -76,7 +91,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("communityKey",community);
         PendingIntent piResult = PendingIntent.getActivity(this, 0, intent, 0);
-
         Notification.Builder builder= null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             builder = new Notification.Builder(this)
@@ -90,10 +104,23 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     .setContentIntent(piResult);
             builder.setStyle(inboxStyle);
         }
-
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         assert notificationManager != null;
         assert builder != null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+        {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL, TAG, importance);
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            assert notificationManager != null;
+            builder.setChannelId(NOTIFICATION_CHANNEL);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
         notificationManager.notify("Rideline",CHAT_ID,builder.build());
+
+
     }
 }

@@ -12,12 +12,6 @@ import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.*
 import com.afollestad.materialdialogs.MaterialDialog
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.places.AutocompleteFilter
-import com.google.android.gms.location.places.Places
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -25,74 +19,71 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.R
-import com.ridelineTeam.application.rideline.adapter.PlaceAutocompleteAdapter
 import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.model.User
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.InputsHelper
 import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
 import es.dmoral.toasty.Toasty
+import com.ridelineTeam.application.rideline.util.files.COUNTRIES
+import  kotlinx.android.synthetic.main.activity_create_account.*
 
 
-class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
-    override fun onConnectionFailed(connectionResult: ConnectionResult) {
-        Toasty.error(applicationContext,connectionResult.errorMessage.orEmpty(),Toast.LENGTH_SHORT).show()
-    }
+class CreateAccountActivity : AppCompatActivity(){
 
-    private lateinit var txtName: EditText
-    private lateinit var txtNameLayout:TextInputLayout
-    private lateinit var txtLastName: EditText
-    private lateinit var txtLastNamesLayout:TextInputLayout
-    private lateinit var txtEmail: EditText
-    private lateinit var txtEmailLayout:TextInputLayout
-    private lateinit var txtPassword: EditText
-    private lateinit var txtPasswordLayout: TextInputLayout
-    private lateinit var txtConfirmPassword: EditText
-    private lateinit var txtConfirmPasswordLayout:TextInputLayout
-    private lateinit var txtTelephone:EditText
-    private lateinit var txtTelephoneLayout:TextInputLayout
-    private lateinit var progressBar: ProgressBar
-    private lateinit var txtAddress: AutoCompleteTextView
-    private lateinit var txtAddressLayout:TextInputLayout
-    private lateinit var btnCreateAccount:Button
+    //FireBase variables
     private lateinit var dbReference: DatabaseReference
-    private lateinit var database: FirebaseDatabase
-    private var txtValidatePassword=""
     private lateinit var mAuth : FirebaseAuth
-    private lateinit var txtTerms:TextView
-    private lateinit var placeAutocompleteAdapter: PlaceAutocompleteAdapter
-    private lateinit var mGoogleApiClient: GoogleApiClient
-    private lateinit var checkTerms:CheckBox
+
     private lateinit var materialDialog: MaterialDialog
 
-    private var latLongBounds = LatLngBounds(
-            LatLng((-40).toDouble(), (-168).toDouble()),
-            LatLng((71).toDouble(), (136).toDouble())
-    )
+    private var txtValidatePassword=""
+    private var countryCode = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account)
+
         mAuth = FirebaseAuth.getInstance()
+
         isUserInSession()
-        FragmentHelper.showToolbar(getString(R.string.createAccountActivity),true,findViewById(R.id.toolbar),this)
+
+        dbReference = FirebaseDatabase.getInstance().reference.child(USERS)
+        FragmentHelper.showToolbar(getString(R.string.createAccountActivity),true,
+                findViewById(R.id.toolbar),this)
+
         materialDialog = MaterialDialog.Builder(this)
                 .title(getString(R.string.loading))
                 .content(getString(R.string.please_wait))
                 .progress(true, 0).build()
-        initializeProperties()
+
+        countrySpinner.setItems(COUNTRIES.toList())
+
     }
     override fun onStart() {
         super.onStart()
-        btnCreateAccount.setOnClickListener{_ ->createUser()}
+
+        dbReference.keepSynced(true)
+
         clickableText(txtTerms,SpannableString(resources.getString(R.string.terms1)))
+
         InputsHelper.textOnly(txtNameLayout,resources)
         InputsHelper.textOnly(txtLastNamesLayout,resources)
         InputsHelper.email(txtEmailLayout,resources)
         InputsHelper.phoneNumber(txtTelephoneLayout,resources)
-        InputsHelper.required(txtAddressLayout,resources)
         InputsHelper.password(txtPasswordLayout,resources)
+
         confirmPassword(txtConfirmPasswordLayout)
-        dbReference.keepSynced(true)
+
+        btnCreateAccount.setOnClickListener{_ ->createUser()}
+
+        countrySpinner.setOnItemSelectedListener({ _, _, _, item ->
+            val itemSelected = item.toString().replace("[()]".toRegex(),"")
+            val itemParts = itemSelected.split(" ")
+             countryCode = itemParts[itemParts.size-1]
+            txtAddressLayout.error = null
+        })
+
     }
 
     override fun onBackPressed() {
@@ -106,9 +97,9 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
             val user = User()
             user.apply {
                 name = txtName.text.toString().capitalize()
-                lastName = txtLastName.text.toString().capitalize()
+                lastName = txtLastNames.text.toString().capitalize()
                 email = txtEmail.text.toString()
-                address = txtAddress.text.toString()
+                country = countryCode
                 telephone=Integer.parseInt(txtTelephone.text.toString())
                 status= getString(R.string.defaultStatus)
             }
@@ -153,38 +144,7 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
             }
         })
     }
-    private fun initializeProperties(){
-        mGoogleApiClient = GoogleApiClient.Builder(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .enableAutoManage(this, this)
-                .build()
-        val filter = AutocompleteFilter.Builder()
-                .setCountry("CR")
-        placeAutocompleteAdapter = PlaceAutocompleteAdapter(this,mGoogleApiClient,
-                latLongBounds,filter.build())
-        txtName = findViewById(R.id.txtName)
-        txtNameLayout = findViewById(R.id.txtNameLayout)
-        txtLastName = findViewById(R.id.txtLastNames)
-        txtLastNamesLayout = findViewById(R.id.txtLastNamesLayout)
-        txtEmail = findViewById(R.id.txtEmail)
-        txtEmailLayout =findViewById(R.id.txtEmailLayout)
-        txtPassword = findViewById(R.id.txtPassword)
-        txtPasswordLayout = findViewById(R.id.txtPasswordlayout)
-        txtConfirmPassword = findViewById(R.id.txtConfirmPassword)
-        txtConfirmPasswordLayout=findViewById(R.id.txtConfirmPasswordlayout)
-        txtTelephone=findViewById(R.id.txtTelephone)
-        txtTelephoneLayout=findViewById(R.id.txtTelephoneLayout)
-        txtAddress = findViewById(R.id.txtAddress)
-        txtAddressLayout = findViewById(R.id.txtAddressLayout)
-        txtAddress.setAdapter(placeAutocompleteAdapter)
-        progressBar = findViewById(R.id.progressBar)
-        btnCreateAccount = findViewById(R.id.btn_createAccount)
-        txtTerms = findViewById(R.id.txtTerms)
-        database = FirebaseDatabase.getInstance()
-        dbReference = database.reference.child(USERS)
-        checkTerms = findViewById(R.id.checkTerms)
-    }
+
     private fun showTerms(){
         val dialogBuilder = AlertDialog.Builder(this)
         val inflater = this.layoutInflater
@@ -193,6 +153,7 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
         val builder = dialogBuilder.create()
         builder.show()
     }
+
     private fun validateFields():Boolean{
         when {
             TextUtils.isEmpty(txtName.text) -> {
@@ -205,14 +166,14 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
                 txtName.requestFocus()
                 return false
             }
-            TextUtils.isEmpty(txtLastName.text) -> {
+            TextUtils.isEmpty(txtLastNames.text) -> {
                 txtLastNamesLayout.error = getString(R.string.requiredFieldMessage)
-                txtLastName.requestFocus()
+                txtLastNames.requestFocus()
                 return false
             }
-            InputsHelper.isTextOnly(txtLastName.text.toString())->{
+            InputsHelper.isTextOnly(txtLastNames.text.toString())->{
                 txtLastNamesLayout.error = getString(R.string.textOnlyFieldMessage)
-                txtLastName.requestFocus()
+                txtLastNames.requestFocus()
                 return false
             }
             TextUtils.isEmpty(txtEmail.text) -> {
@@ -245,9 +206,9 @@ class CreateAccountActivity : AppCompatActivity(), GoogleApiClient.OnConnectionF
                 txtTelephone.requestFocus()
                 return false
             }
-            TextUtils.isEmpty(txtAddress.text)->{
+            TextUtils.isEmpty(countryCode)->{
                 txtAddressLayout.error=getString(R.string.requiredFieldMessage)
-                txtAddress.requestFocus()
+                countrySpinner.requestFocus()
                 return false
             }
             !checkTerms.isChecked ->{

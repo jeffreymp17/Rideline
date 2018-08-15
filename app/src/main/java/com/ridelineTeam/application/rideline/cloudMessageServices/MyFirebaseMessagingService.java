@@ -24,6 +24,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
     private static final Integer CHAT_ID = 121;
     private static final Integer NORMAL_CHAT = 122;
+    private static final String NOTIFICATION_CHANNEL="RIDELINE_APPLICATION";
     private static Notification.InboxStyle inboxStyle = new Notification.InboxStyle();
     private static int value = 0;
 
@@ -67,13 +68,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
         {
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel notificationChannel = new NotificationChannel("NORMAL", TAG, importance);
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL, TAG, importance);
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(Color.RED);
             notificationChannel.enableVibration(true);
             notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
             assert notificationManager != null;
-            builder.setChannelId("NORMAL");
+            builder.setChannelId(NOTIFICATION_CHANNEL);
             notificationManager.createNotificationChannel(notificationChannel);
         }
         notificationManager.notify("Rideline",NORMAL_CHAT,builder.build());
@@ -109,13 +110,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
         {
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel notificationChannel = new NotificationChannel("CHAT", TAG, importance);
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL, TAG, importance);
             notificationChannel.enableLights(true);
             notificationChannel.setLightColor(Color.RED);
             notificationChannel.enableVibration(true);
             notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
             assert notificationManager != null;
-            builder.setChannelId("CHAT");
+            builder.setChannelId(NOTIFICATION_CHANNEL);
             notificationManager.createNotificationChannel(notificationChannel);
         }
         notificationManager.notify("Rideline",CHAT_ID,builder.build());

@@ -64,7 +64,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         assert notificationManager != null;
         assert builder != null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+        {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel notificationChannel = new NotificationChannel("NORMAL", TAG, importance);
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.enableVibration(true);
+            notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            assert notificationManager != null;
+            builder.setChannelId("NORMAL");
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
         notificationManager.notify("Rideline",NORMAL_CHAT,builder.build());
+
 
     }
     private void showNotificationInboxStyle(String title,String body,String community){

@@ -143,7 +143,7 @@
                     android:src="@drawable/ic_password" />
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/txtPasswordlayout"
+                    android:id="@+id/txtPasswordLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -176,7 +176,7 @@
                     android:src="@drawable/ic_confirm_pass" />
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/txtConfirmPasswordlayout"
+                    android:id="@+id/txtConfirmPasswordLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -251,13 +251,16 @@
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/originIc">
 
-                    <AutoCompleteTextView
-                        android:id="@+id/txtAddress"
+                    <com.jaredrummler.materialspinner.MaterialSpinner
+                        android:id="@+id/countrySpinner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/address"
-                        android:inputType="textAutoComplete"
-                        android:maxLines="1" />
+                        android:textSize="16sp"
+                        app:ms_hint="Country"
+                        app:ms_arrow_tint="@color/colorAccent"
+                        app:ms_dropdown_max_height="300dp"
+                        app:ms_hint_color="@color/secondaryText" />
+
                 </android.support.design.widget.TextInputLayout>
             </RelativeLayout>
 
@@ -291,7 +294,7 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/btn_createAccount"
+                android:id="@+id/btnCreateAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"

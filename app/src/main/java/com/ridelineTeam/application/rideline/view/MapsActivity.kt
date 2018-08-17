@@ -72,6 +72,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+        ride = intent.getSerializableExtra("rideObject") as Ride
+        val country = intent.getStringExtra("country")
         materialDialog = MaterialDialog.Builder(this)
                 .title(getString(R.string.loading))
                 .content(getString(R.string.please_wait))
@@ -82,7 +84,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                 .enableAutoManage(this, this)
                 .build()
         val filter = AutocompleteFilter.Builder()
-                .setCountry("CR")
+                .setCountry(country)
         placeAutocompleteAdapter = PlaceAutocompleteAdapter(this, mGoogleApiClient, latLongBounds,filter.build())
         txtOrigin = findViewById(R.id.txtOrigin)
         txtDestination = findViewById(R.id.txtDestination)
@@ -91,7 +93,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         loadingBar = findViewById(R.id.loading)
-        ride = intent.getSerializableExtra("rideObject") as Ride
         database = FirebaseDatabase.getInstance()
         databaseReference = database.reference.child(RIDES).push()
         Log.d("gettingObject", ride.toString())

@@ -68,7 +68,7 @@ class LoginActivity : AppCompatActivity() {
                             }
                         } else {
                             task.addOnFailureListener(this) {
-                                Toasty.error(this, "${it.message}", Toast.LENGTH_LONG,
+                                Toasty.error(this, "${it.message}", Toast.LENGTH_SHORT,
                                         true).show()
                             }
                         }
@@ -76,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
                     }
         } else {
             progressBar.visibility = View.GONE
-            Toasty.warning(this, getString(R.string.emptyUserPassToast), Toast.LENGTH_LONG,
+            Toasty.warning(this, getString(R.string.emptyUserPassToast), Toast.LENGTH_SHORT,
                     true).show()
         }
     }
@@ -95,7 +95,7 @@ class LoginActivity : AppCompatActivity() {
             true
         } else {
             Toasty.warning(this, getString(R.string.verifiedText),
-                    Toast.LENGTH_LONG, true).show()
+                    Toast.LENGTH_SHORT, true).show()
             false
         }
     }

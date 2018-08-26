@@ -74,7 +74,8 @@ class RideFragment : Fragment() {
     private lateinit var arrayOfRestrictions: ArrayList<Any>
     private lateinit var arrayOfPosition: ArrayList<Int>
 
-    private lateinit var roundTripItem: CheckBox
+    private lateinit var roundTripItem:CheckBox
+    private var country = "";
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -187,7 +188,8 @@ class RideFragment : Fragment() {
                             restrictions = arrayOfRestrictions
                     )
                     startActivity(Intent(context, MapsActivity::class.java)
-                            .putExtra("rideObject", ride))
+                            .putExtra("rideObject", ride)
+                            .putExtra("country",country))
                 }
             }
             hideProgressBar()
@@ -359,8 +361,9 @@ class RideFragment : Fragment() {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val user = dataSnapshot.getValue(User::class.java)
-                if (user!!.activeRide != null) {
-                    FragmentHelper.changeFragment(HomeFragment(), fragmentManager!!)
+                country = user!!.country
+                if (user.activeRide != null) {
+                    FragmentHelper.changeFragment(HomeFragment(),fragmentManager!!)
                     Toasty.info(activity!!.applicationContext, getString(R.string.rideActiveMessage), Toast.LENGTH_SHORT).show()
                 }
             }

@@ -43,9 +43,6 @@ import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.fragment_ride.*
 
 
-/**
- * A simple [Fragment] subclass.
- */
 class ProfileFragment : Fragment() {
     private lateinit var profilePicture: CircleImageView
     private lateinit var name: TextView
@@ -173,7 +170,7 @@ class ProfileFragment : Fragment() {
                 user.apply {
                     val fullName =user!!.name + " " + user!!.lastName
                     name.text =  fullName
-                    place.text = user!!.address
+                    place.visibility = View.GONE
                     email.text = user!!.email
                     if (user!!.pictureUrl.isEmpty()) {
                         Picasso.with(context).load(R.drawable.if_profle_1055000).fit().into(imageCircle)

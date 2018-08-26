@@ -216,6 +216,7 @@
     <string name="chat_subtitle">Toca para info. de la comunidad</string>
     <string name="load_notificatio_error">Message could not loaded</string>
     <string name="restrictions">Restricciónes</string>
+    <string name="Chat">Chat</string>
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">
         <item>No animales</item>

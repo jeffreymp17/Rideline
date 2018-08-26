@@ -25,6 +25,7 @@ import com.ridelineTeam.application.rideline.util.files.FIREBASE_SERVER_DEV
 import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.view.AboutActivity
+import com.ridelineTeam.application.rideline.view.ChatCommunityActivity
 import com.ridelineTeam.application.rideline.view.LoginActivity
 import com.ridelineTeam.application.rideline.view.fragment.*
 import com.squareup.picasso.Picasso

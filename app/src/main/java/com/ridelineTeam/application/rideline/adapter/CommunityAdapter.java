@@ -29,7 +29,8 @@ import com.ridelineTeam.application.rideline.model.Community;
 import com.ridelineTeam.application.rideline.model.User;
 import com.ridelineTeam.application.rideline.util.helpers.DateTimeAndStringHelper;
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper;
-import com.ridelineTeam.application.rideline.view.fragment.ChatCommunityActivity;
+import com.ridelineTeam.application.rideline.view.ChatCommunityActivity;
+import com.ridelineTeam.application.rideline.view.CommunityRidesActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -262,7 +263,7 @@ public class CommunityAdapter {
                         inCommunity=true;
                 }
                 if (inCommunity){
-                    Intent intent = new Intent(activity, ChatCommunityActivity.class);
+                    Intent intent = new Intent(activity,CommunityRidesActivity.class);
                     intent.putExtra("community", community);
                     activity.startActivity(intent);
                 }

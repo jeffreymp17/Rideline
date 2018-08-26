@@ -2,6 +2,7 @@ package com.ridelineTeam.application.rideline.view.fragment
 
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -30,6 +31,7 @@ import com.ridelineTeam.application.rideline.model.Ride
 import com.ridelineTeam.application.rideline.model.User
 import com.ridelineTeam.application.rideline.model.enums.Status
 import com.ridelineTeam.application.rideline.model.enums.Type
+import com.ridelineTeam.application.rideline.util.enums.Restrictions
 import com.ridelineTeam.application.rideline.util.files.*
 import com.ridelineTeam.application.rideline.util.helpers.ImageHelper
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
@@ -38,6 +40,7 @@ import com.squareup.picasso.Picasso
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
+import kotlinx.android.synthetic.main.fragment_ride.*
 
 
 class ProfileFragment : Fragment() {
@@ -115,6 +118,7 @@ class ProfileFragment : Fragment() {
                 .title(R.string.loading)
                 .content(R.string.please_wait)
                 .progress(true, 0).build()
+
         return rootView
     }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -124,6 +128,7 @@ class ProfileFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         statistics()
+
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -138,6 +143,7 @@ class ProfileFragment : Fragment() {
             uploadProfileImage()
         }
     }
+
     private fun showGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -516,5 +522,7 @@ class ProfileFragment : Fragment() {
                 }
             })
         }
+
     }
+
 }// Required empty public constructor

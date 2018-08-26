@@ -17,5 +17,6 @@ data class Ride(
                 var community:String = "",
                 var user:String="",
                 var time:String="",
-                var passengers: Map<String,User> = HashMap()
-            ) : Serializable
+                var passengers: Map<String,User> = HashMap(),
+                var restrictions:ArrayList<Any> = ArrayList()
+                ) : Serializable

@@ -48,7 +48,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Intent intent=new Intent(this,MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent piResult = PendingIntent.getActivity(this, 0, intent, 0);
-
         Notification.Builder builder= null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             builder = new Notification.Builder(this)

@@ -219,5 +219,13 @@
     <string name="leave_community_success">"You have been leaves the community!"</string>
     <string name="chat_subtitle">Tap to see community info</string>
     <string name="load_notificatio_error">Message could not loaded</string>
-
+    <string name="restrictions">Restrictions</string>
+    <!--ARRAY OF RESTRICTIONS-->
+    <string-array name="restrictions_array">
+        <item>No pets</item>
+        <item>No food</item>
+        <item>No children</item>
+        <item>No sleep</item>
+        <item>No smoking</item>
+    </string-array>
 </resources>

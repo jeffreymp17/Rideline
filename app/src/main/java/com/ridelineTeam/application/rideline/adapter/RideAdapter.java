@@ -29,9 +29,10 @@ import com.ridelineTeam.application.rideline.view.RideDetailActivity;
 import com.ridelineTeam.application.rideline.util.helpers.DateTimeAndStringHelper;
 import com.ridelineTeam.application.rideline.model.Ride;
 import com.ridelineTeam.application.rideline.model.User;
-import com.ridelineTeam.application.rideline.model.enums.Status;
+import com.ridelineTeam.application.rideline.util.enums.Status;
 import com.ridelineTeam.application.rideline.model.enums.Type;
 import com.ridelineTeam.application.rideline.view.fragment.ProfileFragment;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,6 +41,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
 
 import static com.ridelineTeam.application.rideline.util.files.ConstantsKt.RIDES;
@@ -58,6 +60,7 @@ public class RideAdapter {
         private TextView destination;
         private TextView passengerCard;
         private ImageView rideImage;
+        private CircleImageView userPicture;
         private Button btnGoCard;
         private Button btnCancelCard;
         private TextView hour;
@@ -70,6 +73,7 @@ public class RideAdapter {
             typeCard = view.findViewById(R.id.typeCard);
             passengerCard = view.findViewById(R.id.passengerCard);
             rideImage = view.findViewById(R.id.typeRideImage);
+            userPicture = view.findViewById(R.id.userPicture);
             btnGoCard = view.findViewById(R.id.btnGoCard);
             btnCancelCard = view.findViewById(R.id.btnCancelCard);
             destination = view.findViewById(R.id.txtDestination);
@@ -334,8 +338,20 @@ public class RideAdapter {
                     User user = dataSnapshot.getValue(User.class);
                     String fullName;
                     if (user != null) {
-                        fullName = user.getName() + " " + user.getLastName();
+
+                        if(user.getId().equals(userId))
+                            fullName = activity.getResources().getString(R.string.you);
+                        else {
+                            fullName = user.getName() + " " + user.getLastName();
+                            fullName = DateTimeAndStringHelper.truncate(fullName,15);
+                        }
                         holder.userCard.setText(fullName);
+
+                        if (!user.getPictureUrl().isEmpty())
+                            Picasso.with(activity).load(user.getPictureUrl()).fit().into(holder.userPicture);
+                        else
+                            Picasso.with(activity).load(R.drawable.avatar).fit().into(holder.userPicture);
+
                     }
                 }
 
@@ -352,10 +368,10 @@ public class RideAdapter {
             }
 
             String originText= activity.getResources().getString(R.string.originText)
-                    +" "+ ride.getOrigin();
+                    +" "+ DateTimeAndStringHelper.formatRoute(ride.getOrigin());
 
             String destinationText= activity.getResources().getString(R.string.destinationText)
-                    +" "+ ride.getDestination();
+                    +" "+ DateTimeAndStringHelper.formatRoute(ride.getDestination());
             holder.origin.setText(originText);
             holder.destination.setText(destinationText);
             holder.typeCard.setText(typeMessage(ride.getType()));
@@ -430,7 +446,6 @@ public class RideAdapter {
 
         private void cleanupListener() {
             if (childEventListener != null) {
-                Log.d("CLEAN", "LIMPIANDO LISTENER");
                 databaseReference.removeEventListener(childEventListener);
             }
         }
@@ -453,7 +468,6 @@ public class RideAdapter {
             db.child(user).child(TOKEN).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.d("toke", "myToken:" + dataSnapshot.getValue());
                     String token = dataSnapshot.getValue(String.class);
                     if (ride.getType().equals(Type.OFFERED)) {
                         NotificationHelper.message(com.ridelineTeam.application.rideline.MainActivity.Companion.getFmc()

@@ -25,7 +25,7 @@ import com.ridelineTeam.application.rideline.R;
 import com.ridelineTeam.application.rideline.util.helpers.DateTimeAndStringHelper;
 import com.ridelineTeam.application.rideline.view.RideDetailActivity;
 import com.ridelineTeam.application.rideline.model.Ride;
-import com.ridelineTeam.application.rideline.model.enums.Status;
+import com.ridelineTeam.application.rideline.util.enums.Status;
 import com.ridelineTeam.application.rideline.model.enums.Type;
 
 import java.util.ArrayList;

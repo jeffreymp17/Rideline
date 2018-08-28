@@ -28,7 +28,7 @@ import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.model.Community
 import com.ridelineTeam.application.rideline.model.Ride
 import com.ridelineTeam.application.rideline.model.User
-import com.ridelineTeam.application.rideline.model.enums.Status
+import com.ridelineTeam.application.rideline.util.enums.Status
 import com.ridelineTeam.application.rideline.model.enums.Type
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
@@ -75,7 +75,7 @@ class RideFragment : Fragment() {
     private lateinit var arrayOfPosition: ArrayList<Int>
 
     private lateinit var roundTripItem:CheckBox
-    private var country = "";
+    private var country = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

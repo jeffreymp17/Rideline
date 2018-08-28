@@ -1,7 +1,7 @@
 package com.ridelineTeam.application.rideline.model
 
 
-import com.ridelineTeam.application.rideline.model.enums.Status
+import com.ridelineTeam.application.rideline.util.enums.Status
 import com.ridelineTeam.application.rideline.model.enums.Type
 import java.io.Serializable
 

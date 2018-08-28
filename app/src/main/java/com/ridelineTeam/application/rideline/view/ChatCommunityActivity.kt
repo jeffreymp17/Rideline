@@ -1,4 +1,4 @@
-package com.ridelineTeam.application.rideline.view.fragment
+package com.ridelineTeam.application.rideline.view
 
 import android.app.Activity
 import android.annotation.SuppressLint
@@ -31,7 +31,6 @@ import com.ridelineTeam.application.rideline.util.files.TOKEN
 import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
-import com.ridelineTeam.application.rideline.view.CommunityDetailActivity
 import es.dmoral.toasty.Toasty
 import java.util.*
 

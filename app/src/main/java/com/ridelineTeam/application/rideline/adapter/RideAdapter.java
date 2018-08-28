@@ -205,7 +205,114 @@ public class RideAdapter {
             query.addChildEventListener(childEventListener);
             this.childEventListener = childEventListener;
         }
+        public RideAdapterRecycler(final Context context, DatabaseReference reference,
+                                   Activity activity, Query query, final String userId,
+                                   TextView textView,String communityId) {
+            this.cleanupListener();
+            this.context = context;
+            this.databaseReference = reference;
+            this.activity = activity;
+            this.Rides = new ArrayList<>();
+            this.RidesIds = new ArrayList<>();
+            this.userId = userId;
+            this.noRidesText = textView;
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm",Locale.getDefault());
 
+            ChildEventListener childEventListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
+                    Log.d("RideAdapter", "onChildAdded " + dataSnapshot.getKey());
+                        if (communityId.equals(dataSnapshot.child("community").getValue())) {
+                            Ride ride = dataSnapshot.getValue(Ride.class);
+                            String rideDate = null;
+                            try {
+                                if (ride != null) {
+                                    rideDate = ride.getDate()+" "+ ride.getTime();
+                                    rideDate = DateTimeAndStringHelper.dateFormat(rideDate);
+                                }
+                                Date dateRide = formatter.parse(rideDate);
+                                Date currentDate = new Date();
+                                if(dateRide.after(currentDate)){
+                                    RidesIds.add(dataSnapshot.getKey());
+
+                                    Rides.add(ride);
+
+                                    notifyItemInserted(Rides.size() - 1);
+                                }
+                                else{
+                                    assert ride != null;
+                                    ProfileFragment.Companion.changeStatusWhenTimeOver(ride,activity);
+                                }
+                            } catch (ParseException e) {
+                                Toasty.error(activity.getApplicationContext(),
+                                        e.getMessage(),Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                            }
+                        }
+
+
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, String s) {
+                    Log.d("RideAdapter", "onChildChanged:" + dataSnapshot.getKey());
+
+                    // A comment has changed, use the key to determine if we are displaying this
+                    // comment and if so displayed the changed comment.
+
+                    Ride Ride = dataSnapshot.getValue(Ride.class);
+                    String RideKey = dataSnapshot.getKey();
+                    // [START_EXCLUDE]
+                    int RideIndex = RidesIds.indexOf(RideKey);
+                    if (RideIndex > -1) {
+                        // Replace with the new data
+                        Rides.set(RideIndex, Ride);
+                        // Update the RecyclerView
+                        notifyItemChanged(RideIndex);
+                    } else {
+                        Log.w("RideAdapter", "onChildChanged:unknown_child:" + RideKey);
+                    }
+                }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                    Log.d("RideAdapter", "onChildRemoved:" + dataSnapshot.getKey());
+
+                    // A comment has changed, use the key to determine if we are displaying this
+                    // comment and if so remove it.
+                    String RideKey = dataSnapshot.getKey();
+
+                    // [START_EXCLUDE]
+                    int RideIndex = RidesIds.indexOf(RideKey);
+                    if (RideIndex > -1) {
+                        // Remove data from the list
+                        RidesIds.remove(RideIndex);
+                        Rides.remove(RideIndex);
+
+                        // Update the RecyclerView
+                        notifyItemRemoved(RideIndex);
+                    } else {
+                        Log.w("RideAdapter", "onChildRemoved:unknown_child:" + RideKey);
+                    }
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, String s) {
+                    Log.d("RideAdapter", "onChildMoved:" + dataSnapshot.getKey());
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.w("RideAdapter", "postRide:onCancelled", databaseError.toException());
+                    // Toast.makeText(context, "Failed to load comments.",
+                    //       Toast.LENGTH_SHORT).show();
+                }
+            };
+
+            query.addChildEventListener(childEventListener);
+            this.childEventListener = childEventListener;
+        }
         @NonNull
         @Override
         public RideViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

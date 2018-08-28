@@ -83,7 +83,7 @@
             android:name=".view.RideDetailActivity"
             android:label="@string/title_activity_ride_detail" />
         <activity
-            android:name=".view.fragment.ChatCommunityActivity"
+            android:name=".view.ChatCommunityActivity"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -91,10 +91,10 @@
         </activity>
         <activity
             android:name=".view.CommunityDetailActivity"
-            android:parentActivityName=".view.fragment.ChatCommunityActivity">
+            android:parentActivityName=".view.ChatCommunityActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ridelineTeam.application.rideline.view.fragment.ChatCommunityActivity" />
+                android:value="com.ridelineTeam.application.rideline.view.ChatCommunityActivity" />
         </activity>
         <activity
             android:name=".view.AboutActivity"
@@ -111,6 +111,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.PeopleRideDetailActivity"></activity>
+        <activity android:name=".view.CommunityRidesActivity"></activity>
     </application>
 
 </manifest>

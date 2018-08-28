@@ -214,10 +214,21 @@
     <string name="leave_community_success">"¡Has salido de la communidad!"</string>
     <string name="no_longer_belong_community">Ya no perteneces a esta comunidad</string>
     <string name="chat_subtitle">Toca para info. de la comunidad</string>
-    <string name="load_notificatio_error">El mensaje no pudo ser cargado</string>
+    <string name="load_notificatio_error">Message could not loaded</string>
+    <string name="restrictions">Restricciónes</string>
+    <string name="Chat">Chat</string>
     <string name="ride_passengers">Personas en tú ride</string>
     <string name="driver">Conductor</string>
     <string name="rejected_request_message">ha rechazado tu solicitud de ride</string>
     <string name="rejected_request">Solicitud rechazada</string>
     <string name="passenger_removed">Pasajero removido</string>
+
+    <!--ARRAY OF RESTRICTIONS-->
+    <string-array name="restrictions_array">
+        <item>No animales</item>
+        <item>No comidad</item>
+        <item>No niños</item>
+        <item>No dormir</item>
+        <item>No fumar</item>
+    </string-array>
 </resources>

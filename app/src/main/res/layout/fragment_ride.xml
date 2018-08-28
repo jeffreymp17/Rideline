@@ -265,6 +265,12 @@
                         android:theme="@style/RaisedButtonDark"
                         />
                     <Button
+                        android:id="@+id/btn_restrictions"
+                        android:layout_width="match_parent"
+                        android:text="Restrictions"
+                        android:theme="@style/RaisedButtonDark"
+                        android:layout_height="wrap_content" />
+                    <Button
                         android:id="@+id/btn_next"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content"

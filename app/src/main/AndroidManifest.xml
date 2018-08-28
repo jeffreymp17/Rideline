@@ -82,7 +82,6 @@
         <activity
             android:name=".view.RideDetailActivity"
             android:label="@string/title_activity_ride_detail" />
-
         <activity
             android:name=".view.fragment.ChatCommunityActivity"
             android:parentActivityName=".MainActivity">
@@ -111,6 +110,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".view.PeopleRideDetailActivity"></activity>
     </application>
 
 </manifest>

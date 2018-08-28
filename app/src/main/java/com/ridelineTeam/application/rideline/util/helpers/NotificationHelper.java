@@ -1,6 +1,5 @@
 package com.ridelineTeam.application.rideline.util.helpers;
 
-import android.app.Activity;
 import org.pixsee.fcm.Message;
 import org.pixsee.fcm.Sender;
 import java.util.List;

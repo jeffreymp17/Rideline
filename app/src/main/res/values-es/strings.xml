@@ -198,7 +198,7 @@
     <string name="passengersText">Pasajeros</string>
 
     <string name="loading">Cargando</string>
-    <string name="please_wait">Por favor espere...</string>
+    <string name="please_wait">Por favor espere…</string>
     <string name="personal_information">Editar información</string>
     <string name="done">Listo</string>
     <string name="cancel">Cancelar</string>
@@ -214,5 +214,10 @@
     <string name="leave_community_success">"¡Has salido de la communidad!"</string>
     <string name="no_longer_belong_community">Ya no perteneces a esta comunidad</string>
     <string name="chat_subtitle">Toca para info. de la comunidad</string>
-    <string name="load_notificatio_error">Message could not loaded</string>
+    <string name="load_notificatio_error">El mensaje no pudo ser cargado</string>
+    <string name="ride_passengers">Personas en tú ride</string>
+    <string name="driver">Conductor</string>
+    <string name="rejected_request_message">ha rechazado tu solicitud de ride</string>
+    <string name="rejected_request">Solicitud rechazada</string>
+    <string name="passenger_removed">Pasajero removido</string>
 </resources>

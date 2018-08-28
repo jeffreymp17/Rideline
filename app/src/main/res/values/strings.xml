@@ -220,6 +220,7 @@
     <string name="chat_subtitle">Tap to see community info</string>
     <string name="load_notificatio_error">Message could not loaded</string>
     <string name="restrictions">Restrictions</string>
+    <string name="Chat">Chat</string>
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">
         <item>No pets</item>

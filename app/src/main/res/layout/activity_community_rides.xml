@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ridelineTeam.application.rideline.view.CommunityRidesActivity">
+<include layout="@layout/toolbar"></include>
+    <TextView
+        android:paddingTop="55dp"
+        android:id="@+id/noRidesText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No hay rides publicados"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+    <android.support.v7.widget.RecyclerView
+        android:paddingTop="55dp"
+        android:id="@+id/communityRidesRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</android.support.design.widget.CoordinatorLayout>

@@ -121,7 +121,7 @@ class RideDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             MapDrawHelper.setupGoogleMapScreenSettings(mMap)
             MapDrawHelper.addPolyline(results!!, mMap)
             MapDrawHelper.positionCamera(results.routes[MapDrawHelper.overview], mMap)
-            MapDrawHelper.addMarkersToMap(results, mMap)
+            MapDrawHelper.addMarkersToMap(results, mMap,this@RideDetailActivity)
             mMap.setMinZoomPreference(10.0f)
             mMap.setMaxZoomPreference(15.0f)
         } catch (e: Exception) {

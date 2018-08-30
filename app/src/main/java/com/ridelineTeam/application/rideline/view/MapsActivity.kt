@@ -1,11 +1,13 @@
 package com.ridelineTeam.application.rideline.view
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -22,15 +24,13 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.places.AutocompleteFilter
 import com.google.android.gms.location.places.Places
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
 import com.google.firebase.database.*
 import com.google.maps.model.TravelMode
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.MainActivity.Companion.PERMISSION_REQUEST_ACCESS_FINE_LOCATION
+import com.ridelineTeam.application.rideline.MainActivity.Companion.REQUEST_LOCATION
 import com.ridelineTeam.application.rideline.Manifest
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.PlaceAutocompleteAdapter
@@ -62,10 +62,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
     private val overview = 0
     private lateinit var ride: Ride
     private lateinit var materialDialog: MaterialDialog
-    private lateinit var locationListener: LocationListener
+    private var locationListener: LocationListener? =null
     private lateinit var placeAutocompleteAdapter: PlaceAutocompleteAdapter
     private lateinit var mGoogleApiClient: GoogleApiClient
-    private val firstRender: Boolean = true
+
 
 
     private var latLongBounds = LatLngBounds(
@@ -109,19 +109,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             FragmentHelper.startGPS(this@MapsActivity)
 
+        }else{
+            getLocation()
         }
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        manager.removeUpdates(locationListener)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d("STARTGPS", "onActivityResult() called with: requestCode = [$requestCode], resultCode = [$resultCode], data = [$data]");
+        if(resultCode==Activity.RESULT_OK){
+            Log.d("STARTGPS", "ENBLED")
+            getLocation()
+        }else if(resultCode==Activity.RESULT_CANCELED){
+            Toasty.warning(applicationContext, "Es necesario el permiso para mejorar la experiencia", Toast.LENGTH_LONG, true).show()
+
+        }
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
     override fun onStart() {
         super.onStart()
         mapFragment.getMapAsync(this)
-        getLocation()
         txtOrigin.setAdapter(placeAutocompleteAdapter)
         txtDestination.setAdapter(placeAutocompleteAdapter)
         btnShowRoute.setOnClickListener { _ ->
@@ -286,38 +298,42 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         })
     }
 
-    private fun getLocation() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                    PERMISSION_REQUEST_ACCESS_FINE_LOCATION)
+    private fun getLocation() =
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                        PERMISSION_REQUEST_ACCESS_FINE_LOCATION)
 
-        } else {
-            locationListener = object : LocationListener {
-                override fun onLocationChanged(location: Location?) {
-                    with(mMap) {
-                        addMarker(MarkerOptions()
-                                .position(LatLng(location!!.latitude, location!!.longitude))
-                                .title("Here"))
+            } else {
+                locationListener = object : LocationListener {
+                    override fun onLocationChanged(location: Location?) {
+                        with(mMap) {
+                            addMarker(MarkerOptions()
+                                    .position(LatLng(location!!.latitude, location!!.longitude))
+                                    .title("You are Here").icon(BitmapDescriptorFactory.defaultMarker(207f)))
+                            val latLng = LatLng(location.latitude, location.longitude)
+                            var cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng,15f)
+                            animateCamera(cameraUpdate)
+                            manager.removeUpdates(locationListener)
+
+                        }
                     }
+
+                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+                    }
+
+                    override fun onProviderEnabled(provider: String?) {
+                    }
+
+                    override fun onProviderDisabled(provider: String?) {
+                    }
+
                 }
 
-                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-                }
-
-                override fun onProviderEnabled(provider: String?) {
-                }
-
-                override fun onProviderDisabled(provider: String?) {
-                }
-
+                manager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
             }
-
-            manager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
-        }
-    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -325,12 +341,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
             when (grantResults[0]) {
                 PackageManager.PERMISSION_GRANTED -> getLocation()
                 PackageManager.PERMISSION_DENIED -> {
-                    //Tell to user the need of grant permission
+                    Toasty.warning(applicationContext, "Es necesario el permiso para mejorar la experiencia", Toast.LENGTH_LONG, true).show()
                 }
             }
         }
 
     }
-
 
 }

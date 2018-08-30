@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.widget.Toast
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -51,6 +52,7 @@ class FragmentHelper {
             task.addOnCompleteListener {
                 try {
                     task.getResult(ApiException::class.java)
+                    Log.d("activado","GPS")
                 } catch (ex: ApiException) {
                     when (ex.statusCode) {
                         LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
@@ -59,20 +61,25 @@ class FragmentHelper {
                                 resolvableApiException
                                         .startResolutionForResult(activity,
                                                 LOCATION_SETTINGS_REQUEST)
-                                Log.d("myLocations:", "$mLocationRequest")
+                                Log.d("myLocations:", "hwe---------------------")
                             } catch (e: IntentSender.SendIntentException) {
+                                Log.d("myLocations:", "NOOOOOO")
 
                             }
                         }
                         LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
-                            Log.d("state", "unavailable")
 
                         }
+                        LocationSettingsStatusCodes.SUCCESS->{
+                            Log.d("activado","GPS")
+                        }
+
 
                     }
                 }
             }
         }
+
     }
 }
 

@@ -25,6 +25,7 @@ import com.ridelineTeam.application.rideline.util.files.FIREBASE_SERVER_DEV
 import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.view.AboutActivity
+import com.ridelineTeam.application.rideline.view.ChatCommunityActivity
 import com.ridelineTeam.application.rideline.view.LoginActivity
 import com.ridelineTeam.application.rideline.view.fragment.*
 import com.squareup.picasso.Picasso
@@ -126,11 +127,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_home -> {
                 FragmentHelper.changeFragment(HomeFragment(),supportFragmentManager)
-                //titleNav = getString(R.string.app_name)
             }
             R.id.nav_profile -> {
                 FragmentHelper.changeFragment(ProfileFragment(),supportFragmentManager)
-                //titleNav = getString(R.string.profile)
             }
             R.id.nav_ride -> {
                 cantCreateRideWhenActive()

@@ -1,7 +1,6 @@
 package com.ridelineTeam.application.rideline.util.helpers;
 
 
-import android.support.annotation.NonNull;
 import android.text.format.Time;
 
 import java.text.ParseException;
@@ -38,5 +37,28 @@ public class DateTimeAndStringHelper {
             month =  "0"+monthNumber;
         }
         return day+"/"+month+"/"+year;
+    }
+
+    public static String formatRoute(String text){
+        StringBuilder resultText = new StringBuilder();
+        text = text.toLowerCase().replaceAll("\\bprovincia de \\b","");
+        String[] split = text.split(",");
+        for (int i=0; i < split.length-1; i++){
+            if(i==0)
+                resultText.append(capitalize(split[i]));
+            else {
+                String aux = "," + capitalize(split[i]);
+                resultText.append(aux);
+            }
+        }
+        return resultText.toString();
+    }
+
+    public static String truncate(String text, int length){
+        if (text.length()> length){
+            text = text.substring(0,length);
+            text+="...";
+        }
+        return  text;
     }
 }

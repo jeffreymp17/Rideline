@@ -15,7 +15,7 @@ import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.RideAdapter
 import com.ridelineTeam.application.rideline.util.files.RIDES
 import com.ridelineTeam.application.rideline.util.files.USERS
-import com.ridelineTeam.application.rideline.model.enums.Status
+import com.ridelineTeam.application.rideline.util.enums.Status
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DataSnapshot

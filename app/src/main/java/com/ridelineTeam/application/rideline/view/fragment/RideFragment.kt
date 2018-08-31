@@ -71,7 +71,7 @@ class RideFragment : Fragment() {
     private lateinit var radioGroupType: RadioRealButtonGroup
     private lateinit var materialDialog: MaterialDialog
     private lateinit var btnRestrictions: Button
-    private lateinit var arrayOfRestrictions: ArrayList<Any>
+    private lateinit var arrayOfRestrictions: ArrayList<Restrictions>
     private lateinit var arrayOfPosition: ArrayList<Int>
 
     private lateinit var roundTripItem:CheckBox
@@ -216,7 +216,7 @@ class RideFragment : Fragment() {
     private fun multiSelectDialog() {
         val indicesLocal = ArrayList<Int>()
         val enumRestrictions = ArrayList<Restrictions>()
-        val restrictionsLocal = ArrayList<Any>()
+        val restrictionsLocal = ArrayList<Restrictions>()
         enumRestrictions.addAll(listOf(Restrictions.PET, Restrictions.FOOD, Restrictions.CHILD, Restrictions.SLEEP, Restrictions.FOOD))
         val res = resources.getStringArray(R.array.restrictions_array)
         val restrictions = ArrayList<Any>()

@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
 import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
+import com.ridelineTeam.application.rideline.view.fragment.ChatCommunityActivity
 import com.ridelineTeam.application.rideline.view.fragment.CommunityFragment
 import es.dmoral.toasty.Toasty
 import java.util.*

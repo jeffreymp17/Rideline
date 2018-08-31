@@ -1,9 +1,8 @@
 package com.ridelineTeam.application.rideline.model
 
 
-import com.ridelineTeam.application.rideline.util.enums.Status
+import com.ridelineTeam.application.rideline.model.enums.Status
 import com.ridelineTeam.application.rideline.model.enums.Type
-import com.ridelineTeam.application.rideline.util.enums.Restrictions
 import java.io.Serializable
 
 data class Ride(
@@ -18,6 +17,5 @@ data class Ride(
                 var community:String = "",
                 var user:String="",
                 var time:String="",
-                var passengers: Map<String,User> = HashMap(),
-                var restrictions:ArrayList<Restrictions> = ArrayList()
-                ) : Serializable
+                var passengers: Map<String,User> = HashMap()
+            ) : Serializable

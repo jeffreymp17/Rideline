@@ -1,8 +1,5 @@
-package com.ridelineTeam.application.rideline.util.enums
+package com.ridelineTeam.application.rideline.model.enums
 
 enum class Status {
-    ACTIVE,
-    FINISHED,
-    CANCELED,
-    PENDING
+    ACTIVE,FINISHED,CANCELED
 }

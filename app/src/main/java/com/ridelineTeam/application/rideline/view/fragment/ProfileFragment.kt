@@ -2,7 +2,6 @@ package com.ridelineTeam.application.rideline.view.fragment
 
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -29,23 +28,22 @@ import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.ProfileAdapter
 import com.ridelineTeam.application.rideline.model.Ride
 import com.ridelineTeam.application.rideline.model.User
-import com.ridelineTeam.application.rideline.util.enums.Status
+import com.ridelineTeam.application.rideline.model.enums.Status
 import com.ridelineTeam.application.rideline.model.enums.Type
-import com.ridelineTeam.application.rideline.util.enums.Restrictions
 import com.ridelineTeam.application.rideline.util.files.*
-import com.ridelineTeam.application.rideline.util.helpers.*
-import com.ridelineTeam.application.rideline.view.PeopleRideDetailActivity
+import com.ridelineTeam.application.rideline.util.helpers.ImageHelper
+import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
+import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
 import com.squareup.picasso.Picasso
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
-import kotlinx.android.synthetic.main.cardview.*
-import kotlinx.android.synthetic.main.fragment_ride.*
 
 
 class ProfileFragment : Fragment() {
     private lateinit var profilePicture: CircleImageView
     private lateinit var name: TextView
+    private lateinit var place: TextView
     private lateinit var email: TextView
     private lateinit var imageCircle: CircleImageView
     private lateinit var reference: DatabaseReference
@@ -90,6 +88,7 @@ class ProfileFragment : Fragment() {
         recycler = rootView.findViewById(R.id.recycler_profile)
         reference = database.reference.child(USERS)
         name = rootView.findViewById(R.id.profile_name)
+        place = rootView.findViewById(R.id.profile_place)
         email = rootView.findViewById(R.id.user_email)
         profilePicture = rootView.findViewById(R.id.my_picture_profile)
         btnEdit.setOnClickListener {
@@ -116,7 +115,6 @@ class ProfileFragment : Fragment() {
                 .title(R.string.loading)
                 .content(R.string.please_wait)
                 .progress(true, 0).build()
-
         return rootView
     }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -126,10 +124,6 @@ class ProfileFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         statistics()
-        frameLayoutCard.setOnClickListener{
-            startActivity(Intent(context, PeopleRideDetailActivity::class.java)
-                .putExtra("rideObject", user!!.activeRide)) 
-            }
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -144,7 +138,6 @@ class ProfileFragment : Fragment() {
             uploadProfileImage()
         }
     }
-
     private fun showGallery() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -171,6 +164,7 @@ class ProfileFragment : Fragment() {
                 user.apply {
                     val fullName =user!!.name + " " + user!!.lastName
                     name.text =  fullName
+                    place.visibility = View.GONE
                     email.text = user!!.email
                     if (user!!.pictureUrl.isEmpty()) {
                         Picasso.with(context).load(R.drawable.if_profle_1055000).fit().into(imageCircle)
@@ -336,15 +330,8 @@ class ProfileFragment : Fragment() {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val user = dataSnapshot.getValue(User::class.java)
-                var fullName = user!!.name+" "+user.lastName
-                fullName = DateTimeAndStringHelper.truncate(fullName, 15)
-                if(user.id==id) fullName = getString(R.string.you)
+                val fullName =user!!.name+" "+user.lastName
                 userCard.text=fullName
-                if (!user.pictureUrl.isEmpty())
-                    Picasso.with(activity).load(user.pictureUrl).fit().into(userPicture)
-                else
-                    Picasso.with(activity).load(R.drawable.avatar).fit().into(userPicture)
-
             }
         })
         if (Type.REQUESTED == ride.type){
@@ -376,12 +363,12 @@ class ProfileFragment : Fragment() {
             destinationText
                     .append(resources.getString(R.string.destinationText))
                     .append(" ")
-                    .append(DateTimeAndStringHelper.formatRoute(ride.destination))
+                    .append(ride.destination)
         val originText = StringBuilder()
         originText
                 .append(resources.getString(R.string.originText))
                 .append(" ")
-                .append(DateTimeAndStringHelper.formatRoute(ride.origin))
+                .append(ride.origin)
         destination.text = destinationText
         origin.text =  originText
         hour.text = ride.time
@@ -529,7 +516,5 @@ class ProfileFragment : Fragment() {
                 }
             })
         }
-
     }
-
 }// Required empty public constructor

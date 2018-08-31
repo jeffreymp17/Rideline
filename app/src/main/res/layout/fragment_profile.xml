@@ -29,8 +29,8 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/my_picture_profile"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
                     android:layout_gravity="center"
                     android:background="?android:attr/selectableItemBackground"
                     android:src="@drawable/avatar"
@@ -46,6 +46,14 @@
                     android:textColor="@color/icons"
                     android:textSize="15sp" />
 
+                <TextView
+                    android:id="@+id/profile_place"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Caimital"
+                    android:textAlignment="center"
+                    android:textColor="@color/icons"
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/user_email"
@@ -56,7 +64,14 @@
                     android:textColor="@color/icons"
                     android:textSize="15sp" />
 
-
+                <TextView
+                    android:id="@+id/user_year"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="2018"
+                    android:textAlignment="center"
+                    android:textColor="@color/icons"
+                    android:textSize="15sp" />
             </LinearLayout>
 
             <android.support.design.widget.FloatingActionButton

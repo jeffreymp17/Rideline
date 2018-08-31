@@ -110,8 +110,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.PeopleRideDetailActivity"></activity>
-        <activity android:name=".view.CommunityRidesActivity"></activity>
+        <activity android:name=".view.PeopleRideDetailActivity" />
+        <activity android:name=".view.CommunityRidesActivity" />
+        <activity android:name=".view.UpdateProfileActivity"></activity>
     </application>
 
 </manifest>

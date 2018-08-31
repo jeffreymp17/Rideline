@@ -226,6 +226,7 @@
     <string name="rejected_request_message">has rejected your ride request</string>
     <string name="rejected_request">Rejected request</string>
     <string name="passenger_removed">Passenger removed</string>
+    <string name="edit">Edit</string>
 
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">
@@ -235,5 +236,5 @@
         <item>No sleep</item>
         <item>No smoking</item>
     </string-array>
->>>>>>> app/src/main/res/values/strings.xml
+    >>>>>>> app/src/main/res/values/strings.xml
 </resources>

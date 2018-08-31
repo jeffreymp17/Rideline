@@ -222,6 +222,7 @@
     <string name="rejected_request_message">ha rechazado tu solicitud de ride</string>
     <string name="rejected_request">Solicitud rechazada</string>
     <string name="passenger_removed">Pasajero removido</string>
+    <string name="edit">Edit</string>
 
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">

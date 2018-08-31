@@ -2,7 +2,6 @@ package com.ridelineTeam.application.rideline.view.fragment
 
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -15,9 +14,7 @@ import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.firebase.auth.FirebaseAuth
@@ -31,16 +28,15 @@ import com.ridelineTeam.application.rideline.model.Ride
 import com.ridelineTeam.application.rideline.model.User
 import com.ridelineTeam.application.rideline.util.enums.Status
 import com.ridelineTeam.application.rideline.model.enums.Type
-import com.ridelineTeam.application.rideline.util.enums.Restrictions
 import com.ridelineTeam.application.rideline.util.files.*
 import com.ridelineTeam.application.rideline.util.helpers.*
 import com.ridelineTeam.application.rideline.view.PeopleRideDetailActivity
+import com.ridelineTeam.application.rideline.view.UpdateProfileActivity
 import com.squareup.picasso.Picasso
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.cardview.*
-import kotlinx.android.synthetic.main.fragment_ride.*
 
 
 class ProfileFragment : Fragment() {
@@ -76,6 +72,11 @@ class ProfileFragment : Fragment() {
     private lateinit var card: CardView
     private lateinit var noActiveRideText:TextView
     private lateinit var materialDialog: MaterialDialog
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView: View = inflater.inflate(R.layout.fragment_profile, container, false)
@@ -142,6 +143,19 @@ class ProfileFragment : Fragment() {
             }
             showProgressBar()
             uploadProfileImage()
+        }
+    }
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater!!.inflate(R.menu.menu_profile,menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item!!.itemId) {
+            R.id.action_edit ->{
+                startActivity(Intent(context, UpdateProfileActivity::class.java))
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

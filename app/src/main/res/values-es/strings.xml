@@ -219,6 +219,7 @@
     <string name="Chat">Chat</string>
     <string name="timeRoute">Tiempo:</string>
     <string name="travelDistance">Distancia del viaje:</string>
+    <string name="permissionGPS">Activa el GPS si quieres  mejorar la experiencia</string>
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">
         <item>No animales</item>

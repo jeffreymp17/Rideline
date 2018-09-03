@@ -62,10 +62,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
     private val overview = 0
     private lateinit var ride: Ride
     private lateinit var materialDialog: MaterialDialog
-    private var locationListener: LocationListener? =null
+    private var locationListener: LocationListener? = null
     private lateinit var placeAutocompleteAdapter: PlaceAutocompleteAdapter
     private lateinit var mGoogleApiClient: GoogleApiClient
-
 
 
     private var latLongBounds = LatLngBounds(
@@ -106,23 +105,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         Log.d("gettingObject", ride.toString())
         Log.d("MY COMMUNITY::", "" + getCommunityForNotification(ride.community))
         manager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+
+    }
+
+    private fun currentPosition() {
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             FragmentHelper.startGPS(this@MapsActivity)
 
-        }else{
+        } else {
             getLocation()
         }
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d("STARTGPS", "onActivityResult() called with: requestCode = [$requestCode], resultCode = [$resultCode], data = [$data]");
-        if(resultCode==Activity.RESULT_OK){
+        if (resultCode == Activity.RESULT_OK) {
             Log.d("STARTGPS", "ENBLED")
-            getLocation()
-        }else if(resultCode==Activity.RESULT_CANCELED){
-            Toasty.warning(applicationContext, "Es necesario el permiso para mejorar la experiencia", Toast.LENGTH_LONG, true).show()
+            currentPosition()
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            Toasty.warning(applicationContext,getString( R.string.permissionGPS), Toast.LENGTH_LONG, true).show()
 
         }
     }
@@ -131,9 +134,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         super.onBackPressed()
         finish()
     }
+
     override fun onStart() {
         super.onStart()
         mapFragment.getMapAsync(this)
+        currentPosition()
         txtOrigin.setAdapter(placeAutocompleteAdapter)
         txtDestination.setAdapter(placeAutocompleteAdapter)
         btnShowRoute.setOnClickListener { _ ->
@@ -314,9 +319,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                                     .position(LatLng(location!!.latitude, location!!.longitude))
                                     .title("You are Here").icon(BitmapDescriptorFactory.defaultMarker(207f)))
                             val latLng = LatLng(location.latitude, location.longitude)
-                            var cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng,15f)
+                            var cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
                             animateCamera(cameraUpdate)
                             manager.removeUpdates(locationListener)
+                            Log.d("HERE", "I AM HERE")
 
                         }
                     }
@@ -332,7 +338,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
 
                 }
 
-                manager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
+                manager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*0, 0f, locationListener)
+
+
+
             }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

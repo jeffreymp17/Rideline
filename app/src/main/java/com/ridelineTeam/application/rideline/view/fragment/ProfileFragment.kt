@@ -25,6 +25,7 @@ import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.ridelineTeam.application.rideline.MainActivity
+import com.ridelineTeam.application.rideline.MainActivity.Companion.userId
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.ProfileAdapter
 import com.ridelineTeam.application.rideline.model.Ride
@@ -116,7 +117,6 @@ class ProfileFragment : Fragment() {
                 .title(R.string.loading)
                 .content(R.string.please_wait)
                 .progress(true, 0).build()
-
         return rootView
     }
     override fun onActivityCreated(savedInstanceState: Bundle?) {

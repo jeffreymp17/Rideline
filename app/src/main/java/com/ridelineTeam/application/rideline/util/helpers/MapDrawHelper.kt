@@ -2,7 +2,9 @@ package com.ridelineTeam.application.rideline.util.helpers
 
 import android.Manifest
 import android.app.Activity
+import android.content.res.Resources
 import android.location.Location
+import android.util.Log
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -21,8 +23,7 @@ import org.joda.time.DateTime
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 import com.google.android.gms.maps.model.CameraPosition
-
-
+import com.ridelineTeam.application.rideline.R
 
 
 class MapDrawHelper {
@@ -42,6 +43,10 @@ class MapDrawHelper {
             mUiSettings.isZoomGesturesEnabled = true
             mUiSettings.isTiltGesturesEnabled = true
             mUiSettings.isRotateGesturesEnabled = true
+            mUiSettings.isMyLocationButtonEnabled=true
+            mUiSettings.setAllGesturesEnabled(true)
+            mUiSettings.isMapToolbarEnabled=true
+
         }
 
         fun addPolyline(results: DirectionsResult, mMap: GoogleMap) {
@@ -53,15 +58,15 @@ class MapDrawHelper {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(
                     route.legs[overview].startLocation.lat,
                     route.legs[overview].startLocation.lng), 9f))
-            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.Builder()
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.Builder()
                     .target(mMap.cameraPosition.target)
-                    .zoom(17f)
-                    .bearing(30f)
-                    .tilt(45f)
+                    .zoom(15f)
+                    .bearing(35f)
+                    .tilt(50f)
                     .build()))
         }
 
-        fun addMarkersToMap(results: DirectionsResult, mMap: GoogleMap) {
+        fun addMarkersToMap(results: DirectionsResult, mMap: GoogleMap,activity: Activity) {
             with(mMap) {
                 addMarker(MarkerOptions().position(LatLng(
                         results.routes[overview].legs[overview].startLocation.lat,
@@ -73,7 +78,7 @@ class MapDrawHelper {
                         results.routes[overview].legs[overview].endLocation.lng))
                         .title(results.routes[overview].legs[overview].endAddress)
                         .icon(BitmapDescriptorFactory.defaultMarker(45.0f))
-                        .snippet(getEndLocationTitle(results))).showInfoWindow()
+                        .snippet(getEndLocationTitle(results,activity))).showInfoWindow()
             }
 
         }
@@ -99,21 +104,9 @@ class MapDrawHelper {
             }
         }
 
-        fun getCurrentLocation(activity: Activity): LatLng {
-
-            var current = LatLng(10.134894, -85.446627)
-            val mFusedLocationClient = FusedLocationProviderClient(activity)
-            if (PermissionHelper.checkPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                mFusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-                    current = LatLng(location!!.latitude, location.longitude)
-                }
-            }
-            return current
-        }
-
-        private fun getEndLocationTitle(results: DirectionsResult): String {
-            return "Time :" + results.routes[overview].legs[overview].duration.humanReadable +
-                    " Distance :" + results.routes[overview].legs[overview].distance.humanReadable
+        private fun getEndLocationTitle(results: DirectionsResult,activity: Activity): String {
+            return activity.resources.getString(R.string.timeRoute) + results.routes[overview].legs[overview].duration.humanReadable +" "+
+                    activity.resources.getString(R.string.travelDistance) + results.routes[overview].legs[overview].distance.humanReadable
         }
 
         private fun getGeoContext(apiKey: String): GeoApiContext {
@@ -125,5 +118,7 @@ class MapDrawHelper {
                     .setReadTimeout(1, TimeUnit.SECONDS)
                     .setWriteTimeout(1, TimeUnit.SECONDS)
         }
+
+
     }
 }

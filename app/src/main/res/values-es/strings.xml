@@ -217,6 +217,10 @@
     <string name="load_notificatio_error">Message could not loaded</string>
     <string name="restrictions">Restricciónes</string>
     <string name="Chat">Chat</string>
+    <string name="timeRoute">Tiempo:</string>
+    <string name="travelDistance">Distancia del viaje:</string>
+    <string name="permissionGPS">Activa el GPS si quieres  mejorar la experiencia</string>
+    
     <string name="ride_passengers">Personas en tú ride</string>
     <string name="driver">Conductor</string>
     <string name="rejected_request_message">ha rechazado tu solicitud de ride</string>

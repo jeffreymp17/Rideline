@@ -221,6 +221,11 @@
     <string name="load_notificatio_error">Message could not loaded</string>
     <string name="restrictions">Restrictions</string>
     <string name="Chat">Chat</string>
+
+    <string name="timeRoute">Time:</string>
+    <string name="travelDistance">Distance of trip:</string>
+    <string name="permissionGPS">Activate the GPS if you want to improve the experience</string>
+
     <string name="ride_passengers">People in your ride</string>
     <string name="driver">Driver</string>
     <string name="rejected_request_message">has rejected your ride request</string>
@@ -235,5 +240,4 @@
         <item>No sleep</item>
         <item>No smoking</item>
     </string-array>
->>>>>>> app/src/main/res/values/strings.xml
 </resources>

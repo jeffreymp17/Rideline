@@ -50,6 +50,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val refreshedToken = FirebaseInstanceId.getInstance().token!!
         val fmc: Sender = Sender(FIREBASE_SERVER_DEV)
         val userId=FirebaseAuth.getInstance().currentUser!!.uid
+        const val PERMISSION_REQUEST_ACCESS_FINE_LOCATION = 100
+       const  val REQUEST_LOCATION = 199
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

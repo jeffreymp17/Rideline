@@ -1,7 +1,16 @@
 package com.ridelineTeam.application.rideline.view
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
@@ -15,22 +24,20 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.places.AutocompleteFilter
 import com.google.android.gms.location.places.Places
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.*
 import com.google.firebase.database.*
 import com.google.maps.model.TravelMode
 import com.ridelineTeam.application.rideline.MainActivity
+import com.ridelineTeam.application.rideline.MainActivity.Companion.PERMISSION_REQUEST_ACCESS_FINE_LOCATION
+import com.ridelineTeam.application.rideline.MainActivity.Companion.REQUEST_LOCATION
+import com.ridelineTeam.application.rideline.Manifest
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.PlaceAutocompleteAdapter
 import com.ridelineTeam.application.rideline.model.Ride
 import com.ridelineTeam.application.rideline.model.enums.Type
 import com.ridelineTeam.application.rideline.util.files.*
+import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.MapDrawHelper
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
 import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
@@ -46,16 +53,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
     private lateinit var btnShowRoute: Button
     private lateinit var loadingBar: View
     private lateinit var btnCreate: Button
+    private lateinit var manager: LocationManager
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
     private var listOfTokens = ArrayList<String>()
     private var usersIds = ArrayList<String>()
     private var communityDescription = ""
-
     private val overview = 0
     private lateinit var ride: Ride
     private lateinit var materialDialog: MaterialDialog
-
+    private var locationListener: LocationListener? = null
     private lateinit var placeAutocompleteAdapter: PlaceAutocompleteAdapter
     private lateinit var mGoogleApiClient: GoogleApiClient
 
@@ -66,7 +73,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
     )
 
     override fun onConnectionFailed(p0: ConnectionResult) {
-        Toasty.error(this,p0.errorMessage.toString(),Toast.LENGTH_SHORT).show()
+        Toasty.error(this, p0.errorMessage.toString(), Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,7 +92,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                 .build()
         val filter = AutocompleteFilter.Builder()
                 .setCountry(country)
-        placeAutocompleteAdapter = PlaceAutocompleteAdapter(this, mGoogleApiClient, latLongBounds,filter.build())
+        placeAutocompleteAdapter = PlaceAutocompleteAdapter(this, mGoogleApiClient, latLongBounds, filter.build())
         txtOrigin = findViewById(R.id.txtOrigin)
         txtDestination = findViewById(R.id.txtDestination)
         btnShowRoute = findViewById(R.id.btn_ShowRoute)
@@ -97,13 +104,41 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         databaseReference = database.reference.child(RIDES).push()
         Log.d("gettingObject", ride.toString())
         Log.d("MY COMMUNITY::", "" + getCommunityForNotification(ride.community))
+        manager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
 
+    }
+
+    private fun currentPosition() {
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            FragmentHelper.startGPS(this@MapsActivity)
+
+        } else {
+            getLocation()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d("STARTGPS", "onActivityResult() called with: requestCode = [$requestCode], resultCode = [$resultCode], data = [$data]");
+        if (resultCode == Activity.RESULT_OK) {
+            Log.d("STARTGPS", "ENBLED")
+            currentPosition()
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            Toasty.warning(applicationContext,getString( R.string.permissionGPS), Toast.LENGTH_LONG, true).show()
+
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
     }
 
     override fun onStart() {
         super.onStart()
         mapFragment.getMapAsync(this)
+        currentPosition()
         txtOrigin.setAdapter(placeAutocompleteAdapter)
         txtDestination.setAdapter(placeAutocompleteAdapter)
         btnShowRoute.setOnClickListener { _ ->
@@ -130,15 +165,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                             .child(ride.user)
                             .child("activeRide")
                             .setValue(ride).addOnCompleteListener {
-                                if(it.isComplete){
+                                if (it.isComplete) {
                                     databaseReference.database.reference.child(USERS)
                                             .child(ride.user)
                                             .child("taked").setValue(1)
                                     startActivity(Intent(baseContext, MainActivity::class.java))
                                     finish()
                                 }
-                            }.addOnFailureListener{
-                                Toasty.error(applicationContext,"Error when save active ride",Toast.LENGTH_SHORT,true).show()
+                            }.addOnFailureListener {
+                                Toasty.error(applicationContext, "Error when save active ride", Toast.LENGTH_SHORT, true).show()
                             }
                 }
                 hideProgressBar()
@@ -159,14 +194,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         loadingBar.visibility = View.VISIBLE
         mMap = googleMap
         MapDrawHelper.setupGoogleMapScreenSettings(mMap)
-        val location = MapDrawHelper.getCurrentLocation(this)
-        mMap.addMarker(MarkerOptions().position(location).title("You are here!")
-                .icon(BitmapDescriptorFactory.defaultMarker(45.0f))
-        )
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(location))
         loadingBar.visibility = View.GONE
 
+
     }
+
 
     private fun drawMap(origin: String, destination: String) {
         try {
@@ -176,7 +208,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
             MapDrawHelper.setupGoogleMapScreenSettings(mMap)
             MapDrawHelper.addPolyline(results!!, mMap)
             MapDrawHelper.positionCamera(results.routes[overview], mMap)
-            MapDrawHelper.addMarkersToMap(results, mMap)
+            MapDrawHelper.addMarkersToMap(results, mMap, activity = this@MapsActivity)
         } catch (e: Exception) {
             txtOrigin.text = null
             txtDestination.text = null
@@ -210,7 +242,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                 for (users in data.children) {
                     usersIds.add(users.value.toString())
                 }
-                val users=usersIds.filterNot { it==MainActivity.userId }
+                val users = usersIds.filterNot { it == MainActivity.userId }
                 getTokens(users as ArrayList<String>)
                 Log.d("USERS", "LIST--->$usersIds")
             }
@@ -218,6 +250,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
 
         })
     }
+
 
     private fun getTokens(list: ArrayList<String>) {
         getCommunityForNotification(ride.community)
@@ -234,22 +267,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                 if (ride.type.toString() == Type.OFFERED.toString()) {
                     NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens,
                             resources.getString(R.string.new_ride_offered),
-                            resources.getString(R.string.new_ride_offered_body)+" "+communityDescription)
+                            resources.getString(R.string.new_ride_offered_body) + " " + communityDescription)
                 } else {
                     NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens,
                             resources.getString(R.string.new_ride_requested),
-                            resources.getString(R.string.new_ride_requested_body)+" "+communityDescription)
+                            resources.getString(R.string.new_ride_requested_body) + " " + communityDescription)
 
                 }
             }
         })
     }
 
-    private fun showProgressBar(){
+    private fun showProgressBar() {
         materialDialog.show()
         PermissionHelper.disableScreenInteraction(window)
     }
-    private fun hideProgressBar(){
+
+    private fun hideProgressBar() {
         materialDialog.dismiss()
         PermissionHelper.enableScreenInteraction(window)
     }
@@ -269,5 +303,58 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         })
     }
 
+    private fun getLocation() =
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                        this,
+                        arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                        PERMISSION_REQUEST_ACCESS_FINE_LOCATION)
+
+            } else {
+                locationListener = object : LocationListener {
+                    override fun onLocationChanged(location: Location?) {
+                        with(mMap) {
+                            addMarker(MarkerOptions()
+                                    .position(LatLng(location!!.latitude, location!!.longitude))
+                                    .title("You are Here").icon(BitmapDescriptorFactory.defaultMarker(207f)))
+                            val latLng = LatLng(location.latitude, location.longitude)
+                            var cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
+                            animateCamera(cameraUpdate)
+                            manager.removeUpdates(locationListener)
+                            Log.d("HERE", "I AM HERE")
+
+                        }
+                    }
+
+                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+                    }
+
+                    override fun onProviderEnabled(provider: String?) {
+                    }
+
+                    override fun onProviderDisabled(provider: String?) {
+                    }
+
+                }
+
+                manager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*0, 0f, locationListener)
+
+
+
+            }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_ACCESS_FINE_LOCATION) {
+            when (grantResults[0]) {
+                PackageManager.PERMISSION_GRANTED -> getLocation()
+                PackageManager.PERMISSION_DENIED -> {
+                    Toasty.warning(applicationContext, "Es necesario el permiso para mejorar la experiencia", Toast.LENGTH_LONG, true).show()
+                }
+            }
+        }
+
+    }
 
 }

@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.zagum.switchicon.SwitchIconView;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,14 +25,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ridelineTeam.application.rideline.R;
+import com.ridelineTeam.application.rideline.util.enums.Restrictions;
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper;
 import com.ridelineTeam.application.rideline.view.RideDetailActivity;
 import com.ridelineTeam.application.rideline.util.helpers.DateTimeAndStringHelper;
 import com.ridelineTeam.application.rideline.model.Ride;
 import com.ridelineTeam.application.rideline.model.User;
-import com.ridelineTeam.application.rideline.model.enums.Status;
+import com.ridelineTeam.application.rideline.util.enums.Status;
 import com.ridelineTeam.application.rideline.model.enums.Type;
 import com.ridelineTeam.application.rideline.view.fragment.ProfileFragment;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,6 +43,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
 
 import static com.ridelineTeam.application.rideline.util.files.ConstantsKt.RIDES;
@@ -58,10 +62,16 @@ public class RideAdapter {
         private TextView destination;
         private TextView passengerCard;
         private ImageView rideImage;
+        private CircleImageView userPicture;
         private Button btnGoCard;
         private Button btnCancelCard;
         private TextView hour;
         private FrameLayout frameLayoutCard;
+        private SwitchIconView smokeIcon;
+        private SwitchIconView petIcon;
+        private SwitchIconView foodIcon;
+        private SwitchIconView sleepIcon;
+        private SwitchIconView childIcon;
 
         private RideViewHolder(View view) {
             super(view);
@@ -70,12 +80,18 @@ public class RideAdapter {
             typeCard = view.findViewById(R.id.typeCard);
             passengerCard = view.findViewById(R.id.passengerCard);
             rideImage = view.findViewById(R.id.typeRideImage);
+            userPicture = view.findViewById(R.id.userPicture);
             btnGoCard = view.findViewById(R.id.btnGoCard);
             btnCancelCard = view.findViewById(R.id.btnCancelCard);
             destination = view.findViewById(R.id.txtDestination);
             origin = view.findViewById(R.id.txtOrigin);
             hour = view.findViewById(R.id.rideHour);
             frameLayoutCard = view.findViewById(R.id.frameLayoutCard);
+            smokeIcon = view.findViewById(R.id.smokeIcon);
+            petIcon = view.findViewById(R.id.petIcon);
+            foodIcon = view.findViewById(R.id.foodIcon);
+            sleepIcon = view.findViewById(R.id.sleepIcon);
+            childIcon = view.findViewById(R.id.childIcon);
         }
     }
 
@@ -334,8 +350,20 @@ public class RideAdapter {
                     User user = dataSnapshot.getValue(User.class);
                     String fullName;
                     if (user != null) {
-                        fullName = user.getName() + " " + user.getLastName();
+
+                        if(user.getId().equals(userId))
+                            fullName = activity.getResources().getString(R.string.you);
+                        else {
+                            fullName = user.getName() + " " + user.getLastName();
+                            fullName = DateTimeAndStringHelper.truncate(fullName,15);
+                        }
                         holder.userCard.setText(fullName);
+
+                        if (!user.getPictureUrl().isEmpty())
+                            Picasso.with(activity).load(user.getPictureUrl()).fit().into(holder.userPicture);
+                        else
+                            Picasso.with(activity).load(R.drawable.avatar).fit().into(holder.userPicture);
+
                     }
                 }
 
@@ -352,16 +380,19 @@ public class RideAdapter {
             }
 
             String originText= activity.getResources().getString(R.string.originText)
-                    +" "+ ride.getOrigin();
+                    +" "+ DateTimeAndStringHelper.formatRoute(ride.getOrigin());
 
             String destinationText= activity.getResources().getString(R.string.destinationText)
-                    +" "+ ride.getDestination();
+                    +" "+ DateTimeAndStringHelper.formatRoute(ride.getDestination());
             holder.origin.setText(originText);
             holder.destination.setText(destinationText);
             holder.typeCard.setText(typeMessage(ride.getType()));
             holder.hour.setText(ride.getTime());
             holder.dateCard.setText(ride.getDate());
             String passengerText;
+
+            drawRestrictions(ride.getRestrictions(),holder);
+
             if (ride.getType().equals(Type.OFFERED)) {
                 Log.d("HERE", "YES");
                 holder.rideImage.setBackground(activity.getResources().getDrawable(R.drawable.taxi));
@@ -430,7 +461,6 @@ public class RideAdapter {
 
         private void cleanupListener() {
             if (childEventListener != null) {
-                Log.d("CLEAN", "LIMPIANDO LISTENER");
                 databaseReference.removeEventListener(childEventListener);
             }
         }
@@ -453,7 +483,6 @@ public class RideAdapter {
             db.child(user).child(TOKEN).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.d("toke", "myToken:" + dataSnapshot.getValue());
                     String token = dataSnapshot.getValue(String.class);
                     if (ride.getType().equals(Type.OFFERED)) {
                         NotificationHelper.message(com.ridelineTeam.application.rideline.MainActivity.Companion.getFmc()
@@ -534,6 +563,28 @@ public class RideAdapter {
                 }
             });
 
+        }
+
+        private void drawRestrictions(ArrayList<Restrictions> restrictions,RideViewHolder holder){
+            for (Restrictions restriction : restrictions){
+                switch (restriction){
+                    case SMOKE:
+                        holder.smokeIcon.setIconEnabled(false);
+                        break;
+                    case PET:
+                        holder.petIcon.setIconEnabled(false);
+                        break;
+                    case FOOD:
+                        holder.foodIcon.setIconEnabled(false);
+                        break;
+                    case CHILD:
+                        holder.childIcon.setIconEnabled(false);
+                        break;
+                    case SLEEP:
+                        holder.sleepIcon.setIconEnabled(false);
+                        break;
+                }
+            }
         }
 
     }

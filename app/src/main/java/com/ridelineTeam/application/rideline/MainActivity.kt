@@ -130,11 +130,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when (item.itemId) {
             R.id.nav_home -> {
                 FragmentHelper.changeFragment(HomeFragment(),supportFragmentManager)
-                //titleNav = getString(R.string.app_name)
             }
             R.id.nav_profile -> {
                 FragmentHelper.changeFragment(ProfileFragment(),supportFragmentManager)
-                //titleNav = getString(R.string.profile)
             }
             R.id.nav_ride -> {
                 cantCreateRideWhenActive()

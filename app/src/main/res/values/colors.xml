@@ -11,6 +11,7 @@
         <color name="background">#EEEEEE</color>
         <color name="colorBackgroundTextCard">#56404040</color>
         <color name="dangerColor">#b71c1c</color>
+        <color name="successColor">#4caf50</color>
         <color name="colorCancelPrimary">#F44336</color>
         <color name="colorCancelDark">#D32F2F</color>
         <color name="myBubble">#b3e5fc</color>

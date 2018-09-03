@@ -28,7 +28,7 @@ import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.MapDrawHelper
 import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.model.Ride
-import com.ridelineTeam.application.rideline.model.enums.Status
+import com.ridelineTeam.application.rideline.util.enums.Status
 import es.dmoral.toasty.Toasty
 
 
@@ -174,7 +174,7 @@ class RideDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         startActivity(callIntent)
     }
 
-    fun initNavigation(ride: Ride, activity: Activity) {
+    private fun initNavigation(ride: Ride, activity: Activity) {
         val uri = Uri.parse("google.navigation:q=" + ride.destination)
         val mapIntent = Intent(Intent.ACTION_VIEW, uri)
         mapIntent.setClassName("com.google.android.apps.maps",
@@ -182,7 +182,7 @@ class RideDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         activity.startActivity(mapIntent)
     }
 
-    fun expand(v: View, duration: Int, targetHeight: Int) {
+    private fun expand(v: View, duration: Int, targetHeight: Int) {
 
         val prevHeight = v.height
 

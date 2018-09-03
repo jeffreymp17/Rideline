@@ -15,7 +15,7 @@ import com.ridelineTeam.application.rideline.MainActivity.Companion.userId
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.RideAdapter
 import com.ridelineTeam.application.rideline.model.Community
-import com.ridelineTeam.application.rideline.model.enums.Status
+import com.ridelineTeam.application.rideline.util.enums.Status
 import com.ridelineTeam.application.rideline.util.files.RIDES
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 

@@ -28,7 +28,7 @@ import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.model.Community
 import com.ridelineTeam.application.rideline.model.Ride
 import com.ridelineTeam.application.rideline.model.User
-import com.ridelineTeam.application.rideline.model.enums.Status
+import com.ridelineTeam.application.rideline.util.enums.Status
 import com.ridelineTeam.application.rideline.model.enums.Type
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
@@ -71,11 +71,11 @@ class RideFragment : Fragment() {
     private lateinit var radioGroupType: RadioRealButtonGroup
     private lateinit var materialDialog: MaterialDialog
     private lateinit var btnRestrictions: Button
-    private lateinit var arrayOfRestrictions: ArrayList<Any>
+    private lateinit var arrayOfRestrictions: ArrayList<Restrictions>
     private lateinit var arrayOfPosition: ArrayList<Int>
 
     private lateinit var roundTripItem:CheckBox
-    private var country = "";
+    private var country = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -216,7 +216,7 @@ class RideFragment : Fragment() {
     private fun multiSelectDialog() {
         val indicesLocal = ArrayList<Int>()
         val enumRestrictions = ArrayList<Restrictions>()
-        val restrictionsLocal = ArrayList<Any>()
+        val restrictionsLocal = ArrayList<Restrictions>()
         enumRestrictions.addAll(listOf(Restrictions.PET, Restrictions.FOOD, Restrictions.CHILD, Restrictions.SLEEP, Restrictions.FOOD))
         val res = resources.getStringArray(R.array.restrictions_array)
         val restrictions = ArrayList<Any>()

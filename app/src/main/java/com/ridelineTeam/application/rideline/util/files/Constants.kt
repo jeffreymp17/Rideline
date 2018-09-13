@@ -30,3 +30,6 @@ val COUNTRIES = arrayOf(
         "Trinidad and Tobago (TT)",
         "United States (US)","Uruguay (UY)",
         "Venezuela (VE)")
+//NETWORK STATE
+const val CONNECTED="CONNECTED"
+const val DISCONNECTED="DISCONNECTED"

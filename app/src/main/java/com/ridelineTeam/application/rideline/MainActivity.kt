@@ -1,20 +1,26 @@
 package com.ridelineTeam.application.rideline
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -23,6 +29,7 @@ import com.ridelineTeam.application.rideline.model.User
 import com.ridelineTeam.application.rideline.util.files.ACCESS_FINE_LOCATION
 import com.ridelineTeam.application.rideline.util.files.FIREBASE_SERVER_DEV
 import com.ridelineTeam.application.rideline.util.files.USERS
+import com.ridelineTeam.application.rideline.util.helpers.ConnectivityHelper
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.view.AboutActivity
 import com.ridelineTeam.application.rideline.view.ChatCommunityActivity
@@ -31,6 +38,9 @@ import com.ridelineTeam.application.rideline.view.fragment.*
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import org.pixsee.fcm.Sender
 
@@ -44,50 +54,42 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var email: TextView
     private lateinit var image: CircleImageView
     private lateinit var navigationView: NavigationView
-    //private lateinit var searchView:MaterialSearchView
+    private lateinit var manager: LocationManager
+    private var connectivityDisposable: Disposable? = null
+    private var snack: Snackbar? = null
 
     companion object {
         val refreshedToken = FirebaseInstanceId.getInstance().token!!
         val fmc: Sender = Sender(FIREBASE_SERVER_DEV)
-        val userId=FirebaseAuth.getInstance().currentUser!!.uid
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
         const val PERMISSION_REQUEST_ACCESS_FINE_LOCATION = 100
-       const  val REQUEST_LOCATION = 199
+        const val PLACE_PICKER_REQUEST = 3
+
 
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if (intent.extras!= null){
-            for (key in intent.extras.keySet()){
-                if (key == "communityChat"){
+        manager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        if (intent.extras != null) {
+            for (key in intent.extras.keySet()) {
+                if (key == "communityChat") {
                     startActivity(Intent(this, ChatCommunityActivity::class.java))
                 }
 
             }
         }
-        var displayingFragment:Fragment = HomeFragment()
-        if(intent.getStringExtra("fragment")!=null){
-            val fragmentName =intent.getStringExtra("fragment")
+        var displayingFragment: Fragment = HomeFragment()
+        if (intent.getStringExtra("fragment") != null) {
+            val fragmentName = intent.getStringExtra("fragment")
             displayingFragment = getDisplayingFragment(fragmentName)
         }
         init(displayingFragment)
-
-        /*try{
-            if (AppStatus.getInstance(applicationContext).isOnline) {}
-         }catch (e:ExceptionInInitializerError){
-            val snackbar = Snackbar.make(window.decorView,
-                            getString(R.string.errorMessage),
-                            Snackbar.LENGTH_INDEFINITE)
-                            .setAction(getString(R.string.retry), {
-              init()
-            })
-          snackbar.show()
-          }*/
-
     }
 
-    private fun init(displayingFragment:Fragment) {
+    private fun init(displayingFragment: Fragment) {
         toolbar = findViewById(R.id.toolbar)
         user = FirebaseAuth.getInstance().currentUser!!
 
@@ -102,7 +104,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         userName = navigationView.getHeaderView(0).findViewById(R.id.nav_complete_name)
         email = navigationView.getHeaderView(0).findViewById(R.id.email_nav)
         image = navigationView.getHeaderView(0).findViewById(R.id.nav_image)
-        FragmentHelper.changeFragment(displayingFragment,supportFragmentManager)
+        FragmentHelper.changeFragment(displayingFragment, supportFragmentManager)
         supportFragmentManager.addOnBackStackChangedListener {
             val fragment = supportFragmentManager.findFragmentById(R.id.containerMain)
             if (fragment != null) {
@@ -110,11 +112,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        Log.d("TOKEN", "MESSAGE:$refreshedToken")
         sendRegistrationToServer(refreshedToken, id)
         getUserProfile()
+
     }
 
+    private fun currentPosition() {
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            FragmentHelper.startGPS(this@MainActivity)
+
+        }
+    }
 
     override fun onBackPressed() {
         when {
@@ -129,19 +137,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_home -> {
-                FragmentHelper.changeFragment(HomeFragment(),supportFragmentManager)
+                FragmentHelper.changeFragment(HomeFragment(), supportFragmentManager)
             }
             R.id.nav_profile -> {
-                FragmentHelper.changeFragment(ProfileFragment(),supportFragmentManager)
+                FragmentHelper.changeFragment(ProfileFragment(), supportFragmentManager)
             }
             R.id.nav_ride -> {
                 cantCreateRideWhenActive()
             }
             R.id.nav_community -> {
-                if(userObject!!.communities.isEmpty()){
-                    FragmentHelper.changeFragment(CommunitiesFragment(),supportFragmentManager)
-                }else{
-                    FragmentHelper.changeFragment(CommunityFragment(),supportFragmentManager)
+                if (userObject!!.communities.isEmpty()) {
+                    FragmentHelper.changeFragment(CommunitiesFragment(), supportFragmentManager)
+                } else {
+                    FragmentHelper.changeFragment(CommunityFragment(), supportFragmentManager)
                 }
 
             }
@@ -171,8 +179,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
     }
-
-
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -233,13 +239,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val user = dataSnapshot.getValue(User::class.java)
                 if (user!!.activeRide == null) {
-                    FragmentHelper.changeFragment(RideFragment(),supportFragmentManager)
+                    FragmentHelper.changeFragment(RideFragment(), supportFragmentManager)
                 } else {
                     Toasty.info(this@MainActivity, getString(R.string.rideActiveMessage), Toast.LENGTH_SHORT).show()
                 }
             }
         })
     }
+
     private fun updateTittle(fragment: Fragment) {
         val fragmentName = fragment.javaClass.name
         when (fragmentName) {
@@ -249,7 +256,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             HomeFragment::class.java.name -> title = getString(R.string.app_name)
         }
     }
-    private fun getDisplayingFragment(fragmentName: String):Fragment {
+
+    private fun getDisplayingFragment(fragmentName: String): Fragment {
         return when (fragmentName) {
             ProfileFragment::class.java.name -> ProfileFragment()
             RideFragment::class.java.name -> RideFragment()
@@ -278,6 +286,39 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val dialog: AlertDialog = builder.create()
         // Display the alert dialog on app interface
         dialog.show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        connectivityDisposable = ReactiveNetwork
+                .observeNetworkConnectivity(applicationContext)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    if (it.available()) {
+                    } else {
+                        messageConnectionState(it.available())
+                    }
+                    Log.d("internet state", "Available:${it.available()}-->State:${it.state()}")
+                }
+
+    }
+    private fun messageConnectionState(available: Boolean) {
+        if (!available) {
+            drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            snack = Snackbar.make(window.decorView, // Parent view
+                    "No connection...", // Message to show
+                    Snackbar.LENGTH_INDEFINITE // How long to display the message.
+            ).setAction("Try again", {
+                if (ConnectivityHelper.isOnline()) {
+                    drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN)
+                }
+                Log.d("status", "ping:${ConnectivityHelper.isOnline()}")
+            })
+            snack!!.show()
+        } else {
+
+        }
     }
 
 

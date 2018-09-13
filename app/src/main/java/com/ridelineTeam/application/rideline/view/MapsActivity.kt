@@ -1,6 +1,9 @@
 package com.ridelineTeam.application.rideline.view
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -9,6 +12,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Looper
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -19,19 +23,25 @@ import android.widget.Button
 import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException
+import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
+import com.google.android.gms.location.LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
+import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
 import com.google.android.gms.location.places.AutocompleteFilter
 import com.google.android.gms.location.places.Places
+import com.google.android.gms.location.places.ui.PlaceAutocomplete
+import com.google.android.gms.location.places.ui.PlacePicker
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
+import com.google.android.gms.tasks.Task
 import com.google.firebase.database.*
 import com.google.maps.model.TravelMode
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.MainActivity.Companion.PERMISSION_REQUEST_ACCESS_FINE_LOCATION
-import com.ridelineTeam.application.rideline.MainActivity.Companion.REQUEST_LOCATION
-import com.ridelineTeam.application.rideline.Manifest
+import com.ridelineTeam.application.rideline.MainActivity.Companion.PLACE_PICKER_REQUEST
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.PlaceAutocompleteAdapter
 import com.ridelineTeam.application.rideline.model.Ride
@@ -62,11 +72,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
     private val overview = 0
     private lateinit var ride: Ride
     private lateinit var materialDialog: MaterialDialog
-    private var locationListener: LocationListener? = null
+    private lateinit var locationCallback: LocationCallback
     private lateinit var placeAutocompleteAdapter: PlaceAutocompleteAdapter
     private lateinit var mGoogleApiClient: GoogleApiClient
-
-
+    private lateinit var lastLocation: Location
     private var latLongBounds = LatLngBounds(
             LatLng((-40).toDouble(), (-168).toDouble()),
             LatLng((71).toDouble(), (136).toDouble())
@@ -98,47 +107,62 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         btnShowRoute = findViewById(R.id.btn_ShowRoute)
         btnCreate = findViewById(R.id.btn_createRide)
         mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        fusedLocationClient = getFusedLocationProviderClient(this)
         loadingBar = findViewById(R.id.loading)
         database = FirebaseDatabase.getInstance()
         databaseReference = database.reference.child(RIDES).push()
         Log.d("gettingObject", ride.toString())
         Log.d("MY COMMUNITY::", "" + getCommunityForNotification(ride.community))
+        // currentPosition()
         manager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
-
+        getPermissionLocation()
     }
 
-    private fun currentPosition() {
+    /* private fun currentPosition() {
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             FragmentHelper.startGPS(this@MapsActivity)
 
         } else {
-            getLocation()
+          locationRequest()
         }
+    }*/
+
+    override fun onDestroy() {
+        super.onDestroy()
+        //  stopLocationUpdates()
+        Log.d("STATE", "onDestroy")
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Log.d("STARTGPS", "onActivityResult() called with: requestCode = [$requestCode], resultCode = [$resultCode], data = [$data]");
-        if (resultCode == Activity.RESULT_OK) {
-            Log.d("STARTGPS", "ENBLED")
-            currentPosition()
-        } else if (resultCode == Activity.RESULT_CANCELED) {
-            Toasty.warning(applicationContext,getString( R.string.permissionGPS), Toast.LENGTH_LONG, true).show()
-
-        }
+    private fun stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(
+                locationCallback)
     }
+
+    /*   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+           super.onActivityResult(requestCode, resultCode, data)
+           Log.d("STARTGPS", "onActivityResult() called with: requestCode = [$requestCode], resultCode = [$resultCode], data = [$data]");
+           if (resultCode == Activity.RESULT_OK) {
+               Log.d("STARTGPS", "ENBLED")
+              /// permissionGranted=true
+              // getLocation()
+               startLocationUpdates()
+
+           } else if (resultCode == Activity.RESULT_CANCELED) {
+               Toasty.warning(applicationContext, getString(R.string.permissionGPS), Toast.LENGTH_LONG, true).show()
+
+           }
+       }*/
 
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
+
     }
 
     override fun onStart() {
         super.onStart()
         mapFragment.getMapAsync(this)
-        currentPosition()
+        /// startLocationUpdates()
         txtOrigin.setAdapter(placeAutocompleteAdapter)
         txtDestination.setAdapter(placeAutocompleteAdapter)
         btnShowRoute.setOnClickListener { _ ->
@@ -153,31 +177,32 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
             }
         }
         btnCreate.setOnClickListener({ _ ->
-            if (validateFields()) {
-                showProgressBar()
-                ride.origin = txtOrigin.text.toString()
-                ride.destination = txtDestination.text.toString()
-                ride.id = databaseReference.key!!
-                databaseReference.setValue(ride).addOnSuccessListener {
-                    getCommunityUsers()
-                    databaseReference.database.reference
-                            .child(USERS)
-                            .child(ride.user)
-                            .child("activeRide")
-                            .setValue(ride).addOnCompleteListener {
-                                if (it.isComplete) {
-                                    databaseReference.database.reference.child(USERS)
-                                            .child(ride.user)
-                                            .child("taked").setValue(1)
-                                    startActivity(Intent(baseContext, MainActivity::class.java))
-                                    finish()
-                                }
-                            }.addOnFailureListener {
-                                Toasty.error(applicationContext, "Error when save active ride", Toast.LENGTH_SHORT, true).show()
-                            }
-                }
-                hideProgressBar()
-            }
+             if (validateFields()) {
+                 showProgressBar()
+                 ride.origin = txtOrigin.text.toString()
+                 ride.destination = txtDestination.text.toString()
+                 ride.id = databaseReference.key!!
+                 databaseReference.setValue(ride).addOnSuccessListener {
+                     getCommunityUsers()
+                     databaseReference.database.reference
+                             .child(USERS)
+                             .child(ride.user)
+                             .child("activeRide")
+                             .setValue(ride).addOnCompleteListener {
+                                 if (it.isComplete) {
+                                     databaseReference.database.reference.child(USERS)
+                                             .child(ride.user)
+                                             .child("taked").setValue(1)
+                                     startActivity(Intent(baseContext, MainActivity::class.java))
+                                     finish()
+                                 }
+                             }.addOnFailureListener {
+                                 Toasty.error(applicationContext, "Error when save active ride", Toast.LENGTH_SHORT, true).show()
+                             }
+                 }
+                 hideProgressBar()
+             }
+
         })
     }
 
@@ -195,8 +220,61 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         mMap = googleMap
         MapDrawHelper.setupGoogleMapScreenSettings(mMap)
         loadingBar.visibility = View.GONE
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                currentPositionMarker()
+            }
+        } else {
+            currentPositionMarker()
 
+        }
+    }
 
+    private fun loadPlacePicker() {
+        val builder = PlacePicker.IntentBuilder()
+        try {
+            startActivityForResult(builder.build(this@MapsActivity), PLACE_PICKER_REQUEST)
+        } catch (e: GooglePlayServicesRepairableException) {
+            e.printStackTrace()
+        } catch (e: GooglePlayServicesNotAvailableException) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                val place = PlacePicker.getPlace(this, data)
+                var addressText = place.name.toString()
+                addressText += "\n" + place.address.toString()
+
+                //   placeMarkerOnMap(place.latLng)
+            }
+        }
+    }
+
+    private fun currentPositionMarker() {
+        if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
+                if (location != null) {
+                    lastLocation = location
+                    with(mMap) {
+                        isMyLocationEnabled = true
+                        addMarker(MarkerOptions()
+                                .position(LatLng(location!!.latitude, location!!.longitude))
+                                .title(getString(R.string.your_position)).icon(BitmapDescriptorFactory.defaultMarker(207f)))
+                        val latLng = LatLng(location.latitude, location.longitude)
+                        var cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
+                        animateCamera(cameraUpdate)
+                        Log.d("HERE", "I AM HERE")
+
+                    }
+                }
+            }
+        }
     }
 
 
@@ -251,7 +329,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         })
     }
 
-
     private fun getTokens(list: ArrayList<String>) {
         getCommunityForNotification(ride.community)
         val ref: DatabaseReference = database.reference
@@ -303,52 +380,116 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         })
     }
 
-    private fun getLocation() =
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                        this,
-                        arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                        PERMISSION_REQUEST_ACCESS_FINE_LOCATION)
+    private fun getPermissionLocation() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                    PERMISSION_REQUEST_ACCESS_FINE_LOCATION)
+            return
+        }
+    }
+    //else {
+    //  startLocationUpdates()
+    /*     locationListener = object : LocationListener {
+             override fun onLocationChanged(location: Location?) {
+                 with(mMap) {
+                     addMarker(MarkerOptions()
+                             .position(LatLng(location!!.latitude, location!!.longitude))
+                             .title("You are Here").icon(BitmapDescriptorFactory.defaultMarker(207f)))
+                     val latLng = LatLng(location.latitude, location.longitude)
+                     var cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
+                     animateCamera(cameraUpdate)
+                     manager.removeUpdates(locationListener)
+                     Log.d("HERE", "I AM HERE")
 
-            } else {
-                locationListener = object : LocationListener {
-                    override fun onLocationChanged(location: Location?) {
+                 }
+             }
+
+             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+             }
+
+             override fun onProviderEnabled(provider: String?) {
+             }
+
+             override fun onProviderDisabled(provider: String?) {
+             }
+
+         }
+
+         manager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 0, 0f, locationListener)
+*/
+
+    //}
+
+    private fun startLocationUpdates() {
+
+        if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.requestLocationUpdates(locationRequest(),
+                    locationCallback, Looper.myLooper())
+
+        }
+
+
+    }
+
+    private fun locationRequest(): LocationRequest {
+        var locationRequest = LocationRequest()
+        if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            with(locationRequest) {
+                priority = PRIORITY_BALANCED_POWER_ACCURACY
+                fastestInterval = 1000
+                interval = 1000
+                maxWaitTime = 1000
+
+            }
+            locationCallback = object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult?) {
+                    locationResult ?: return
+                    for (location in locationResult.locations) {
                         with(mMap) {
                             addMarker(MarkerOptions()
                                     .position(LatLng(location!!.latitude, location!!.longitude))
-                                    .title("You are Here").icon(BitmapDescriptorFactory.defaultMarker(207f)))
+                                    .title(getString(R.string.your_position)).icon(BitmapDescriptorFactory.defaultMarker(207f)))
                             val latLng = LatLng(location.latitude, location.longitude)
                             var cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
                             animateCamera(cameraUpdate)
-                            manager.removeUpdates(locationListener)
                             Log.d("HERE", "I AM HERE")
 
                         }
+                        Toast.makeText(applicationContext, "HERE:${location.latitude}${location.latitude}", Toast.LENGTH_LONG).show()
+                        Looper.myLooper()
+                        // ...
                     }
-
-                    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-                    }
-
-                    override fun onProviderEnabled(provider: String?) {
-                    }
-
-                    override fun onProviderDisabled(provider: String?) {
-                    }
-
                 }
-
-                manager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000*0, 0f, locationListener)
-
-
-
             }
+        }
+        return locationRequest
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        //  stopLocationUpdates()
+        Log.d("STATE", "onPause")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // startLocationUpdates()
+        Log.d("STATE", "onResume")
+    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_ACCESS_FINE_LOCATION) {
             when (grantResults[0]) {
-                PackageManager.PERMISSION_GRANTED -> getLocation()
+                PackageManager.PERMISSION_GRANTED -> {
+                    //  startLocationUpdates()
+                }
                 PackageManager.PERMISSION_DENIED -> {
                     Toasty.warning(applicationContext, "Es necesario el permiso para mejorar la experiencia", Toast.LENGTH_LONG, true).show()
                 }
@@ -356,5 +497,4 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         }
 
     }
-
 }

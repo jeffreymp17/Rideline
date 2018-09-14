@@ -118,40 +118,73 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         getPermissionLocation()
     }
 
-    /* private fun currentPosition() {
-        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            FragmentHelper.startGPS(this@MapsActivity)
 
-        } else {
-          locationRequest()
-        }
-    }*/
 
     override fun onDestroy() {
         super.onDestroy()
         //  stopLocationUpdates()
         Log.d("STATE", "onDestroy")
     }
+    /*
+       private fun stopLocationUpdates() {
+           fusedLocationClient.removeLocationUpdates(
+                   locationCallback)
+       }
 
-    private fun stopLocationUpdates() {
-        fusedLocationClient.removeLocationUpdates(
-                locationCallback)
-    }
+         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+              super.onActivityResult(requestCode, resultCode, data)
+              Log.d("STARTGPS", "onActivityResult() called with: requestCode = [$requestCode], resultCode = [$resultCode], data = [$data]");
+              if (resultCode == Activity.RESULT_OK) {
+                  Log.d("STARTGPS", "ENBLED")
+                 /// permissionGranted=true
+                 // getLocation()
+                  startLocationUpdates()
 
-    /*   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-           super.onActivityResult(requestCode, resultCode, data)
-           Log.d("STARTGPS", "onActivityResult() called with: requestCode = [$requestCode], resultCode = [$resultCode], data = [$data]");
-           if (resultCode == Activity.RESULT_OK) {
-               Log.d("STARTGPS", "ENBLED")
-              /// permissionGranted=true
-              // getLocation()
-               startLocationUpdates()
+              } else if (resultCode == Activity.RESULT_CANCELED) {
+                  Toasty.warning(applicationContext, getString(R.string.permissionGPS), Toast.LENGTH_LONG, true).show()
 
-           } else if (resultCode == Activity.RESULT_CANCELED) {
-               Toasty.warning(applicationContext, getString(R.string.permissionGPS), Toast.LENGTH_LONG, true).show()
+              }
+          }*/
+    /* private fun currentPosition() {
+           if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+               FragmentHelper.startGPS(this@MapsActivity)
 
+           } else {
+             locationRequest()
            }
        }*/
+    //else {
+    //  startLocationUpdates()
+    /*     locationListener = object : LocationListener {
+             override fun onLocationChanged(location: Location?) {
+                 with(mMap) {
+                     addMarker(MarkerOptions()
+                             .position(LatLng(location!!.latitude, location!!.longitude))
+                             .title("You are Here").icon(BitmapDescriptorFactory.defaultMarker(207f)))
+                     val latLng = LatLng(location.latitude, location.longitude)
+                     var cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
+                     animateCamera(cameraUpdate)
+                     manager.removeUpdates(locationListener)
+                     Log.d("HERE", "I AM HERE")
+
+                 }
+             }
+
+             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+             }
+
+             override fun onProviderEnabled(provider: String?) {
+             }
+
+             override fun onProviderDisabled(provider: String?) {
+             }
+
+         }
+
+         manager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 0, 0f, locationListener)
+*/
+
+    //}
 
     override fun onBackPressed() {
         super.onBackPressed()
@@ -390,38 +423,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
             return
         }
     }
-    //else {
-    //  startLocationUpdates()
-    /*     locationListener = object : LocationListener {
-             override fun onLocationChanged(location: Location?) {
-                 with(mMap) {
-                     addMarker(MarkerOptions()
-                             .position(LatLng(location!!.latitude, location!!.longitude))
-                             .title("You are Here").icon(BitmapDescriptorFactory.defaultMarker(207f)))
-                     val latLng = LatLng(location.latitude, location.longitude)
-                     var cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
-                     animateCamera(cameraUpdate)
-                     manager.removeUpdates(locationListener)
-                     Log.d("HERE", "I AM HERE")
-
-                 }
-             }
-
-             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-             }
-
-             override fun onProviderEnabled(provider: String?) {
-             }
-
-             override fun onProviderDisabled(provider: String?) {
-             }
-
-         }
-
-         manager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 0, 0f, locationListener)
-*/
-
-    //}
 
     private fun startLocationUpdates() {
 

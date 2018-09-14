@@ -303,21 +303,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
 
     }
+
     private fun messageConnectionState(available: Boolean) {
         if (!available) {
             drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             snack = Snackbar.make(window.decorView, // Parent view
-                    "No connection...", // Message to show
+                    getString(R.string.connectonStateError),// Message to show
                     Snackbar.LENGTH_INDEFINITE // How long to display the message.
-            ).setAction("Try again", {
+            ).setAction(getString(R.string.try_again), {
                 if (ConnectivityHelper.isOnline()) {
-                    drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN)
+                    Toasty.success(applicationContext, getString(R.string.connectionState), Toast.LENGTH_LONG).show()
+                    drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+                } else {
+                    Toasty.error(applicationContext, getString(R.string.connectonStateError), Toast.LENGTH_LONG).show()
+
                 }
                 Log.d("status", "ping:${ConnectivityHelper.isOnline()}")
             })
             snack!!.show()
-        } else {
-
         }
     }
 

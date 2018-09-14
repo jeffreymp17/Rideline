@@ -227,6 +227,9 @@
     <string name="rejected_request">Solicitud rechazada</string>
     <string name="passenger_removed">Pasajero removido</string>
     <string name="your_position">You are here</string>
+    <string name="connectionState">Conecteda</string>
+    <string name="connectonStateError">Sin conexión</string>
+    <string name="try_again">Conectarse</string>
 
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">

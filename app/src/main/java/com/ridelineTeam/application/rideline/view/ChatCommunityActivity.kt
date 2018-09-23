@@ -3,6 +3,7 @@ package com.ridelineTeam.application.rideline.view
 import android.app.Activity
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.NetworkInfo
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
@@ -17,6 +18,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -29,9 +31,15 @@ import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
 import com.ridelineTeam.application.rideline.util.files.COMMUNITY_USERS
 import com.ridelineTeam.application.rideline.util.files.TOKEN
 import com.ridelineTeam.application.rideline.util.files.USERS
+import com.ridelineTeam.application.rideline.util.helpers.ConnectivityHelper
+import com.ridelineTeam.application.rideline.util.helpers.ConnectivityHelper.Companion.messageConnectionState
+import com.ridelineTeam.application.rideline.util.helpers.ConnectivityHelper.Companion.safelyDispose
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
 import es.dmoral.toasty.Toasty
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 class ChatCommunityActivity : AppCompatActivity() {
@@ -47,6 +55,7 @@ class ChatCommunityActivity : AppCompatActivity() {
     private lateinit var subtitleTextView:TextView
     private var user: FirebaseUser? = null
     private lateinit var toolbar: android.support.v7.widget.Toolbar
+    private lateinit var connectivityDisposable: Disposable
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -253,5 +262,22 @@ class ChatCommunityActivity : AppCompatActivity() {
                 return Transaction.success(mutableData)
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+      connectivityDisposable= ConnectivityHelper.networkConnectionState(applicationContext,this@ChatCommunityActivity)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        safelyDispose(connectivityDisposable)
+
+
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
     }
 }

@@ -29,7 +29,9 @@ import com.ridelineTeam.application.rideline.util.helpers.MapDrawHelper
 import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.model.Ride
 import com.ridelineTeam.application.rideline.util.enums.Status
+import com.ridelineTeam.application.rideline.util.helpers.ConnectivityHelper
 import es.dmoral.toasty.Toasty
+import io.reactivex.disposables.Disposable
 
 
 class RideDetailActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -50,6 +52,7 @@ class RideDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var number: String
     private lateinit var btnNavigation: FloatingActionButton
     private lateinit var btnCall: FloatingActionButton
+    private lateinit var connectivityDisposable: Disposable
     private var ride = Ride()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -195,6 +198,17 @@ class RideDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         valueAnimator.interpolator = DecelerateInterpolator()
         valueAnimator.duration = duration.toLong()
         valueAnimator.start()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        connectivityDisposable=ConnectivityHelper.networkConnectionState(applicationContext,this@RideDetailActivity)
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ConnectivityHelper.safelyDispose(connectivityDisposable)
     }
 
 

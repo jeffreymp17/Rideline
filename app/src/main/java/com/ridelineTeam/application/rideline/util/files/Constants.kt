@@ -30,3 +30,5 @@ val COUNTRIES = arrayOf(
         "Trinidad and Tobago (TT)",
         "United States (US)","Uruguay (UY)",
         "Venezuela (VE)")
+//NETWORK STATE
+const val COMMAND_INTERNET="/system/bin/ping -c 1 8.8.8.8"

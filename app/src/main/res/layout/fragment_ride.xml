@@ -267,7 +267,7 @@
                     <Button
                         android:id="@+id/btn_restrictions"
                         android:layout_width="match_parent"
-                        android:text="Restrictions"
+                        android:text="@string/restrictions"
                         android:theme="@style/RaisedButtonDark"
                         android:layout_height="wrap_content" />
                     <Button

@@ -231,6 +231,10 @@
     <string name="rejected_request_message">has rejected your ride request</string>
     <string name="rejected_request">Rejected request</string>
     <string name="passenger_removed">Passenger removed</string>
+    <string name="your_position">You are here</string>
+    <string name="connectionState">Connected</string>
+    <string name="connectonStateError">Without connecton</string>
+    <string name="try_again">Try again</string>
 
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">

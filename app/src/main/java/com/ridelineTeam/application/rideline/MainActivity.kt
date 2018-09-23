@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
@@ -55,9 +56,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var image: CircleImageView
     private lateinit var navigationView: NavigationView
     private lateinit var manager: LocationManager
-    private var connectivityDisposable: Disposable? = null
-    private var snack: Snackbar? = null
-
+    private lateinit var connectivityDisposable: Disposable
+    private lateinit var snack:Snackbar
     companion object {
         val refreshedToken = FirebaseInstanceId.getInstance().token!!
         val fmc: Sender = Sender(FIREBASE_SERVER_DEV)
@@ -111,10 +111,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 updateTittle(fragment)
             }
         }
+        currentPosition()
 
         sendRegistrationToServer(refreshedToken, id)
         getUserProfile()
-
+        snack = Snackbar.make(findViewById(android.R.id.content), // Parent view
+                getString(R.string.connectonStateError),// Message to show
+                Snackbar.LENGTH_INDEFINITE // How long to display the message.
+        )
     }
 
     private fun currentPosition() {
@@ -212,7 +216,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     userName.text = fullName
                     email.text = userObject!!.email
                     if (userObject!!.pictureUrl.isEmpty()) {
-                        Picasso.with(applicationContext).load(R.drawable.if_profle_1055000).fit().into(image)
+                        Picasso.with(applicationContext).load(R.drawable.avatar).fit().into(image)
 
                     } else {
                         Picasso.with(applicationContext).load(userObject!!.pictureUrl).fit().into(image)
@@ -290,40 +294,38 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
-        connectivityDisposable = ReactiveNetwork
+              connectivityDisposable=ReactiveNetwork
                 .observeNetworkConnectivity(applicationContext)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    if (it.available()) {
-                    } else {
-                        messageConnectionState(it.available())
+                    if (it.state()!= NetworkInfo.State.CONNECTED||!ConnectivityHelper.connection(applicationContext)) {
+                          lostConnection()
+                    }else{
+                        returnConnection()
                     }
-                    Log.d("internet state", "Available:${it.available()}-->State:${it.state()}")
                 }
 
     }
 
-    private fun messageConnectionState(available: Boolean) {
-        if (!available) {
-            drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            snack = Snackbar.make(window.decorView, // Parent view
-                    getString(R.string.connectonStateError),// Message to show
-                    Snackbar.LENGTH_INDEFINITE // How long to display the message.
-            ).setAction(getString(R.string.try_again), {
-                if (ConnectivityHelper.isOnline()) {
-                    Toasty.success(applicationContext, getString(R.string.connectionState), Toast.LENGTH_LONG).show()
-                    drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-                } else {
-                    Toasty.error(applicationContext, getString(R.string.connectonStateError), Toast.LENGTH_LONG).show()
+    private fun returnConnection() {
+        this.snack!!.dismiss()
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+    }
 
-                }
-                Log.d("status", "ping:${ConnectivityHelper.isOnline()}")
-            })
-            snack!!.show()
-        }
+    override fun onPause() {
+        super.onPause()
+         ConnectivityHelper.safelyDispose(connectivityDisposable)
+    }
+
+    private fun lostConnection() {
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        snack!!.show()
+    }
     }
 
 
-}
+
+
+
 

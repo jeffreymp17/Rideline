@@ -224,22 +224,17 @@ class RideFragment : Fragment() {
         MaterialDialog.Builder(context!!)
                 .title(R.string.restrictions)
                 .items(restrictions)
-                .itemsCallbackMultiChoice(arrayOfPosition.toTypedArray(), { dialog, which, text ->
+                .itemsCallbackMultiChoice(arrayOfPosition.toTypedArray(), { _, which, _ ->
                     for (i in which) {
-                        Log.d("IS", "MY:::$i-------->:$text")
-                        Log.d("DATA", "FROM EMUN${enumRestrictions[i]}")
                         restrictionsLocal.add(enumRestrictions[i])
                         indicesLocal.add(i)
-                        Log.d("DATA", "ARRAY OF SELECTRED:$restrictionsLocal")
-                        Log.d("DATA", "ARRAY OF SELECTRED indix:$indicesLocal")
 
                     }
                     arrayOfPosition=indicesLocal
                     arrayOfRestrictions = restrictionsLocal
-                    Log.d("ARRAY GLOBAL", "ARRAY---------:$arrayOfRestrictions")
                     return@itemsCallbackMultiChoice true
                 }).positiveText("Ok")
-                .negativeText("Cancel").show()
+                .negativeText(resources.getString(R.string.cancel)).show()
     }
 
     private fun validateFields(): Boolean {

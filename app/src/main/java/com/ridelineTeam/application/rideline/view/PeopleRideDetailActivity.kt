@@ -15,10 +15,12 @@ import com.ridelineTeam.application.rideline.model.User
 import com.ridelineTeam.application.rideline.util.enums.Status
 import com.ridelineTeam.application.rideline.util.files.RIDES
 import com.ridelineTeam.application.rideline.util.files.USERS
+import com.ridelineTeam.application.rideline.util.helpers.ConnectivityHelper
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
 import es.dmoral.toasty.Toasty
+import io.reactivex.disposables.Disposable
 
 class PeopleRideDetailActivity : AppCompatActivity() {
 
@@ -26,6 +28,7 @@ class PeopleRideDetailActivity : AppCompatActivity() {
     private lateinit var peopleRecycler: MultiSnapRecyclerView
     private lateinit var toolbar: android.support.v7.widget.Toolbar
     private lateinit var adapter: PeopleRideDetailAdapter.PeopleRideDetailAdapterRecycler
+    private lateinit var connectivityDisposable: Disposable
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -139,5 +142,16 @@ class PeopleRideDetailActivity : AppCompatActivity() {
                 }
              })
         }
+    }
+    override fun onResume() {
+        super.onResume()
+        connectivityDisposable= ConnectivityHelper.networkConnectionState(applicationContext,this@PeopleRideDetailActivity)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ConnectivityHelper.safelyDispose(connectivityDisposable)
+
+
     }
 }

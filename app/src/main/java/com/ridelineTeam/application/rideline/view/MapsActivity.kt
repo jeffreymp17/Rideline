@@ -1,16 +1,11 @@
 package com.ridelineTeam.application.rideline.view
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
-import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
 import android.support.v4.app.ActivityCompat
@@ -28,15 +23,12 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
 import com.google.android.gms.location.places.AutocompleteFilter
 import com.google.android.gms.location.places.Places
-import com.google.android.gms.location.places.ui.PlaceAutocomplete
 import com.google.android.gms.location.places.ui.PlacePicker
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.*
-import com.google.android.gms.tasks.Task
 import com.google.firebase.database.*
 import com.google.maps.model.TravelMode
 import com.ridelineTeam.application.rideline.MainActivity
@@ -47,11 +39,12 @@ import com.ridelineTeam.application.rideline.adapter.PlaceAutocompleteAdapter
 import com.ridelineTeam.application.rideline.model.Ride
 import com.ridelineTeam.application.rideline.model.enums.Type
 import com.ridelineTeam.application.rideline.util.files.*
-import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
+import com.ridelineTeam.application.rideline.util.helpers.ConnectivityHelper
 import com.ridelineTeam.application.rideline.util.helpers.MapDrawHelper
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
 import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
 import es.dmoral.toasty.Toasty
+import io.reactivex.disposables.Disposable
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
@@ -80,6 +73,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
             LatLng((-40).toDouble(), (-168).toDouble()),
             LatLng((71).toDouble(), (136).toDouble())
     )
+    private lateinit var connectivityDisposable: Disposable
+
 
     override fun onConnectionFailed(p0: ConnectionResult) {
         Toasty.error(this, p0.errorMessage.toString(), Toast.LENGTH_SHORT).show()
@@ -474,12 +469,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
 
     override fun onPause() {
         super.onPause()
+        ConnectivityHelper.safelyDispose(connectivityDisposable)
         //  stopLocationUpdates()
         Log.d("STATE", "onPause")
     }
 
     override fun onResume() {
         super.onResume()
+        connectivityDisposable=ConnectivityHelper.networkConnectionState(applicationContext,this@MapsActivity)
         // startLocationUpdates()
         Log.d("STATE", "onResume")
     }

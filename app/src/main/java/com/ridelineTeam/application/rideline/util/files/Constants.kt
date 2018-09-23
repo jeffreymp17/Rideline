@@ -31,5 +31,4 @@ val COUNTRIES = arrayOf(
         "United States (US)","Uruguay (UY)",
         "Venezuela (VE)")
 //NETWORK STATE
-const val CONNECTED="CONNECTED"
-const val DISCONNECTED="DISCONNECTED"
+const val COMMAND_INTERNET="/system/bin/ping -c 1 8.8.8.8"

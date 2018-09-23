@@ -17,7 +17,9 @@ import com.ridelineTeam.application.rideline.adapter.RideAdapter
 import com.ridelineTeam.application.rideline.model.Community
 import com.ridelineTeam.application.rideline.util.enums.Status
 import com.ridelineTeam.application.rideline.util.files.RIDES
+import com.ridelineTeam.application.rideline.util.helpers.ConnectivityHelper
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
+import io.reactivex.disposables.Disposable
 
 class CommunityRidesActivity : AppCompatActivity() {
 private lateinit var community:Community
@@ -27,6 +29,8 @@ private lateinit var community:Community
     private lateinit var recycler: RecyclerView
     private lateinit var noRidesText: TextView
     private lateinit var toolbar: android.support.v7.widget.Toolbar
+    private lateinit var connectivityDisposable: Disposable
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_community_rides)
@@ -78,5 +82,16 @@ private lateinit var community:Community
 
             else -> super.onOptionsItemSelected(item)
         }
+    }
+    override fun onResume() {
+        super.onResume()
+        connectivityDisposable= ConnectivityHelper.networkConnectionState(applicationContext,this@CommunityRidesActivity)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ConnectivityHelper.safelyDispose(connectivityDisposable)
+
+
     }
 }

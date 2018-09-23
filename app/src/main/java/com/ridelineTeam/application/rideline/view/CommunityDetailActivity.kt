@@ -25,9 +25,11 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
+import com.ridelineTeam.application.rideline.util.helpers.ConnectivityHelper
 import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
 import com.ridelineTeam.application.rideline.view.fragment.CommunityFragment
 import es.dmoral.toasty.Toasty
+import io.reactivex.disposables.Disposable
 import java.util.*
 
 
@@ -46,6 +48,8 @@ class CommunityDetailActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
     private lateinit var  btnLeaveCommunity:Button
     private lateinit var materialDialog: MaterialDialog
+    private lateinit var connectivityDisposable: Disposable
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -287,6 +291,17 @@ class CommunityDetailActivity : AppCompatActivity() {
     private fun hideProgressBar(){
         materialDialog.dismiss()
         PermissionHelper.enableScreenInteraction(window)
+    }
+    override fun onResume() {
+        super.onResume()
+        connectivityDisposable= ConnectivityHelper.networkConnectionState(applicationContext,this@CommunityDetailActivity)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ConnectivityHelper.safelyDispose(connectivityDisposable)
+
+
     }
 
 }

@@ -4,9 +4,11 @@ package com.ridelineTeam.application.rideline.view.fragment
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -38,7 +40,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import com.afollestad.materialdialogs.MaterialDialog
+import com.orhanobut.dialogplus.DialogPlus
+import com.orhanobut.dialogplus.DialogPlusBuilder
+import com.orhanobut.dialogplus.ViewHolder
+import com.ridelineTeam.application.rideline.model.RideCost
+import com.ridelineTeam.application.rideline.util.enums.Cost
 import com.ridelineTeam.application.rideline.util.enums.Restrictions
+import kotlinx.android.synthetic.main.custom_price.*
 import java.lang.reflect.Array
 
 
@@ -71,11 +79,19 @@ class RideFragment : Fragment() {
     private lateinit var radioGroupType: RadioRealButtonGroup
     private lateinit var materialDialog: MaterialDialog
     private lateinit var btnRestrictions: Button
+    private lateinit var radioGroupPrice:RadioRealButtonGroup
     private lateinit var arrayOfRestrictions: ArrayList<Restrictions>
     private lateinit var arrayOfPosition: ArrayList<Int>
-
-    private lateinit var roundTripItem:CheckBox
     private var country = ""
+    private lateinit var btnCustom:Button
+    private lateinit var btnCustomPrice: FloatingActionButton
+    private lateinit var btnFree:FloatingActionButton
+    private lateinit var txtCustomPrice:EditText
+    private lateinit var btnCloseBottomDialog:Button
+    private lateinit var customDialogView:View
+    private lateinit var priceLayout: RelativeLayout
+    private  var cost: RideCost?=null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,14 +125,51 @@ class RideFragment : Fragment() {
         radioGroupType = rootView.findViewById(R.id.radioGroupType)
         radioTypeRequest = rootView.findViewById(R.id.radioTypeRequest)
         radioTypeOffer = rootView.findViewById(R.id.radioTypeOffer)
-        roundTripItem = rootView.findViewById(R.id.roundTripItem)
+        btnCustom = rootView.findViewById(R.id.custom_cost)
         getCommunitiesIds()
         btnRestrictions.setOnClickListener {
             Log.d("her", "yes")
             multiSelectDialog()
 
         }
+
+        btnCustom.setOnClickListener {
+         dialogCustomPrice()
+        }
         return rootView
+    }
+
+    private fun dialogCustomPrice() {
+       val dialog:DialogPlus? = DialogPlus.newDialog(context)
+                .setContentHolder(ViewHolder(R.layout.custom_price))
+                .setExpanded(true)
+                .setCancelable(false)
+                .create()
+        dialog!!.footerView
+        dialog!!.show()
+        customDialogView = dialog.holderView
+        btnCustomPrice = customDialogView.findViewById(R.id.btnCustomPrice)
+        btnFree =customDialogView.findViewById(R.id.btnFree)
+        btnCloseBottomDialog=customDialogView.findViewById(R.id.btnCloseBottomDialog)
+        txtCustomPrice=customDialogView.findViewById(R.id.txtCustomPrice)
+        priceLayout=customDialogView.findViewById(R.id.insert_price_layout)
+        btnCustomPrice.setOnClickListener {
+            priceLayout.visibility=View.VISIBLE
+        }
+        btnFree.setOnClickListener {
+            priceLayout.visibility=View.GONE
+        }
+        btnCloseBottomDialog.setOnClickListener {
+            cost = if(!TextUtils.isEmpty(txtCustomPrice.text.toString())){
+                RideCost(Cost.PAID.toString(),java.lang.Double.parseDouble(txtCustomPrice.text.toString()))
+
+
+            }else{
+                RideCost(Cost.FREE.toString(),0.0)
+            }
+            Log.d("PRICE","RIDE:$cost")
+            dialog.dismiss()
+        }
     }
 
     override fun onResume() {
@@ -177,7 +230,6 @@ class RideFragment : Fragment() {
                     val ride = Ride(
                             date = dateRide.text.toString(),
                             riders = passenger,
-                            roundTrip = roundTripItem.isChecked,
                             status = Status.ACTIVE,
                             type = typeOfRide,
                             user = userId,
@@ -185,7 +237,9 @@ class RideFragment : Fragment() {
                             origin = "",
                             community = community,
                             time = time.text.toString(),
-                            restrictions = arrayOfRestrictions
+                            restrictions = arrayOfRestrictions,
+                            cost=cost
+
                     )
                     startActivity(Intent(context, MapsActivity::class.java)
                             .putExtra("rideObject", ride)
@@ -255,7 +309,10 @@ class RideFragment : Fragment() {
                 spinnerCommunitiesLayout.error = getString(R.string.requiredFieldMessage)
                 false
             }
-
+            cost==null->{
+                Toasty.warning(context!!,getString(R.string.required_payment),Toast.LENGTH_LONG).show()
+                false
+            }
             else -> true
         }
     }

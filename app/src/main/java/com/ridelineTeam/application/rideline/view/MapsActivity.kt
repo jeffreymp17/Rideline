@@ -39,10 +39,7 @@ import com.ridelineTeam.application.rideline.adapter.PlaceAutocompleteAdapter
 import com.ridelineTeam.application.rideline.model.Ride
 import com.ridelineTeam.application.rideline.model.enums.Type
 import com.ridelineTeam.application.rideline.util.files.*
-import com.ridelineTeam.application.rideline.util.helpers.ConnectivityHelper
-import com.ridelineTeam.application.rideline.util.helpers.MapDrawHelper
-import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper
-import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
+import com.ridelineTeam.application.rideline.util.helpers.*
 import es.dmoral.toasty.Toasty
 import io.reactivex.disposables.Disposable
 
@@ -307,6 +304,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
 
 
     private fun drawMap(origin: String, destination: String) {
+        InputsHelper.hideKeyboard(applicationContext,window.decorView.rootView)
         try {
             val results = MapDrawHelper.getDirectionsDetails(origin, destination,
                     TravelMode.DRIVING, getString(R.string.apiKey))

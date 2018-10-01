@@ -220,7 +220,6 @@
     <string name="timeRoute">Tiempo:</string>
     <string name="travelDistance">Distancia del viaje:</string>
     <string name="permissionGPS">Activa el GPS si quieres  mejorar la experiencia</string>
-    
     <string name="ride_passengers">Personas en tú ride</string>
     <string name="driver">Conductor</string>
     <string name="rejected_request_message">ha rechazado tu solicitud de ride</string>
@@ -230,6 +229,13 @@
     <string name="connectionState">Conecteda</string>
     <string name="connectonStateError">Sin conexión</string>
     <string name="try_again">Conectarse</string>
+    <string name="custom_price">Precio</string>
+    <string name="free_ride">Gratis</string>
+    <string name="choose_option">Seleccióne una opción</string>
+    <string name="free_or_paid">Gratis o pago</string>
+    <string name="more_options">Más opciónes</string>
+    <string name="required_payment">Required the payment method</string>
+    <string name="close">Cerrar</string>
 
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">

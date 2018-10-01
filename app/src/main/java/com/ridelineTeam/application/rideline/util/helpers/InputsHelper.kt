@@ -1,5 +1,6 @@
 package com.ridelineTeam.application.rideline.util.helpers
 
+import android.content.Context
 import android.content.res.Resources
 import android.support.design.widget.TextInputLayout
 import android.text.Editable
@@ -7,6 +8,9 @@ import android.text.TextWatcher
 import com.ridelineTeam.application.rideline.R
 import android.util.Patterns
 import java.util.regex.Pattern
+import android.content.Context.INPUT_METHOD_SERVICE
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 
 
 class InputsHelper {
@@ -136,6 +140,11 @@ class InputsHelper {
         fun isPhoneNumber(text:String):Boolean{
             val patterns = Pattern.compile("^[0-9]{8}$")
             return !patterns.matcher(text.trim()).matches()
+        }
+
+        fun hideKeyboard(context: Context, mView: View) {
+            val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(mView.windowToken, 0)
         }
     }
 }

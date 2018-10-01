@@ -122,17 +122,7 @@
                     android:layout_marginTop="@dimen/white_space"
                     android:orientation="vertical">
 
-                    <CheckBox
-                        android:id="@+id/roundTripItem"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/roundTrip"
-                        android:textSize="20sp"
-                        android:layout_gravity="end"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:textColor="@color/primaryText"/>
+
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -264,12 +254,37 @@
                         android:text="@string/goToCommunities"
                         android:theme="@style/RaisedButtonDark"
                         />
-                    <Button
-                        android:id="@+id/btn_restrictions"
+
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:text="@string/restrictions"
-                        android:theme="@style/RaisedButtonDark"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="0dp"
+                            android:text="@string/more_options" />
+
+                        <Button
+                            android:id="@+id/custom_cost"
+                            android:layout_width="160dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentEnd="true"
+                            android:drawableRight="@drawable/baseline_attach_money_white_24dp"
+                            android:text="@string/free_or_paid"
+                            android:theme="@style/RaisedButtonDark" />
+
+                        <Button
+                            android:id="@+id/btn_restrictions"
+                            android:layout_width="160dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:drawableRight="@drawable/ic_restrictions"
+                            android:text="@string/restrictions"
+                            android:theme="@style/RaisedButtonDark" />
+                    </RelativeLayout>
+
                     <Button
                         android:id="@+id/btn_next"
                         android:layout_width="120dp"

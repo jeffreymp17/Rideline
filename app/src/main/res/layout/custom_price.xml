@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/custon_option"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingTop="15dp"
+            android:text="@string/choose_option"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="123dp"
+        android:orientation="horizontal"
+        android:paddingLeft="60dp"
+        android:paddingTop="50dp">
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnFree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:elevation="0dp"
+            android:src="@drawable/baseline_star_white_24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="-20dp"
+            android:background="@drawable/rounded_label_accent"
+            android:paddingLeft="22dp"
+            android:paddingRight="10dp"
+            android:text="@string/free_ride"
+            android:textColor="@color/icons" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnCustomPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="40dp"
+            android:elevation="0dp"
+            android:src="@drawable/baseline_attach_money_white_24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="-60dp"
+            android:background="@drawable/rounded_label_accent"
+            android:paddingLeft="22dp"
+            android:paddingRight="10dp"
+            android:text="@string/custom_price"
+            android:textColor="@color/icons" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:layout_marginTop="120dp"
+        tools:layout_editor_absoluteY="136dp">
+
+        <RelativeLayout
+            android:id="@+id/insert_price_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/icons"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/lastNameIc"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:contentDescription="@null"
+                android:src="@drawable/baseline_money_black_24dp" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/txtCustomPriceLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/lastNameIc">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/txtCustomPrice"
+                    android:imeOptions="actionDone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/custom_price"
+                    android:inputType="numberDecimal" />
+            </android.support.design.widget.TextInputLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="185dp"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnCloseBottomDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/close"
+            android:theme="@style/RaisedButtonDark" />
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

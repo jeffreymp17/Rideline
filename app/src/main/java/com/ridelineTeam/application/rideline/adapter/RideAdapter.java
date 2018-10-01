@@ -25,6 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ridelineTeam.application.rideline.R;
+import com.ridelineTeam.application.rideline.model.RideCost;
+import com.ridelineTeam.application.rideline.util.enums.Cost;
 import com.ridelineTeam.application.rideline.util.enums.Restrictions;
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper;
 import com.ridelineTeam.application.rideline.view.RideDetailActivity;
@@ -72,6 +74,7 @@ public class RideAdapter {
         private SwitchIconView foodIcon;
         private SwitchIconView sleepIcon;
         private SwitchIconView childIcon;
+        private TextView rideCost;
 
         private RideViewHolder(View view) {
             super(view);
@@ -92,6 +95,7 @@ public class RideAdapter {
             foodIcon = view.findViewById(R.id.foodIcon);
             sleepIcon = view.findViewById(R.id.sleepIcon);
             childIcon = view.findViewById(R.id.childIcon);
+            rideCost=view.findViewById(R.id.ridePrice);
         }
     }
 
@@ -392,7 +396,7 @@ public class RideAdapter {
             String passengerText;
 
             drawRestrictions(ride.getRestrictions(),holder);
-
+            setPriceText(ride.getCost(),holder);
             if (ride.getType().equals(Type.OFFERED)) {
                 Log.d("HERE", "YES");
                 holder.rideImage.setBackground(activity.getResources().getDrawable(R.drawable.taxi));
@@ -564,6 +568,13 @@ public class RideAdapter {
             });
 
         }
+        private void setPriceText(RideCost rideCost,RideViewHolder holder){
+           if(rideCost.getName().equals(Cost.FREE.toString())){
+               holder.rideCost.setText(String.format("%s:%s", activity.getString(R.string.custom_price), activity.getString(R.string.free_ride)));
+           }else if(rideCost.getName().equals(Cost.PAID.toString())){
+               holder.rideCost.setText(String.format("%s:%d", activity.getString(R.string.custom_price), Math.round(rideCost.getPrice())));
+           }
+        }
 
         private void drawRestrictions(ArrayList<Restrictions> restrictions,RideViewHolder holder){
             for (Restrictions restriction : restrictions){
@@ -586,6 +597,7 @@ public class RideAdapter {
                 }
             }
         }
+
 
     }
 }

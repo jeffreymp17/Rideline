@@ -13,11 +13,11 @@ data class Ride(
                 var destination:String = "",
                 var riders:Int=0,
                 var type: Type= Type.REQUESTED,
-                var roundTrip:Boolean=false,
                 var status: Status=Status.ACTIVE,
                 var community:String = "",
                 var user:String="",
                 var time:String="",
                 var passengers: Map<String,User> = HashMap(),
-                var restrictions:ArrayList<Restrictions> = ArrayList()
+                var restrictions:ArrayList<Restrictions> = ArrayList(),
+                var cost:RideCost?=null
                 ) : Serializable

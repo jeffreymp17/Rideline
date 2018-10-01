@@ -183,6 +183,13 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:paddingBottom="10dp">
+            <TextView
+                android:id="@+id/ridePrice"
+                android:layout_width="wrap_content"
+                android:text="@string/custom_price"
+                android:textColor="@color/primaryText"
+                android:textSize="20sp"
+                android:layout_height="wrap_content" />
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.mukesh.countrypicker.CountryPicker
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.ProfileAdapter
@@ -36,6 +37,7 @@ import com.squareup.picasso.Picasso
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
 import de.hdodenhof.circleimageview.CircleImageView
 import es.dmoral.toasty.Toasty
+import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.cardview.*
 
 
@@ -52,7 +54,6 @@ class ProfileFragment : Fragment() {
     private lateinit var fireStorage: FirebaseStorage
     private lateinit var sReference: StorageReference
     private lateinit var cardView: CardView
-    private lateinit var btnEdit: FloatingActionButton
     private lateinit var recycler: MultiSnapRecyclerView
     private lateinit var adapter: ProfileAdapter.ProfileAdapterRecycler
     private var user: User? = null
@@ -60,7 +61,7 @@ class ProfileFragment : Fragment() {
 
 
     //Elementos de la carta del ride activo
-    private lateinit var  dateCard : TextView
+    private lateinit var dateCard : TextView
     private lateinit var userCard: TextView
     private lateinit var typeCard: TextView
     private lateinit var origin: TextView
@@ -82,7 +83,6 @@ class ProfileFragment : Fragment() {
         val rootView: View = inflater.inflate(R.layout.fragment_profile, container, false)
         database = FirebaseDatabase.getInstance()
         val user = FirebaseAuth.getInstance().currentUser
-        btnEdit = rootView.findViewById(R.id.edit_profile)
         cardView = rootView.findViewById(R.id.cardViewRide)
         id = user!!.uid
         fireStorage = FirebaseStorage.getInstance()
@@ -93,9 +93,6 @@ class ProfileFragment : Fragment() {
         name = rootView.findViewById(R.id.profile_name)
         email = rootView.findViewById(R.id.user_email)
         profilePicture = rootView.findViewById(R.id.my_picture_profile)
-        btnEdit.setOnClickListener {
-            showChangeLangDialog(container)
-        }
         imageCircle.setOnClickListener {
             showGallery()
         }
@@ -166,6 +163,8 @@ class ProfileFragment : Fragment() {
     }
     //GET DATA FROM CURRENT USER
     private fun getUserProfile() {
+
+
         id = FirebaseAuth.getInstance().currentUser!!.uid
         reference.child(id).addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
@@ -183,9 +182,15 @@ class ProfileFragment : Fragment() {
                     }
                 }
                 user.apply {
+                    val country = CountryPicker.Builder().build().getCountryByISO(user!!.country)
                     val fullName =user!!.name + " " + user!!.lastName
                     name.text =  fullName
                     email.text = user!!.email
+                    userCountry.text = country.name
+                    Picasso.with(activity)
+                            .load(country.flag)
+                            .fit()
+                            .into(imgCountryFlag)
                     if (user!!.pictureUrl.isEmpty()) {
                         Picasso.with(context).load(R.drawable.if_profle_1055000).fit().into(imageCircle)
 
@@ -204,12 +209,6 @@ class ProfileFragment : Fragment() {
                         noActiveRideText.visibility=View.VISIBLE
                     }
                 }
-                for (i in user!!.communities) {
-                    userCommunities(i)
-                }
-                Log.d("COMMUNITIES", "----:" + data.child("communities").value.toString())
-
-
             }
 
         })
@@ -264,80 +263,27 @@ class ProfileFragment : Fragment() {
 
     }
     //EDIT AND CHNAGE DATA IN FIREBASE
-    private fun newProfile(newName: String, newLastNames: String,
-                           newStatus:String) {
-        reference.child(id).child("name").setValue(newName)
-        reference.child(id).child("lastName").setValue(newLastNames)
-        reference.child(id).child("status").setValue(newStatus)
-        Toasty.success(context!!, getString(R.string.profileUpdate), Toast.LENGTH_SHORT, true).show()
-    }
-    ///DIALOG TO CONFIRM CHANGE INFORMATION
-    private fun showChangeLangDialog(viewGroup: ViewGroup?) {
-        val dialogBuilder = AlertDialog.Builder(context!!)
-        val inflater = this.layoutInflater
-        val dialogView = inflater.inflate(R.layout.edit_profile,viewGroup,false)
-        dialogBuilder.setView(dialogView)
 
-        val txtName: EditText = dialogView.findViewById(R.id.txtProfile_name)
-        val txtLastName: EditText = dialogView.findViewById(R.id.txtProfile_Last_names)
-        val txtStatus: EditText = dialogView.findViewById(R.id.txtProfile_Status)
-        with(user) {
-            txtName.setText(user!!.name,TextView.BufferType.EDITABLE)
-            txtLastName.setText(user!!.lastName,TextView.BufferType.EDITABLE)
-            txtStatus.setText(user!!.status,TextView.BufferType.EDITABLE)
-        }
 
-        dialogBuilder.setTitle(R.string.personal_information)
-        dialogBuilder.setPositiveButton(R.string.done) { _, _ ->
-            if (!TextUtils.isEmpty(txtName.text) && !TextUtils.isEmpty(txtLastName.text)) {
-                newProfile(txtName.text.toString(), txtLastName.text.toString()
-                        ,txtStatus.text.toString())
-
-            }
-
-        }
-        dialogBuilder.setNegativeButton(R.string.cancel) { _, _ ->
-
-        }
-
-        val b = dialogBuilder.create()
-        b.show()
-    }
     //THIS METHOD UPLOAD PROFILE PICTORE IN FIREABSE SERVER
     private fun uploadProfileImage() {
         reference = database.reference.child(USERS).child(id)
         sReference = fireStorage.reference.child(PROFILE_PICTURES).child(photoRef)
         sReference.putBytes(pictureBytes).addOnSuccessListener {
             if (it.task.isComplete) {
-                sReference.downloadUrl.addOnSuccessListener({ uri ->
+                sReference.downloadUrl.addOnSuccessListener { uri ->
                     with(reference) {
                         child("pictureUrl").setValue(uri.toString())
 
                     }
                     Picasso.with(context).load(uri.toString()).into(imageCircle)
                     hideProgressBar()
-                })
+                }
             }
 
         }
     }
-    ///GET NAME OF COMMUNITIES
-    private fun userCommunities(key: String) {
-        val query = database.reference.child(COMMUNITIES).child(key)
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-                p0.message
-            }
 
-            override fun onDataChange(community: DataSnapshot) {
-                //community_name.text = community.child("name").value.toString() + "\n" + community_name.text.toString()
-                Log.d("INFO", "-----------$community")
-
-            }
-
-        })
-
-    }
     private  fun drawActiveRideCard(ride: Ride?){
         dateCard.text = ride!!.date
         database.reference.child(USERS).child(ride.user)

@@ -227,6 +227,8 @@
     <string name="rejected_request">Rejected request</string>
     <string name="passenger_removed">Passenger removed</string>
     <string name="edit">Edit</string>
+    <string name="hint_txtCarModel">Model</string>
+    <string name="hint_txtCarPlate">Car plate</string>
 
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">

@@ -223,6 +223,8 @@
     <string name="rejected_request">Solicitud rechazada</string>
     <string name="passenger_removed">Pasajero removido</string>
     <string name="edit">Edit</string>
+    <string name="hint_txtCarModel">Model</string>
+    <string name="hint_txtCarPlate">Car plate</string>
 
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">

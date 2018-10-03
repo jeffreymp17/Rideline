@@ -36,7 +36,6 @@
                     android:src="@drawable/avatar"
                     app:civ_border_color="@color/icons"
                     app:civ_border_width="2dp" />
-
                 <TextView
                     android:id="@+id/profile_name"
                     android:layout_width="match_parent"
@@ -55,19 +54,27 @@
                     android:textAlignment="center"
                     android:textColor="@color/icons"
                     android:textSize="15sp" />
-
-
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_horizontal">
+                    <ImageView
+                        android:id="@+id/imgCountryFlag"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/avatar" />
+                    <TextView
+                        android:id="@+id/userCountry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Costa Rica"
+                        android:textAlignment="center"
+                        android:textColor="@color/icons"
+                        android:textSize="15sp" />
+                </LinearLayout>
             </LinearLayout>
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/edit_profile"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginBottom="5dp"
-                android:layout_marginEnd="5dp"
-                android:src="@drawable/ic_pencil" />
         </RelativeLayout>
 
         <LinearLayout

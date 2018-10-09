@@ -29,6 +29,7 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.ridelineTeam.application.rideline.model.User
 import com.ridelineTeam.application.rideline.util.files.ACCESS_FINE_LOCATION
 import com.ridelineTeam.application.rideline.util.files.FIREBASE_SERVER_DEV
+import com.ridelineTeam.application.rideline.util.files.FirebaseUtils
 import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.util.helpers.ConnectivityHelper
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
@@ -197,7 +198,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
     private fun sendRegistrationToServer(token: String, user: String) {
-        database = FirebaseDatabase.getInstance()
+        database = FirebaseUtils.getDatabase()
         val ref: DatabaseReference = database.reference
         ref.child(USERS).child(user).child("token").setValue(token)
         Log.d("ENTER", "HERE")

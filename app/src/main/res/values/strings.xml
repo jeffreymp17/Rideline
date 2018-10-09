@@ -242,6 +242,9 @@
     <string name="more_options">More options</string>
     <string name="required_payment">Required the payment method</string>
     <string name="close">Close</string>
+    <string name="call">Call</string>
+    <string name="statusActive">Active</string>
+    <string name="view_details">Got to details</string>
 
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">

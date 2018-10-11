@@ -1,18 +1,10 @@
 package com.ridelineTeam.application.rideline.util.helpers
 
-import android.Manifest
 import android.app.Activity
-import android.content.res.Resources
-import android.location.Location
-import android.util.Log
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
 import com.google.maps.DirectionsApi
 import com.google.maps.GeoApiContext
 import com.google.maps.android.PolyUtil
@@ -22,7 +14,6 @@ import com.google.maps.model.TravelMode
 import org.joda.time.DateTime
 import java.io.IOException
 import java.util.concurrent.TimeUnit
-import com.google.android.gms.maps.model.CameraPosition
 import com.ridelineTeam.application.rideline.R
 
 
@@ -71,14 +62,15 @@ class MapDrawHelper {
                 addMarker(MarkerOptions().position(LatLng(
                         results.routes[overview].legs[overview].startLocation.lat,
                         results.routes[overview].legs[overview].startLocation.lng))
-                        .icon(BitmapDescriptorFactory.defaultMarker(207f))
+                        .icon(bitmapIconMarker(R.drawable.ic_person_marker))
                         .title(results.routes[overview].legs[overview].startAddress)).showInfoWindow()
                 addMarker(MarkerOptions().position(LatLng(
                         results.routes[overview].legs[overview].endLocation.lat,
                         results.routes[overview].legs[overview].endLocation.lng))
                         .title(results.routes[overview].legs[overview].endAddress)
-                        .icon(BitmapDescriptorFactory.defaultMarker(45.0f))
+                        .icon(bitmapIconMarker(R.drawable.ic_place_marker))
                         .snippet(getEndLocationTitle(results,activity))).showInfoWindow()
+
             }
 
         }
@@ -117,6 +109,9 @@ class MapDrawHelper {
                     .setConnectTimeout(1, TimeUnit.SECONDS)
                     .setReadTimeout(1, TimeUnit.SECONDS)
                     .setWriteTimeout(1, TimeUnit.SECONDS)
+        }
+        private fun bitmapIconMarker(icon: Int):BitmapDescriptor{
+            return BitmapDescriptorFactory.fromResource(icon)
         }
 
 

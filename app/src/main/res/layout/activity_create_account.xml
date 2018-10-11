@@ -256,11 +256,43 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
-                        app:ms_hint="Country"
+                        app:ms_hint="@string/country"
                         app:ms_arrow_tint="@color/colorAccent"
                         app:ms_dropdown_max_height="300dp"
                         app:ms_hint_color="@color/secondaryText" />
 
+                </android.support.design.widget.TextInputLayout>
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/relative_spinnerGender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/genderIc"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/ic_gender" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/spinnerGenderLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/genderIc">
+
+                    <com.jaredrummler.materialspinner.MaterialSpinner
+                        android:id="@+id/spinnerGender"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:textSize="16sp"
+                        app:ms_arrow_tint="@color/colorAccent"
+                        app:ms_dropdown_max_height="300dp"
+                        app:ms_hint="@string/gender"
+                        app:ms_hint_color="@color/secondaryText" />
                 </android.support.design.widget.TextInputLayout>
             </RelativeLayout>
 

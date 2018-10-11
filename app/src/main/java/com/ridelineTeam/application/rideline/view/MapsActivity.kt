@@ -299,7 +299,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                     with(mMap) {
                         addMarker(MarkerOptions()
                                 .position(LatLng(location!!.latitude, location!!.longitude))
-                                .title(getString(R.string.your_position)).icon(BitmapDescriptorFactory.defaultMarker(207f)))
+                                .title(getString(R.string.your_position)).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_person_marker)))
                         val latLng = LatLng(location.latitude, location.longitude)
                         var cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
                         animateCamera(cameraUpdate)

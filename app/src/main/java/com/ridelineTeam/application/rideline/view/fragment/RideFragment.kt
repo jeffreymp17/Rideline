@@ -64,7 +64,7 @@ class RideFragment : Fragment() {
     private lateinit var spinnerRidersLayout: TextInputLayout
     private lateinit var spinnerCommunities: MaterialSpinner
     private lateinit var spinnerCommunitiesLayout: TextInputLayout
-    private lateinit var btnNext: Button
+    private lateinit var btnNext: FloatingActionButton
     private var passenger: Int = 0
     private var community: String = ""
     private var typeOfRide: Type = Type.REQUESTED

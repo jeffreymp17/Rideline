@@ -245,6 +245,8 @@
     <string name="call">Call</string>
     <string name="statusActive">Active</string>
     <string name="view_details">Got to details</string>
+    <string name="gender">Gender</string>
+    <string name="country">Country</string>
 
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">
@@ -253,5 +255,9 @@
         <item>No children</item>
         <item>No sleep</item>
         <item>No smoking</item>
+    </string-array>
+    <string-array name="gender_array">
+        <item>Men</item>
+        <item>Woman</item>
     </string-array>
 </resources>

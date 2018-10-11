@@ -1,178 +1,189 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/icons"
     tools:context="com.ridelineTeam.application.rideline.view.fragment.RideFragment">
-        <ScrollView
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:background="@color/icons"
+            android:orientation="vertical"
+            android:padding="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/icons"
-                android:orientation="vertical"
-                android:padding="10dp">
+                android:layout_marginTop="@dimen/white_space"
+                android:orientation="vertical">
 
-                <LinearLayout
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/white_space"
-                    android:orientation="vertical">
-                    <TextView
+                    android:background="@color/icons"
+                    android:paddingBottom="5dp"
+                    android:text="@string/passengers"
+                    android:textColor="@color/primaryText"
+                    android:textSize="16sp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/passengerIc"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:src="@drawable/ic_passengers" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/spinnerRidersLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingBottom="5dp"
-                        android:text="@string/passengers"
-                        android:textSize="16sp"
-                        android:textColor="@color/primaryText"
-                        android:background="@color/icons"/>
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <ImageView
-                            android:id="@+id/passengerIc"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="10dp"
-                            android:src="@drawable/ic_passengers" />
-                        <android.support.design.widget.TextInputLayout
-                            android:id="@+id/spinnerRidersLayout"
+                        android:layout_toEndOf="@+id/passengerIc">
+
+                        <com.jaredrummler.materialspinner.MaterialSpinner
+                            android:id="@+id/spinnerRiders"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_toEndOf="@+id/passengerIc">
-                            <com.jaredrummler.materialspinner.MaterialSpinner
-                                android:id="@+id/spinnerRiders"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_toEndOf="@+id/passengerIc"
-                                android:layout_centerVertical="true"
-                                android:textSize="16sp"
-                                app:ms_hint="@string/hint_passengerSpinner"
-                                app:ms_arrow_tint="@color/colorAccent"
-                                app:ms_dropdown_max_height="300dp"
-                                app:ms_hint_color="@color/secondaryText" />
-                        </android.support.design.widget.TextInputLayout>
-                    </RelativeLayout>
-                </LinearLayout>
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/passengerIc"
+                            android:textSize="16sp"
+                            app:ms_arrow_tint="@color/colorAccent"
+                            app:ms_dropdown_max_height="300dp"
+                            app:ms_hint="@string/hint_passengerSpinner"
+                            app:ms_hint_color="@color/secondaryText" />
+                    </android.support.design.widget.TextInputLayout>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/white_space"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="5dp"
+                    android:text="@string/rideType"
+                    android:textColor="@color/primaryText"
+                    android:textSize="16sp" />
+
+                <co.ceryle.radiorealbutton.RadioRealButtonGroup
+                    android:id="@+id/radioGroupType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:rrbg_animateTexts_enter="overshoot"
+                    app:rrbg_dividerColor="@color/divider"
+                    app:rrbg_dividerSize="1dp"
+                    app:rrbg_radius="10dp"
+                    app:rrbg_selectorColor="@color/colorAccent"
+                    app:rrbg_selectorSize="6dp">
+
+                    <co.ceryle.radiorealbutton.RadioRealButton
+                        android:id="@+id/radioTypeRequest"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/radioTypeRequest"
+                        app:rrb_checked="true"
+                        app:rrb_drawable="@drawable/ic_requested"
+                        app:rrb_drawableHeight="36dp"
+                        app:rrb_drawablePadding="8dp"
+                        app:rrb_drawableWidth="36dp"
+                        app:rrb_ripple="true"
+                        app:rrb_rippleColor="@color/colorAccent"
+                        app:rrb_text="@string/radioTypeRequest"
+                        app:rrb_textColor="@color/secondaryText" />
+
+                    <co.ceryle.radiorealbutton.RadioRealButton
+                        android:id="@+id/radioTypeOffer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/radioTypeOffer"
+                        app:rrb_drawable="@drawable/ic_offered"
+                        app:rrb_drawableHeight="36dp"
+                        app:rrb_drawablePadding="8dp"
+                        app:rrb_drawableWidth="36dp"
+                        app:rrb_ripple="true"
+                        app:rrb_rippleColor="@color/colorAccent"
+                        app:rrb_text="@string/radioTypeOffer"
+                        app:rrb_textColor="@color/secondaryText" />
+                </co.ceryle.radiorealbutton.RadioRealButtonGroup>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/white_space"
+                android:orientation="vertical">
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/white_space"
-                    android:orientation="vertical">
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
 
-                    <TextView
-                        android:layout_width="match_parent"
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/dateRideLayout"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:paddingBottom="5dp"
-                        android:text="@string/rideType"
-                        android:textColor="@color/primaryText"
-                        android:textSize="16sp" />
+                        android:layout_weight="0.5">
 
-                    <co.ceryle.radiorealbutton.RadioRealButtonGroup
-                        android:id="@+id/radioGroupType"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:rrbg_animateTexts_enter="overshoot"
-                        app:rrbg_dividerColor="@color/divider"
-                        app:rrbg_dividerSize="1dp"
-                        app:rrbg_radius="10dp"
-                        app:rrbg_selectorColor="@color/colorAccent"
-                        app:rrbg_selectorSize="6dp">
-
-                        <co.ceryle.radiorealbutton.RadioRealButton
-                            android:id="@+id/radioTypeRequest"
+                        <RelativeLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/radioTypeRequest"
-                            app:rrb_checked="true"
-                            app:rrb_drawable="@drawable/ic_requested"
-                            app:rrb_drawableHeight="36dp"
-                            app:rrb_drawablePadding="8dp"
-                            app:rrb_drawableWidth="36dp"
-                            app:rrb_ripple="true"
-                            app:rrb_rippleColor="@color/colorAccent"
-                            app:rrb_text="@string/radioTypeRequest"
-                            app:rrb_textColor="@color/secondaryText" />
+                            app:rrbg_animateDrawables_enter="overshoot">
 
-                        <co.ceryle.radiorealbutton.RadioRealButton
-                            android:id="@+id/radioTypeOffer"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/radioTypeOffer"
-                            app:rrb_drawable="@drawable/ic_offered"
-                            app:rrb_drawableHeight="36dp"
-                            app:rrb_drawablePadding="8dp"
-                            app:rrb_drawableWidth="36dp"
-                            app:rrb_ripple="true"
-                            app:rrb_rippleColor="@color/colorAccent"
-                            app:rrb_text="@string/radioTypeOffer"
-                            app:rrb_textColor="@color/secondaryText" />
-                    </co.ceryle.radiorealbutton.RadioRealButtonGroup>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/white_space"
-                    android:orientation="vertical">
-
-
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/white_space"
-                        android:orientation="horizontal"
-                        android:baselineAligned="false"
-                        android:weightSum="1">
-
-                        <android.support.design.widget.TextInputLayout
-                            android:id="@+id/dateRideLayout"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="0.5">
-                            <RelativeLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                app:rrbg_animateDrawables_enter="overshoot">
                             <ImageView
                                 android:id="@+id/dateIc"
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:layout_centerVertical="true"
                                 android:layout_marginStart="10dp"
-                                android:src="@drawable/ic_date"
-                                android:contentDescription="@null" />
+                                android:contentDescription="@null"
+                                android:src="@drawable/ic_date" />
+
                             <EditText
                                 android:id="@+id/dateRide"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/dateIc"
                                 android:clickable="true"
                                 android:focusable="false"
                                 android:hint="@string/date"
-                                android:textColorHint="@color/secondaryText"
                                 android:inputType="date"
-                                android:layout_toEndOf="@+id/dateIc"
-                                android:layout_centerVertical="true"
-                                android:maxLines="1" />
-                            </RelativeLayout>
-                        </android.support.design.widget.TextInputLayout>
-                        <android.support.design.widget.TextInputLayout
-                            android:id="@+id/timeLayout"
-                            android:layout_width="0dp"
+                                android:maxLines="1"
+                                android:textColorHint="@color/secondaryText" />
+                        </RelativeLayout>
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/timeLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
-                           >
-                            <RelativeLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@color/icons">
+                            android:background="@color/icons">
+
                             <ImageView
                                 android:id="@+id/timeIc"
                                 android:layout_width="30dp"
@@ -180,123 +191,137 @@
                                 android:layout_centerVertical="true"
                                 android:layout_marginStart="10dp"
                                 android:src="@drawable/ic_time" />
+
                             <EditText
                                 android:id="@+id/time"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/timeIc"
                                 android:clickable="true"
                                 android:focusable="false"
                                 android:hint="@string/time"
                                 android:inputType="time"
-                                android:textColorHint="@color/secondaryText"
-                                android:layout_centerVertical="true"
-                                android:layout_toEndOf="@+id/timeIc"
-                                android:maxLines="1" />
-                            </RelativeLayout>
-                        </android.support.design.widget.TextInputLayout>
-                    </LinearLayout>
-                    <TextView
-                        android:id="@+id/txtPublishIn"
-                        android:layout_marginTop="@dimen/white_space"
+                                android:maxLines="1"
+                                android:textColorHint="@color/secondaryText" />
+                        </RelativeLayout>
+                    </android.support.design.widget.TextInputLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtPublishIn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/white_space"
+                    android:paddingBottom="5dp"
+                    android:text="@string/publish"
+                    android:textColor="@color/primaryText"
+                    android:textSize="16sp" />
+
+                <RelativeLayout
+                    android:id="@+id/relative_spinnerCommnunity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/communityIc"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="10dp"
+                        android:src="@drawable/ic_community_accent" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/spinnerCommunitiesLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingBottom="5dp"
-                        android:text="@string/publish"
-                        android:textColor="@color/primaryText"
-                        android:textSize="16sp"/>
-                    <RelativeLayout
-                        android:id="@+id/relative_spinnerCommnunity"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <ImageView
-                            android:id="@+id/communityIc"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="10dp"
-                            android:src="@drawable/ic_community_accent" />
-                        <android.support.design.widget.TextInputLayout
-                            android:id="@+id/spinnerCommunitiesLayout"
+                        android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/communityIc">
+
+                        <com.jaredrummler.materialspinner.MaterialSpinner
+                            android:id="@+id/spinnerCommunities"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_toEndOf="@+id/communityIc">
-                            <com.jaredrummler.materialspinner.MaterialSpinner
-                                android:id="@+id/spinnerCommunities"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:textSize="16sp"
-                                app:ms_hint="@string/hint_communitySpinner"
-                                app:ms_arrow_tint="@color/colorAccent"
-                                app:ms_dropdown_max_height="300dp"
-                                app:ms_hint_color="@color/secondaryText"/>
-                        </android.support.design.widget.TextInputLayout>
-                    </RelativeLayout>
+                            android:textSize="16sp"
+                            app:ms_arrow_tint="@color/colorAccent"
+                            app:ms_dropdown_max_height="300dp"
+                            app:ms_hint="@string/hint_communitySpinner"
+                            app:ms_hint_color="@color/secondaryText" />
+                    </android.support.design.widget.TextInputLayout>
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/txtNoHaveCommunities"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/white_space"
+                    android:padding="12dp"
+                    android:paddingBottom="5dp"
+                    android:text="@string/noHaveCommunities"
+                    android:textColor="@color/primaryText"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/go_to_communitites"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/goToCommunities"
+                    android:theme="@style/RaisedButtonDark"
+                    android:visibility="gone" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
                     <TextView
-                        android:visibility="gone"
-                        android:id="@+id/txtNoHaveCommunities"
-                        android:layout_marginTop="@dimen/white_space"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingBottom="5dp"
-                        android:padding="12dp"
-                        android:text="@string/noHaveCommunities"
-                        android:textColor="@color/primaryText"
-                        android:textSize="16sp"/>
+                        android:layout_marginTop="0dp"
+                        android:text="@string/more_options" />
+
                     <Button
-                        android:id="@+id/go_to_communitites"
-                        android:visibility="gone"
-                        android:layout_width="match_parent"
+                        android:id="@+id/custom_cost"
+                        android:layout_width="160dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="24dp"
-                        android:layout_marginTop="24dp"
-                        android:text="@string/goToCommunities"
-                        android:theme="@style/RaisedButtonDark"
-                        />
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="0dp"
-                            android:text="@string/more_options" />
-
-                        <Button
-                            android:id="@+id/custom_cost"
-                            android:layout_width="160dp"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentBottom="true"
-                            android:layout_alignParentEnd="true"
-                            android:drawableRight="@drawable/baseline_attach_money_white_24dp"
-                            android:text="@string/free_or_paid"
-                            android:theme="@style/RaisedButtonDark" />
-
-                        <Button
-                            android:id="@+id/btn_restrictions"
-                            android:layout_width="160dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="15dp"
-                            android:drawableRight="@drawable/ic_restrictions"
-                            android:text="@string/restrictions"
-                            android:theme="@style/RaisedButtonDark" />
-                    </RelativeLayout>
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentEnd="true"
+                        android:drawableRight="@drawable/baseline_attach_money_white_24dp"
+                        android:text="@string/free_or_paid"
+                        android:theme="@style/RaisedButtonDark" />
 
                     <Button
+                        android:id="@+id/btn_restrictions"
+                        android:layout_width="160dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:drawableRight="@drawable/ic_restrictions"
+                        android:text="@string/restrictions"
+                        android:theme="@style/RaisedButtonDark" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="151dp">
+
+                    <android.support.design.widget.FloatingActionButton
                         android:id="@+id/btn_next"
                         android:layout_width="120dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginTop="@dimen/white_space"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_gravity="bottom|end"
+                        android:layout_marginBottom="14dp"
+                        android:layout_marginEnd="17dp"
                         android:padding="12dp"
-                        android:text="@string/btnNext"
-                        android:theme="@style/RaisedButtonDark"
-                        android:drawableEnd="@drawable/ic_next"/>
-                </LinearLayout>
+                        android:src="@drawable/ic_next" />
+                </RelativeLayout>
+
             </LinearLayout>
-        </ScrollView>
-</android.support.constraint.ConstraintLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</android.support.design.widget.CoordinatorLayout>

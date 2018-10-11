@@ -12,4 +12,5 @@ data class User(var id:String = "",
                 var communities:ArrayList<String> = ArrayList(),
                 var taked:Int=0,
                 var telephone:Int=0,
-                var activeRide:Ride?=null)
+                var activeRide:Ride?=null,
+                var gender:String="")

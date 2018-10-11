@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.text.*
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import android.util.Log
 import android.view.View
 import android.widget.*
 import com.afollestad.materialdialogs.MaterialDialog
@@ -17,10 +18,12 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.jaredrummler.materialspinner.MaterialSpinner
 import com.ridelineTeam.application.rideline.MainActivity
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.model.User
+import com.ridelineTeam.application.rideline.util.enums.Gender
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.InputsHelper
 import com.ridelineTeam.application.rideline.util.helpers.PermissionHelper
@@ -34,11 +37,14 @@ class CreateAccountActivity : AppCompatActivity(){
     //FireBase variables
     private lateinit var dbReference: DatabaseReference
     private lateinit var mAuth : FirebaseAuth
-
+    private lateinit var spinnerGender: MaterialSpinner
+    private lateinit var spinnerGenderLayout: TextInputLayout
     private lateinit var materialDialog: MaterialDialog
-
     private var txtValidatePassword=""
     private var countryCode = ""
+    private  var genderSelected:String=""
+    private  var  arrayGender=ArrayList<Any>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,13 +57,17 @@ class CreateAccountActivity : AppCompatActivity(){
         dbReference = FirebaseDatabase.getInstance().reference.child(USERS)
         FragmentHelper.showToolbar(getString(R.string.createAccountActivity),true,
                 findViewById(R.id.toolbar),this)
-
+        spinnerGender=findViewById(R.id.spinnerGender)
+        spinnerGenderLayout=findViewById(R.id.spinnerGenderLayout)
         materialDialog = MaterialDialog.Builder(this)
                 .title(getString(R.string.loading))
                 .content(getString(R.string.please_wait))
                 .progress(true, 0).build()
 
         countrySpinner.setItems(COUNTRIES.toList())
+        val genderValues=resources.getStringArray(R.array.gender_array)
+        arrayGender.addAll(genderValues)
+        spinnerGender.setItems(arrayGender)
 
     }
     override fun onStart() {
@@ -83,6 +93,12 @@ class CreateAccountActivity : AppCompatActivity(){
              countryCode = itemParts[itemParts.size-1]
             txtAddressLayout.error = null
         })
+        spinnerGender.setOnItemSelectedListener({ _, _, _,item ->
+            val arrayOfEmuns= arrayOf(Gender.MEN,Gender.WOMAN)
+           arrayGender.forEachIndexed { index, genderName ->
+               if(item==genderName){
+                   genderSelected= arrayOfEmuns[index].toString()
+               }}})
 
     }
 
@@ -102,6 +118,7 @@ class CreateAccountActivity : AppCompatActivity(){
                 country = countryCode
                 telephone=Integer.parseInt(txtTelephone.text.toString())
                 status= getString(R.string.defaultStatus)
+                gender=genderSelected
             }
             emailExist(user)
         }else{
@@ -209,6 +226,11 @@ class CreateAccountActivity : AppCompatActivity(){
             TextUtils.isEmpty(countryCode)->{
                 txtAddressLayout.error=getString(R.string.requiredFieldMessage)
                 countrySpinner.requestFocus()
+                return false
+            }
+            TextUtils.isEmpty(genderSelected)->{
+                spinnerGenderLayout.error=getString(R.string.requiredFieldMessage)
+                spinnerGender.requestFocus()
                 return false
             }
             !checkTerms.isChecked ->{

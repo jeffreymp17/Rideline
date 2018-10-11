@@ -81,6 +81,8 @@
                     android:src="@drawable/avatar"
                     android:layout_alignParentStart="true"
                     android:layout_centerInParent="true"
+                    app:civ_border_color="@color/successColor"
+                    app:civ_border_width="2dp"
                     android:layout_marginStart="16dp"/>
             </RelativeLayout>
             <RelativeLayout
@@ -183,13 +185,15 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:paddingBottom="10dp">
-            <TextView
+           <!-- <TextView
+                android:layout_marginTop="5dp"
                 android:id="@+id/ridePrice"
+                android:drawableLeft="@drawable/ic_money_black"
+                android:drawableTint="@color/successColor"
                 android:layout_width="wrap_content"
-                android:text="@string/custom_price"
                 android:textColor="@color/primaryText"
                 android:textSize="20sp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content" />-->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

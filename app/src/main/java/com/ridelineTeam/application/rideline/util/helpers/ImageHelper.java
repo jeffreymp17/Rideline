@@ -8,6 +8,10 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -35,6 +39,22 @@ public class ImageHelper {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
         final byte[] picture = baos.toByteArray();
         return picture;
+    }
+    public static void setImageViewPicture(ImageView imageView,Context context,String pictureUrl){
+        Picasso.with(context).load(pictureUrl).fit().centerCrop()
+                .networkPolicy(NetworkPolicy.OFFLINE)
+                .into(imageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError() {
+                        Picasso.with(context).load(pictureUrl).fit().into(imageView);
+
+                    }
+                });
     }
 
 }

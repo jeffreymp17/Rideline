@@ -225,7 +225,7 @@
     <string name="rejected_request_message">ha rechazado tu solicitud de ride</string>
     <string name="rejected_request">Solicitud rechazada</string>
     <string name="passenger_removed">Pasajero removido</string>
-    <string name="your_position">You are here</string>
+    <string name="your_position">Tú esta aqui</string>
     <string name="connectionState">Conecteda</string>
     <string name="connectonStateError">Sin conexión</string>
     <string name="try_again">Conectarse</string>
@@ -234,8 +234,14 @@
     <string name="choose_option">Seleccióne una opción</string>
     <string name="free_or_paid">Gratis o pago</string>
     <string name="more_options">Más opciónes</string>
-    <string name="required_payment">Required the payment method</string>
+    <string name="required_payment">Debe seleccionar un método de pago</string>
     <string name="close">Cerrar</string>
+    <string name="call">Llamar</string>
+    <!--RIDE STATUS-->
+    <string name="statusActive">Activo</string>
+    <string name="view_details">Ver detalles</string>
+    <string name="gender">Sexo</string>
+    <string name="country">País</string>
 
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">
@@ -244,5 +250,9 @@
         <item>No niños</item>
         <item>No dormir</item>
         <item>No fumar</item>
+    </string-array>
+    <string-array name="gender_array">
+        <item>Hombre</item>
+        <item>Mujer</item>
     </string-array>
 </resources>

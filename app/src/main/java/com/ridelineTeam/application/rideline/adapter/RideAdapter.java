@@ -1,6 +1,7 @@
 package com.ridelineTeam.application.rideline.adapter;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -28,6 +30,8 @@ import com.ridelineTeam.application.rideline.R;
 import com.ridelineTeam.application.rideline.model.RideCost;
 import com.ridelineTeam.application.rideline.util.enums.Cost;
 import com.ridelineTeam.application.rideline.util.enums.Restrictions;
+import com.ridelineTeam.application.rideline.util.files.ConstantsKt;
+import com.ridelineTeam.application.rideline.util.helpers.ImageHelper;
 import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper;
 import com.ridelineTeam.application.rideline.view.RideDetailActivity;
 import com.ridelineTeam.application.rideline.util.helpers.DateTimeAndStringHelper;
@@ -36,6 +40,8 @@ import com.ridelineTeam.application.rideline.model.User;
 import com.ridelineTeam.application.rideline.util.enums.Status;
 import com.ridelineTeam.application.rideline.model.enums.Type;
 import com.ridelineTeam.application.rideline.view.fragment.ProfileFragment;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
@@ -48,6 +54,7 @@ import java.util.Locale;
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
 
+import static com.ridelineTeam.application.rideline.R.drawable.*;
 import static com.ridelineTeam.application.rideline.util.files.ConstantsKt.RIDES;
 import static com.ridelineTeam.application.rideline.util.files.ConstantsKt.STATUS;
 import static com.ridelineTeam.application.rideline.util.files.ConstantsKt.TOKEN;
@@ -95,7 +102,7 @@ public class RideAdapter {
             foodIcon = view.findViewById(R.id.foodIcon);
             sleepIcon = view.findViewById(R.id.sleepIcon);
             childIcon = view.findViewById(R.id.childIcon);
-            rideCost=view.findViewById(R.id.ridePrice);
+           // rideCost=view.findViewById(R.id.ridePrice);
         }
     }
 
@@ -361,13 +368,14 @@ public class RideAdapter {
                             fullName = user.getName() + " " + user.getLastName();
                             fullName = DateTimeAndStringHelper.truncate(fullName,15);
                         }
+                        //Se carga la imagen sin internet
                         holder.userCard.setText(fullName);
-
-                        if (!user.getPictureUrl().isEmpty())
+                        ImageHelper.setImageViewPicture(holder.userPicture,activity,user.getPictureUrl());
+                      /*  if (!user.getPictureUrl().isEmpty())
                             Picasso.with(activity).load(user.getPictureUrl()).fit().into(holder.userPicture);
                         else
                             Picasso.with(activity).load(R.drawable.avatar).fit().into(holder.userPicture);
-
+*/
                     }
                 }
 
@@ -396,10 +404,10 @@ public class RideAdapter {
             String passengerText;
 
             drawRestrictions(ride.getRestrictions(),holder);
-            setPriceText(ride.getCost(),holder);
+            //setPriceText(ride.getCost(),holder);
             if (ride.getType().equals(Type.OFFERED)) {
                 Log.d("HERE", "YES");
-                holder.rideImage.setBackground(activity.getResources().getDrawable(R.drawable.taxi));
+                holder.rideImage.setBackground(activity.getResources().getDrawable(taxi));
                 passengerText= activity.getResources().getString(R.string.seats)
                         +" "+ride.getRiders()+", "
                         +activity.getResources().getString(R.string.available)
@@ -407,10 +415,11 @@ public class RideAdapter {
             } else {
                 passengerText=activity.getResources()
                         .getString(R.string.passengers)+" "+ ride.getRiders();
-                holder.rideImage.setBackground(activity.getResources().getDrawable(R.drawable.como));
+                holder.rideImage.setBackground(activity.getResources().getDrawable(como));
             }
             holder.passengerCard.setText(passengerText);
-            holder.frameLayoutCard.setOnLongClickListener(view -> {
+          /*  holder.frameLayoutCard.setOnLongClickListener(view -> {
+           
                 Intent intent = new Intent(activity, RideDetailActivity.class);
                 //si el map de pasajeros no va vacio no muestra el detalle
                 if(!ride.getPassengers().isEmpty()){
@@ -420,7 +429,9 @@ public class RideAdapter {
                 activity.startActivity(intent);
                 return false;
 
-            });
+
+            });*/
+            holder.frameLayoutCard.setOnClickListener((View ) -> dialog(ride).show());
             holder.btnGoCard.setOnClickListener(view -> {
                 if (ride.getType().equals(Type.REQUESTED)) {
                     finishRide(RidesIds.get(holder.getAdapterPosition()));
@@ -448,7 +459,8 @@ public class RideAdapter {
                     if (user != null) {
                         ride.getPassengers().put(user.getId(),user);
                         databaseReference.getDatabase().getReference().child(RIDES)
-                                .child(ride.getId()).child("passengers").setValue(ride.getPassengers());
+                                .child(ride.getId()).child(ConstantsKt.PASSENGERS
+                        ).setValue(ride.getPassengers());
                     }
                 }
                 @Override
@@ -572,7 +584,7 @@ public class RideAdapter {
            if(rideCost.getName().equals(Cost.FREE.toString())){
                holder.rideCost.setText(String.format("%s:%s", activity.getString(R.string.custom_price), activity.getString(R.string.free_ride)));
            }else if(rideCost.getName().equals(Cost.PAID.toString())){
-               holder.rideCost.setText(String.format("%s:%d", activity.getString(R.string.custom_price), Math.round(rideCost.getPrice())));
+               holder.rideCost.setText(String.format("%d", Math.round(rideCost.getPrice())));
            }
         }
 
@@ -596,6 +608,34 @@ public class RideAdapter {
                         break;
                 }
             }
+
+        }
+        private Dialog dialog(Ride ride){
+            Dialog settingsDialog = new Dialog(activity);
+            settingsDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            settingsDialog.setContentView(activity.getLayoutInflater().inflate(R.layout.card_click_dialog
+                    , null));
+           Button btnDetails= settingsDialog.findViewById(R.id.btn_details);
+           TextView txtType=settingsDialog.findViewById(R.id.ride_dialog_type);
+           ImageView image=settingsDialog.findViewById(R.id.circleImageViewDialog);
+           if(ride.getType().equals(Type.OFFERED)){
+               image.setImageResource(ic_car_3d);
+               txtType.setText(activity.getString(R.string.radioTypeOffer));
+           }else if(ride.getType().equals(Type.REQUESTED)){
+               image.setImageResource(ic_person_location);
+               txtType.setText(activity.getString(R.string.radioTypeRequest));
+           }
+            btnDetails.setOnClickListener((View)->{
+                Intent intent = new Intent(activity, RideDetailActivity.class);
+                //si el map de pasajeros no va vacio no muestra el detalle
+                if(!ride.getPassengers().isEmpty()){
+                    ride.getPassengers().clear();
+                }
+                intent.putExtra("ride", ride);
+                activity.startActivity(intent);
+                settingsDialog.dismiss();
+            });
+            return settingsDialog;
         }
 
 

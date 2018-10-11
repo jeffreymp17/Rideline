@@ -1,13 +1,16 @@
 package com.ridelineTeam.application.rideline.util.files
-
+//FIREBASE CHILD NAMES
 const val USERS = "Users"
 const val RIDES = "Rides"
 const val COMMUNITIES = "Communities"
 const val STATUS = "status"
 const val NAME="name"
 const val COMMUNITY_USERS="users"
+const val PASSENGERS="passengers"
+//FCM SERVICE
 const val TOKEN="token"
 const val FIREBASE_SERVER_DEV="AAAA6C-GdQ8:APA91bEnnfAzFgmEviGE9z-uJ5r8PVSQ9COdorcQDpp0Beuw1aNbVyvV8Igt1Vn4wKJr5V2MrirAL-m6Z2wyqgNBEi6-nrWv1Yf9Thnw9mXNGnT2qOMEfk3oYSeVBTHzvx58MuGuISO2udIJo-UD1KHAOvWvCakddg"
+//OTHERS
 const val  PROFILE_PICTURES="ProfilePictures"
 const val DATE_FORMAT ="dd/MM/yy"
 //Permissions

@@ -47,6 +47,7 @@ import com.ridelineTeam.application.rideline.model.RideCost
 import com.ridelineTeam.application.rideline.util.enums.Cost
 import com.ridelineTeam.application.rideline.util.enums.Restrictions
 import kotlinx.android.synthetic.main.custom_price.*
+import java.lang.Double
 import java.lang.reflect.Array
 
 
@@ -63,7 +64,7 @@ class RideFragment : Fragment() {
     private lateinit var spinnerRidersLayout: TextInputLayout
     private lateinit var spinnerCommunities: MaterialSpinner
     private lateinit var spinnerCommunitiesLayout: TextInputLayout
-    private lateinit var btnNext: Button
+    private lateinit var btnNext: FloatingActionButton
     private var passenger: Int = 0
     private var community: String = ""
     private var typeOfRide: Type = Type.REQUESTED
@@ -79,7 +80,6 @@ class RideFragment : Fragment() {
     private lateinit var radioGroupType: RadioRealButtonGroup
     private lateinit var materialDialog: MaterialDialog
     private lateinit var btnRestrictions: Button
-    private lateinit var radioGroupPrice:RadioRealButtonGroup
     private lateinit var arrayOfRestrictions: ArrayList<Restrictions>
     private lateinit var arrayOfPosition: ArrayList<Int>
     private var country = ""
@@ -147,27 +147,31 @@ class RideFragment : Fragment() {
                 .create()
         dialog!!.footerView
         dialog!!.show()
+        dialogPaymentData(dialog)
+    }
+
+    private fun dialogPaymentData(dialog: DialogPlus) {
         customDialogView = dialog.holderView
         btnCustomPrice = customDialogView.findViewById(R.id.btnCustomPrice)
-        btnFree =customDialogView.findViewById(R.id.btnFree)
-        btnCloseBottomDialog=customDialogView.findViewById(R.id.btnCloseBottomDialog)
-        txtCustomPrice=customDialogView.findViewById(R.id.txtCustomPrice)
-        priceLayout=customDialogView.findViewById(R.id.insert_price_layout)
+        btnFree = customDialogView.findViewById(R.id.btnFree)
+        btnCloseBottomDialog = customDialogView.findViewById(R.id.btnCloseBottomDialog)
+        txtCustomPrice = customDialogView.findViewById(R.id.txtCustomPrice)
+        priceLayout = customDialogView.findViewById(R.id.insert_price_layout)
         btnCustomPrice.setOnClickListener {
-            priceLayout.visibility=View.VISIBLE
+            priceLayout.visibility = View.VISIBLE
         }
         btnFree.setOnClickListener {
-            priceLayout.visibility=View.GONE
+            priceLayout.visibility = View.GONE
         }
         btnCloseBottomDialog.setOnClickListener {
-            cost = if(!TextUtils.isEmpty(txtCustomPrice.text.toString())){
-                RideCost(Cost.PAID.toString(),java.lang.Double.parseDouble(txtCustomPrice.text.toString()))
+            cost = if (!TextUtils.isEmpty(txtCustomPrice.text.toString())) {
+                RideCost(Cost.PAID.toString(), Double.parseDouble(txtCustomPrice.text.toString()))
 
 
-            }else{
-                RideCost(Cost.FREE.toString(),0.0)
+            } else {
+                RideCost(Cost.FREE.toString(), 0.0)
             }
-            Log.d("PRICE","RIDE:$cost")
+            Log.d("PRICE", "RIDE:$cost")
             dialog.dismiss()
         }
     }
@@ -356,6 +360,7 @@ class RideFragment : Fragment() {
 
     /**Obtiene los nombres de las comunidades del usuario para mostrarlas en el dropdown menu*/
     private fun getCommunitiesNames() {
+        arrayCommunitiesNames.clear()
         for (id: String in arrayCommunitiesIds) {
             val dbSource = TaskCompletionSource<DataSnapshot>()
             val dbTask = dbSource.task

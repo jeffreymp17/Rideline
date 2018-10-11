@@ -20,8 +20,7 @@ import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.ValueEventListener
-
-
+import com.ridelineTeam.application.rideline.util.files.FirebaseUtils
 
 
 class HomeFragment : Fragment() {
@@ -35,8 +34,9 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        database = FirebaseDatabase.getInstance()
+        database = FirebaseUtils.getDatabase()
         databaseReference = database.reference.child(RIDES)
+        databaseReference.keepSynced(true)
         user = FirebaseAuth.getInstance().currentUser!!
     }
 

@@ -4,6 +4,8 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -15,6 +17,7 @@ import android.util.Log
 import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.gms.common.ConnectionResult
@@ -42,6 +45,7 @@ import com.ridelineTeam.application.rideline.util.files.*
 import com.ridelineTeam.application.rideline.util.helpers.*
 import es.dmoral.toasty.Toasty
 import io.reactivex.disposables.Disposable
+import java.util.*
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
@@ -227,7 +231,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                  }
                  hideProgressBar()
              }
-
         })
     }
 
@@ -244,14 +247,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         loadingBar.visibility = View.VISIBLE
         mMap = googleMap
         MapDrawHelper.setupGoogleMapScreenSettings(mMap)
-        loadingBar.visibility = View.GONE
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                currentPositionMarker()
-            }
-        } else {
-            currentPositionMarker()
+        if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            loadingBar.visibility = View.GONE
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    currentPositionMarker()
+                    mMap.isMyLocationEnabled = true
 
+                }
+            } else {
+                currentPositionMarker()
+
+            }
         }
     }
 
@@ -285,12 +294,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                 == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
                 if (location != null) {
+                    //convertCoordinateToAddress(location)
                     lastLocation = location
                     with(mMap) {
-                        isMyLocationEnabled = true
                         addMarker(MarkerOptions()
                                 .position(LatLng(location!!.latitude, location!!.longitude))
-                                .title(getString(R.string.your_position)).icon(BitmapDescriptorFactory.defaultMarker(207f)))
+                                .title(getString(R.string.your_position)).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_person_marker)))
                         val latLng = LatLng(location.latitude, location.longitude)
                         var cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
                         animateCamera(cameraUpdate)
@@ -445,6 +454,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                     locationResult ?: return
                     for (location in locationResult.locations) {
                         with(mMap) {
+
                             addMarker(MarkerOptions()
                                     .position(LatLng(location!!.latitude, location!!.longitude))
                                     .title(getString(R.string.your_position)).icon(BitmapDescriptorFactory.defaultMarker(207f)))
@@ -493,4 +503,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         }
 
     }
+    private fun convertCoordinateToAddress(location:Location){
+        try{
+           var  geo = Geocoder(applicationContext, Locale.getDefault())
+           var addresses:List<Address>  = geo.getFromLocation(location.latitude, location.longitude, 1)
+            if (addresses.isEmpty()) {
+               Log.d("LOCATION","WAITING")
+            }
+            else {
+                if (addresses.isNotEmpty()) {
+                    Log.d("LOCALITY","locality:${addresses[0].locality} Address:${addresses[0].getAddressLine(0)}Country:${addresses[0].countryName}")
+                    txtOrigin.setText(addresses[0].getAddressLine(0).toString(), TextView.BufferType.EDITABLE)
+                }
+            }
+        }
+        catch (e:Exception) {
+            e.printStackTrace()
+        }
+    }
+
 }

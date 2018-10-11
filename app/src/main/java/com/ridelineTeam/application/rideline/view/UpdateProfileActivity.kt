@@ -7,7 +7,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
-import com.afollestad.materialdialogs.MaterialDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -59,19 +58,11 @@ class UpdateProfileActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        val dialog = MaterialDialog.Builder(this)
-                .title("New car")
-                .customView(R.layout.cars_dialog_view, true)
-                .positiveText("register")
-                .build()
         InputsHelper.required(txtProfileNameLayout,resources)
         InputsHelper.required(txtProfileLastNamesLayout,resources)
 
         getUserProfile()
 
-        fabNewCard.setOnClickListener{
-            dialog.show()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -146,7 +137,4 @@ class UpdateProfileActivity : AppCompatActivity() {
 
     }
 
-    fun registerCar(){
-
-    }
 }

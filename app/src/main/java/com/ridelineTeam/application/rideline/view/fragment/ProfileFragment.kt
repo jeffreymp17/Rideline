@@ -31,6 +31,7 @@ import com.ridelineTeam.application.rideline.util.enums.Status
 import com.ridelineTeam.application.rideline.model.enums.Type
 import com.ridelineTeam.application.rideline.util.files.*
 import com.ridelineTeam.application.rideline.util.helpers.*
+import com.ridelineTeam.application.rideline.view.CarsActivity
 import com.ridelineTeam.application.rideline.view.PeopleRideDetailActivity
 import com.ridelineTeam.application.rideline.view.UpdateProfileActivity
 import com.squareup.picasso.Picasso
@@ -150,6 +151,10 @@ class ProfileFragment : Fragment() {
         return when (item!!.itemId) {
             R.id.action_edit ->{
                 startActivity(Intent(context, UpdateProfileActivity::class.java))
+                return true
+            }
+            R.id.action_cars ->{
+                startActivity(Intent(context, CarsActivity::class.java))
                 return true
             }
             else -> super.onOptionsItemSelected(item)

@@ -7,10 +7,8 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
-import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
-import com.afollestad.materialdialogs.MaterialDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -43,10 +41,9 @@ class CarsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_cars)
         currentUser = FirebaseAuth.getInstance().currentUser!!
         database = FirebaseDatabase.getInstance()
-        databaseReference = database.reference.child(USERS).child(currentUser.uid).child("cars")
+        databaseReference = database.reference.child(USERS).child(currentUser.uid)
         recycler = findViewById(R.id.carsRecycler)
 
-        initDialogComponents()
         initToolbar()
     }
 
@@ -63,9 +60,18 @@ class CarsActivity : AppCompatActivity() {
 
     private fun carDialog() : AlertDialog {
         val builder = AlertDialog.Builder(this)
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.cars_dialog_view,null)
+        builder.setView(dialogView)
+
+
+        txtCarModel = dialogView.findViewById(R.id.txtCarModel)
+        txtCarPlate = dialogView.findViewById(R.id.txtCarPlate)
+        txtCarModelLayout = dialogView.findViewById(R.id.txtCarModelLayout)
+        txtCarPlateLayout = dialogView.findViewById(R.id.txtCarPlateLayout)
+
         // Set the alert dialog title
         builder.setTitle(R.string.new_car)
-        builder.setView(R.layout.cars_dialog_view)
         // Display a message on alert dialog
         // Set a positive button and its click listener on alert dialog
         builder.setPositiveButton(this.resources.getString(R.string.save)) { _, _ ->
@@ -77,15 +83,6 @@ class CarsActivity : AppCompatActivity() {
         // Finally, make the alert dialog using builder
         return builder.create()
 
-    }
-
-    private fun initDialogComponents(){
-        val inflater = this.layoutInflater
-        val dialogView = inflater.inflate(R.layout.cars_dialog_view,null)
-        txtCarModel = dialogView.findViewById(R.id.txtCarModel)
-        txtCarPlate = dialogView.findViewById(R.id.txtCarPlate)
-        txtCarModelLayout = dialogView.findViewById(R.id.txtCarModelLayout)
-        txtCarPlateLayout = dialogView.findViewById(R.id.txtCarPlateLayout)
     }
 
     private fun initToolbar(){
@@ -107,7 +104,7 @@ class CarsActivity : AppCompatActivity() {
 
     private fun noCarMessage(){
         if(adapter!!.itemCount==0){
-            noCarsText.text = getString(R.string.noCars)
+            noCarsText.text =  databaseReference.toString()//getString(R.string.noCars)
         }
         else{
             noCarsText.text=""
@@ -115,14 +112,12 @@ class CarsActivity : AppCompatActivity() {
     }
 
     private fun registerCar(car: Car){
-        Toasty.info(this,"in 2",Toast.LENGTH_SHORT).show()
         val db = database.reference.child(USERS).child(currentUser.uid)
         car.id = db.push().key!!
         db.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val user = dataSnapshot.getValue(User::class.java)
                     if (user != null) {
-                        Log.d("USER",user.toString())
                         user.cars.add(car)
                         db.setValue(user)
                     }
@@ -146,7 +141,6 @@ class CarsActivity : AppCompatActivity() {
             register = false
         }
         if(register){
-            Toasty.info(this,"in 1",Toast.LENGTH_SHORT).show()
 
             val car = Car()
             car.model = txtCarModel.text.toString()

@@ -6,63 +6,49 @@ import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
-import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.auth.FirebaseUser
 import com.mukesh.countrypicker.CountryPicker
 import com.ridelineTeam.application.rideline.R
+import com.ridelineTeam.application.rideline.dataAccessLayer.interfaces.UserCallback
 import com.ridelineTeam.application.rideline.model.User
-import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.ridelineTeam.application.rideline.util.helpers.InputsHelper
-import com.ridelineTeam.application.rideline.view.fragment.ProfileFragment
 import com.squareup.picasso.Picasso
-import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_update_profile.*
-
+import com.ridelineTeam.application.rideline.dataAccessLayer.User as UserDal
 
 class UpdateProfileActivity : AppCompatActivity() {
     private lateinit var  countryPicker : CountryPicker
     private lateinit var  toolbar       : android.support.v7.widget.Toolbar
-    private lateinit var  countryCode: String
+    private lateinit var  countryCode : String
+    private lateinit var  currentUser: FirebaseUser
+    private lateinit var userDal:UserDal
+    private lateinit var user: User
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update_profile)
-
-        toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.title = "Edit Profile"
-        supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_delete)
-
-        FragmentHelper.backButtonToFragment(toolbar, PeopleRideDetailActivity@ this)
-
-        countryPicker = CountryPicker.Builder()
-                        .with(UpdateProfileActivity@this)
-                        .listener {
-                            txtCountryName.text=it.name
-                            Picasso.with(UpdateProfileActivity@this)
-                                    .load(it.flag)
-                                    .fit()
-                                    .into(imgCountryFlag)
-                            countryCode = it.code
-                        }.build()
-
-        cardCountry.setOnClickListener {
-            countryPicker.showDialog(supportFragmentManager)
-        }
+        currentUser = FirebaseAuth.getInstance().currentUser!!
+        userDal = UserDal(this@UpdateProfileActivity)
+        user = User()
+        initToolbar()
+        initCountryPicker()
     }
 
     override fun onStart() {
         super.onStart()
         InputsHelper.required(txtProfileNameLayout,resources)
         InputsHelper.required(txtProfileLastNamesLayout,resources)
-
-        getUserProfile()
-
+        userDal.getUser(
+            currentUser.uid,
+            object : UserCallback {
+                override fun onGetUserCallback(user: User) {
+                    this@UpdateProfileActivity.user = user
+                    loadUserData()
+                }
+            }
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -70,7 +56,6 @@ class UpdateProfileActivity : AppCompatActivity() {
         inflater.inflate(R.menu.update_profile, menu)
         return super.onCreateOptionsMenu(menu)
     }
-
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
@@ -82,22 +67,33 @@ class UpdateProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun getUserProfile() {
-        val id = FirebaseAuth.getInstance().currentUser!!.uid
-        val reference = FirebaseDatabase.getInstance().reference.child(USERS)
-        reference.child(id).addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-            }
-
-            override fun onDataChange(data: DataSnapshot) {
-                val user = data.getValue(User::class.java)
-                loadData(user!!)
-            }
-
-        })
+    private fun initToolbar(){
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.title = "Edit Profile"
+        supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_delete)
+        FragmentHelper.backButtonToFragment(toolbar, PeopleRideDetailActivity@ this)
     }
 
-    private fun loadData(user:User){
+    private fun initCountryPicker(){
+        countryPicker = CountryPicker.Builder()
+                .with(UpdateProfileActivity@this)
+                .listener {
+                    txtCountryName.text=it.name
+                    Picasso.with(UpdateProfileActivity@this)
+                            .load(it.flag)
+                            .fit()
+                            .into(imgCountryFlag)
+                    countryCode = it.code
+                }.build()
+
+        cardCountry.setOnClickListener {
+            countryPicker.showDialog(supportFragmentManager)
+        }
+    }
+
+    private fun loadUserData(){
         countryCode = user.country
         txtProfileName.setText(user.name, TextView.BufferType.EDITABLE)
         txtProfileLastNames.setText(user.lastName, TextView.BufferType.EDITABLE)
@@ -124,14 +120,11 @@ class UpdateProfileActivity : AppCompatActivity() {
             update = false
         }
         if(update){
-            val id = FirebaseAuth.getInstance().currentUser!!.uid
-            val reference = FirebaseDatabase.getInstance().reference.child(USERS)
-            reference.child(id).child("name").setValue(txtProfileName.text.toString())
-            reference.child(id).child("lastName").setValue(txtProfileLastNames.text.toString())
-            reference.child(id).child("status").setValue(txtProfileStatus.text.toString())
-            reference.child(id).child("country").setValue(countryCode)
-            Toasty.success(this, getString(R.string.profileUpdate), Toast.LENGTH_SHORT, true).show()
-            FragmentHelper.changeFragment(ProfileFragment(),supportFragmentManager)
+            user.name=txtProfileName.text.toString()
+            user.lastName=txtProfileLastNames.text.toString()
+            user.status = txtProfileStatus.text.toString()
+            user.country=countryCode
+            userDal.update(user)
             finish()
         }
 

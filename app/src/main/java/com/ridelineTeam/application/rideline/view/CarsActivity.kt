@@ -4,58 +4,42 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.widget.EditText
-import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.*
 import com.ridelineTeam.application.rideline.R
-import com.ridelineTeam.application.rideline.adapter.CarsAdapter
 import com.ridelineTeam.application.rideline.model.Car
-import com.ridelineTeam.application.rideline.model.User
-import com.ridelineTeam.application.rideline.util.files.USERS
 import com.ridelineTeam.application.rideline.util.helpers.FragmentHelper
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView
-import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_cars.*
-
+import com.ridelineTeam.application.rideline.dataAccessLayer.Car as CarDal
 class CarsActivity : AppCompatActivity() {
 
-    private lateinit var database: FirebaseDatabase
-    private lateinit var databaseReference: DatabaseReference
     private lateinit var currentUser: FirebaseUser
-
-    private  var adapter: CarsAdapter.CarsAdapterRecycler?=null
     private lateinit var recycler: MultiSnapRecyclerView
     private lateinit var toolbar: Toolbar
     private lateinit var txtCarModel: EditText
     private lateinit var txtCarPlate: EditText
     private lateinit var txtCarModelLayout: TextInputLayout
     private lateinit var txtCarPlateLayout: TextInputLayout
+    private lateinit var carDal: CarDal
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cars)
         currentUser = FirebaseAuth.getInstance().currentUser!!
-        database = FirebaseDatabase.getInstance()
-        databaseReference = database.reference.child(USERS).child(currentUser.uid)
         recycler = findViewById(R.id.carsRecycler)
-
+        carDal = CarDal(this@CarsActivity)
         initToolbar()
     }
 
     override fun onStart() {
         super.onStart()
-        loadCars()
-
         val dialog: AlertDialog = carDialog()
-
-        fabNewCard.setOnClickListener{
-            dialog.show()
-        }
+        carDal.all(recycler)
+        fabNewCard.setOnClickListener{dialog.show()}
     }
 
     private fun carDialog() : AlertDialog {
@@ -64,23 +48,14 @@ class CarsActivity : AppCompatActivity() {
         val dialogView = inflater.inflate(R.layout.cars_dialog_view,null)
         builder.setView(dialogView)
 
-
         txtCarModel = dialogView.findViewById(R.id.txtCarModel)
         txtCarPlate = dialogView.findViewById(R.id.txtCarPlate)
         txtCarModelLayout = dialogView.findViewById(R.id.txtCarModelLayout)
         txtCarPlateLayout = dialogView.findViewById(R.id.txtCarPlateLayout)
 
-        // Set the alert dialog title
         builder.setTitle(R.string.new_car)
-        // Display a message on alert dialog
-        // Set a positive button and its click listener on alert dialog
-        builder.setPositiveButton(this.resources.getString(R.string.save)) { _, _ ->
-            getCarData()
-        }
-        // Display a negative button on alert dialog
-        builder.setNegativeButton(this.resources.getString(R.string.cancel)) { _, _ ->
-        }
-        // Finally, make the alert dialog using builder
+        builder.setPositiveButton(this.resources.getString(R.string.save)) { _, _ -> getCarData() }
+        builder.setNegativeButton(this.resources.getString(R.string.cancel)) { _, _ -> }
         return builder.create()
 
     }
@@ -93,61 +68,23 @@ class CarsActivity : AppCompatActivity() {
         FragmentHelper.backButtonToFragment(toolbar, PeopleRideDetailActivity@ this)
     }
 
-    private fun loadCars(){
-        val linearLayoutManager = LinearLayoutManager(this)
-        linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        recycler.layoutManager = linearLayoutManager
-        adapter = CarsAdapter.CarsAdapterRecycler(this, databaseReference, this)
-        recycler.adapter = adapter
-        noCarMessage()
-    }
-
-    private fun noCarMessage(){
-        if(adapter!!.itemCount==0){
-            noCarsText.text =  databaseReference.toString()//getString(R.string.noCars)
-        }
-        else{
-            noCarsText.text=""
-        }
-    }
-
-    private fun registerCar(car: Car){
-        val db = database.reference.child(USERS).child(currentUser.uid)
-        car.id = db.push().key!!
-        db.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val user = dataSnapshot.getValue(User::class.java)
-                    if (user != null) {
-                        user.cars.add(car)
-                        db.setValue(user)
-                    }
-                }
-
-            override fun onCancelled(databaseError: DatabaseError) {}
-        })
-    }
-
     private fun getCarData(){
-        Toasty.info(this,"in",Toast.LENGTH_SHORT).show()
-
-        var register = true
+        var isAllOk = true
         if (TextUtils.isEmpty(txtCarModel.text)){
             txtCarModelLayout.error = resources.getString(R.string.requiredFieldMessage)
-            register = false
+            isAllOk = false
         }
 
         if (TextUtils.isEmpty(txtCarPlate.text)){
             txtCarPlateLayout.error = resources.getString(R.string.requiredFieldMessage)
-            register = false
+            isAllOk = false
         }
-        if(register){
 
+        if(isAllOk){
             val car = Car()
             car.model = txtCarModel.text.toString()
             car.plate = txtCarPlate.text.toString()
-
-            registerCar(car)
-
+            carDal.register(car)
         }
     }
 }

@@ -242,6 +242,13 @@
     <string name="view_details">Ver detalles</string>
     <string name="gender">Sexo</string>
     <string name="country">País</string>
+    <string name="edit">Edit</string>
+    <string name="hint_txtCarModel">Model</string>
+    <string name="hint_txtCarPlate">Car plate</string>
+    <string name="cars">Cars</string>
+    <string name="noCars">You don\'t have any car</string>
+    <string name="new_car">New Car</string>
+    <string name="save">Save</string>
 
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">

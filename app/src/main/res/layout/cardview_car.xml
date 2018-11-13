@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cardViewCar"
+    android:layout_width="match_parent"
+    android:layout_height="80dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/carPicture"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/cars_512"
+            android:layout_marginStart="@dimen/white_space"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_toEndOf="@+id/carPicture"
+            android:layout_marginStart="@dimen/white_space">
+            <TextView
+                android:id="@+id/carModel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/primaryText"
+                android:textSize="18sp"
+                android:text="@string/hint_txtUser"
+                />
+            <TextView
+                android:id="@+id/carPlate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/secondaryText"
+                android:textSize="14sp"
+                android:text="@string/hint_txtUser"
+                />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnRemoveCar"
+            android:enabled="true"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:theme="@style/RaisedButtonCancel"
+            android:src="@drawable/ic_cancel"
+            />
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>

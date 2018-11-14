@@ -34,7 +34,7 @@ class Community(private val activity: Activity) {
 
                     override fun onDataChange(data: DataSnapshot) {
                         val community = data.getValue(Community::class.java)
-                        communityCallback.getCommunityUsers(community!!)
+                        communityCallback.getCommunity(community!!)
                     }
 
                 })
@@ -56,6 +56,7 @@ class Community(private val activity: Activity) {
 
         })
     }
+    
     fun join(communityId: String){
         val communityRef = database.reference.child(COMMUNITIES).child(communityId)
         communityRef.addListenerForSingleValueEvent(object:ValueEventListener{
@@ -78,7 +79,29 @@ class Community(private val activity: Activity) {
                 userDal.addCommunity(communityId)
             }
         })
-
     }
 
+
+    fun saveCommunity(community:Community,userId:String){
+        val db = FirebaseUtils.getDatabase().reference.child(COMMUNITIES).push()
+        db.setValue(community).addOnCompleteListener {
+            if(it.isComplete){
+                addCommunityToCreator(db.key!!,userId)
+            }
+        }
+    }
+    
+    private fun addCommunityToCreator(key:String,uid:String ){
+        val db = FirebaseUtils.getDatabase().reference.child(USERS)
+        db.child(uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val user = dataSnapshot.getValue(User::class.java)
+                user!!.communities.add(key)
+                db.child(uid).setValue(user)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+            }
+        })
+    }
 }

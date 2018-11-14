@@ -1,5 +1,7 @@
 package com.ridelineTeam.application.rideline.model
 
+import com.ridelineTeam.application.rideline.model.enums.Type
+import com.ridelineTeam.application.rideline.util.enums.CommunityType
 import java.io.Serializable
 import kotlin.collections.ArrayList
 
@@ -10,13 +12,15 @@ data class Community(var name:String="",
                      var createdBy:String="",
                      var admin:String="",
                      var createdDate:String="",
+                     var type:CommunityType=CommunityType.PRIVATE,
                      var id:String=""): Serializable{
-
-    fun isUserInCommunity(_userId:String):Boolean {
-        for (userId in this.users) {
-            if (_userId.equals(userId, ignoreCase = true))
-                return true
+                     
+        fun isUserInCommunity(_userId:String):Boolean {
+            for (userId in this.users) {
+                if (_userId.equals(userId, ignoreCase = true))
+                    return true
+            }
+            return false
         }
-        return false
-    }
+                     
 }

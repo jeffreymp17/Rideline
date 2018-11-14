@@ -17,6 +17,7 @@ package com.ridelineTeam.application.rideline.adapter;
  */
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.text.style.CharacterStyle;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -111,8 +112,9 @@ public class PlaceAutocompleteAdapter
         return mResultList.get(position);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View row = super.getView(position, convertView, parent);
 
         // Sets the primary and secondary text for a row.
@@ -121,8 +123,9 @@ public class PlaceAutocompleteAdapter
 
         AutocompletePrediction item = getItem(position);
 
-        TextView textView1 = (TextView) row.findViewById(android.R.id.text1);
-        TextView textView2 = (TextView) row.findViewById(android.R.id.text2);
+        TextView textView1 = row.findViewById(android.R.id.text1);
+        TextView textView2 = row.findViewById(android.R.id.text2);
+        assert item != null;
         textView1.setText(item.getPrimaryText(STYLE_BOLD));
         textView2.setText(item.getSecondaryText(STYLE_BOLD));
 
@@ -132,6 +135,7 @@ public class PlaceAutocompleteAdapter
     /**
      * Returns the filter for the current set of autocomplete results.
      */
+    @NonNull
     @Override
     public Filter getFilter() {
         return new Filter() {

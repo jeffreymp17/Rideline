@@ -13,4 +13,14 @@ data class Community(var name:String="",
                      var admin:String="",
                      var createdDate:String="",
                      var type:CommunityType=CommunityType.PRIVATE,
-                     var id:String=""): Serializable
+                     var id:String=""): Serializable{
+                     
+        fun isUserInCommunity(_userId:String):Boolean {
+            for (userId in this.users) {
+                if (_userId.equals(userId, ignoreCase = true))
+                    return true
+            }
+            return false
+        }
+                     
+}

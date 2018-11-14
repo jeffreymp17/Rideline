@@ -23,22 +23,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.ridelineTeam.application.rideline.R;
 import com.ridelineTeam.application.rideline.model.Community;
-import com.ridelineTeam.application.rideline.model.User;
 import com.ridelineTeam.application.rideline.util.helpers.DateTimeAndStringHelper;
-import com.ridelineTeam.application.rideline.util.helpers.NotificationHelper;
-import com.ridelineTeam.application.rideline.view.ChatCommunityActivity;
 import com.ridelineTeam.application.rideline.view.CommunityRidesActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
-
-import static com.ridelineTeam.application.rideline.util.files.ConstantsKt.COMMUNITIES;
-import static com.ridelineTeam.application.rideline.util.files.ConstantsKt.USERS;
 
 
 public class CommunityAdapter {
@@ -66,6 +59,8 @@ public class CommunityAdapter {
         private List<Community> communities;
         private List<String> communitiesIds;
         private Activity activity;
+        private com.ridelineTeam.application.rideline.dataAccessLayer.Community communityDal;
+        final private FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         public CommunityAdapterRecycler(final Context context, DatabaseReference reference,
                                         Activity activity) {
@@ -75,15 +70,16 @@ public class CommunityAdapter {
             this.activity = activity;
             this.communities = new ArrayList<>();
             this.communitiesIds = new ArrayList<>();
-            String currentUserId=FirebaseAuth.getInstance().getCurrentUser().getUid();
+            this.communityDal = new com.ridelineTeam.application.rideline.dataAccessLayer.Community(this.activity);
 
             ChildEventListener childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
                     try {
                         Community community = dataSnapshot.getValue(Community.class);
+                        assert community != null;
                         for (String userId:community.getUsers()) {
-                            if (userId.equals(currentUserId)){
+                            if (userId.equals(currentUser.getUid())){
                                 communitiesIds.add(dataSnapshot.getKey());
                                 communities.add(community);
                                 notifyItemInserted(communities.size() - 1);
@@ -96,20 +92,14 @@ public class CommunityAdapter {
                 }
 
                 @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    Log.d("CommunityAdapter", "onChildChanged:" + dataSnapshot.getKey());
-                    Log.d("Changed", dataSnapshot.toString());
-                    // A comment has changed, use the key to determine if we are displaying this
-                    // comment and if so displayed the changed comment.
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, String s) {
                     Community community = dataSnapshot.getValue(Community.class);
 
                     String communityKey = dataSnapshot.getKey();
-                    // [START_EXCLUDE]
                     int communityIndex = communitiesIds.indexOf(communityKey);
                     if (communityIndex > -1) {
-                        // Replace with the new data
                         communities.set(communityIndex, community);
-                        // Update the RecyclerView
+
                         notifyItemChanged(communityIndex);
                     } else {
                         Log.w("RideAdapter", "onChildChanged:unknown_child:" + communityKey);
@@ -117,21 +107,14 @@ public class CommunityAdapter {
                 }
 
                 @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    Log.d("RideAdapter", "onChildRemoved:" + dataSnapshot.getKey());
-
-                    // A comment has changed, use the key to determine if we are displaying this
-                    // comment and if so remove it.
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                     String communityKey = dataSnapshot.getKey();
 
-                    // [START_EXCLUDE]
                     int communityIndex = communitiesIds.indexOf(communityKey);
                     if (communityIndex > -1) {
-                        // Remove data from the list
                         communitiesIds.remove(communityIndex);
                         communities.remove(communityIndex);
 
-                        // Update the RecyclerView
                         notifyItemRemoved(communityIndex);
                     } else {
                         Log.w("RideAdapter", "onChildRemoved:unknown_child:" + communityKey);
@@ -139,15 +122,14 @@ public class CommunityAdapter {
                 }
 
                 @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, String s) {
                     Log.d("RideAdapter", "onChildMoved:" + dataSnapshot.getKey());
 
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
+                public void onCancelled(@NonNull DatabaseError databaseError) {
                     Log.w("RideAdapter", "postRide:onCancelled", databaseError.toException());
-                    //Toast.makeText(context, "Failed to load comments.",Toast.LENGTH_SHORT).show();
                 }
             };
             this.databaseReference.addChildEventListener(childEventListener);
@@ -162,11 +144,11 @@ public class CommunityAdapter {
             this.activity = activity;
             this.communities = new ArrayList<>();
             this.communitiesIds = new ArrayList<>();
+            this.communityDal = new com.ridelineTeam.application.rideline.dataAccessLayer.Community(this.activity);
+
             ChildEventListener childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
-                    Log.d("CommunityAdapter", "onChildAdded " + dataSnapshot.getKey());
-                    Log.d("ADDED", dataSnapshot.toString());
 
                     try {
                         Community community = dataSnapshot.getValue(Community.class);
@@ -182,19 +164,14 @@ public class CommunityAdapter {
 
                 @Override
                 public void onChildChanged(@NonNull DataSnapshot dataSnapshot, String s) {
-                    Log.d("CommunityAdapter", "onChildChanged:" + dataSnapshot.getKey());
-                    Log.d("Changed", dataSnapshot.toString());
-                    // A comment has changed, use the key to determine if we are displaying this
-                    // comment and if so displayed the changed comment.
                     Community community = dataSnapshot.getValue(Community.class);
 
                     String communityKey = dataSnapshot.getKey();
-                    // [START_EXCLUDE]
+
                     int communityIndex = communitiesIds.indexOf(communityKey);
                     if (communityIndex > -1) {
-                        // Replace with the new data
                         communities.set(communityIndex, community);
-                        // Update the RecyclerView
+
                         notifyItemChanged(communityIndex);
                     } else {
                         Log.w("RideAdapter", "onChildChanged:unknown_child:" + communityKey);
@@ -203,20 +180,15 @@ public class CommunityAdapter {
 
                 @Override
                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    Log.d("RideAdapter", "onChildRemoved:" + dataSnapshot.getKey());
 
-                    // A comment has changed, use the key to determine if we are displaying this
-                    // comment and if so remove it.
                     String communityKey = dataSnapshot.getKey();
 
-                    // [START_EXCLUDE]
                     int communityIndex = communitiesIds.indexOf(communityKey);
                     if (communityIndex > -1) {
-                        // Remove data from the list
+
                         communitiesIds.remove(communityIndex);
                         communities.remove(communityIndex);
 
-                        // Update the RecyclerView
                         notifyItemRemoved(communityIndex);
                     } else {
                         Log.w("RideAdapter", "onChildRemoved:unknown_child:" + communityKey);
@@ -240,6 +212,7 @@ public class CommunityAdapter {
             query.addChildEventListener(childEventListener);
             this.childEventListener = childEventListener;
         }
+        @NonNull
         @Override
         public CommunityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(context);
@@ -251,17 +224,11 @@ public class CommunityAdapter {
         @Override
         public void onBindViewHolder(@NonNull final CommunityViewHolder holder, int position) {
             final Community community = communities.get(position);
-            final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-            holder.communityNameCard.setText(
-                    DateTimeAndStringHelper.capitalize(community.getName()));
+            holder.communityNameCard.setText(DateTimeAndStringHelper.capitalize(community.getName()));
             holder.communityDescriptionCard.setText(community.getDescription());
 
             holder.cardViewCommunity.setOnClickListener(view -> {
-                Boolean inCommunity = false;
-                for (String userId:community.getUsers()) {
-                    if (currentUser.getUid().equalsIgnoreCase(userId))
-                        inCommunity=true;
-                }
+                Boolean inCommunity = community.isUserInCommunity(currentUser.getUid());
                 if (inCommunity){
                     Intent intent = new Intent(activity,CommunityRidesActivity.class);
                     intent.putExtra("community", community);
@@ -272,12 +239,13 @@ public class CommunityAdapter {
                             activity.getResources().getString(R.string.cant_access_community),
                             Toast.LENGTH_LONG).show();
                 }
+            });
 
-            });
             holder.btnJoin.setOnClickListener(view -> {
-                String key = communitiesIds.get(holder.getAdapterPosition());
-                joinToGroup(key);
+                String communityId = communitiesIds.get(holder.getAdapterPosition());
+                communityDal.join(communityId);
             });
+
             for (String id : community.getUsers()) {
                 if (id.equalsIgnoreCase(currentUser.getUid())) {
                     holder.btnJoin.setEnabled(false);
@@ -292,68 +260,9 @@ public class CommunityAdapter {
             return communities.size();
         }
 
-
         public void cleanupListener() {
             if (childEventListener != null) {
-                Log.d("CLEAN", "LIMPIANDO LISTENER");
                 databaseReference.removeEventListener(childEventListener);
-            }
-        }
-
-        private void joinToGroup(final String key) {
-            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            final DatabaseReference db = databaseReference.getDatabase().getReference().child(COMMUNITIES);
-            db.child(key).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Community community = dataSnapshot.getValue(Community.class);
-                    community.getUsers().add(user.getUid());
-                    db.child(key).child("users").setValue(community.getUsers());
-
-                    final DatabaseReference reference = databaseReference.getDatabase().getReference().child(USERS);
-                    reference.child(community.getAdmin()).addListenerForSingleValueEvent(
-                            new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    User user1 = dataSnapshot.getValue(User.class);
-                                    if (user1 != null) {
-                                        NotificationHelper.message(com.ridelineTeam.application.rideline.MainActivity.Companion.getFmc(),
-                                                user1.getToken(), activity.getResources().getString(R.string.join_title),
-                                                user.getDisplayName() + " "+
-                                                activity.getResources().getString(R.string.join_body));
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            }
-                    );
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-            final DatabaseReference db1 = databaseReference.getDatabase().getReference().child(USERS);
-            if (user != null) {
-                db1.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        User user1 = dataSnapshot.getValue(User.class);
-                        if (user1 != null) {
-                            user1.getCommunities().add(key);
-                            db1.child(user.getUid()).setValue(user1);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
             }
         }
     }

@@ -2,6 +2,8 @@ package com.ridelineTeam.application.rideline.dataAccessLayer
 
 import android.app.Activity
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.dataAccessLayer.interfaces.UserCallback
@@ -12,9 +14,10 @@ import es.dmoral.toasty.Toasty
 
 class User(private val activity: Activity){
     val database: FirebaseDatabase = FirebaseDatabase.getInstance()
+    val currentUser: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
 
     fun getUser(id: String, userCallback: UserCallback) {
-        val reference = FirebaseDatabase.getInstance().reference.child(USERS).child(id)
+        val reference = database.reference.child(USERS).child(id)
         reference.runTransaction(object: Transaction.Handler {
             override fun onComplete(databaseError: DatabaseError?, boolean: Boolean, data: DataSnapshot?) {
                 if (databaseError!=null){
@@ -43,5 +46,21 @@ class User(private val activity: Activity){
         reference.child("country").setValue(user.country)
         Toasty.success(activity, activity.getString(R.string.profileUpdate),
                 Toast.LENGTH_SHORT, true).show()
+    }
+
+    fun addCommunity(communityId: String){
+        val userRef = database.reference.child(USERS).child(currentUser.uid)
+        userRef.addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val user = dataSnapshot.getValue(User::class.java)
+                if (user != null) {
+                    user.communities.add(communityId)
+                    userRef.setValue(user)
+                }
+            }
+        })
     }
 }

@@ -17,12 +17,9 @@ import android.util.Log
 import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException
-import com.google.android.gms.common.GooglePlayServicesRepairableException
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
@@ -48,7 +45,6 @@ import com.ridelineTeam.application.rideline.util.files.*
 import com.ridelineTeam.application.rideline.util.helpers.*
 import es.dmoral.toasty.Toasty
 import io.reactivex.disposables.Disposable
-import java.util.*
 import kotlin.collections.ArrayList
 import com.ridelineTeam.application.rideline.dataAccessLayer.Community as CommunityDal
 
@@ -65,8 +61,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
     private lateinit var manager: LocationManager
     private lateinit var database: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
-    private var listOfTokens = ArrayList<String>()
-    private var usersIds = ArrayList<String>()
     private var communityDescription = ""
     private val overview = 0
     private lateinit var ride: Ride
@@ -92,6 +86,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         communityDal = CommunityDal(this@MapsActivity)
         ride = intent.getSerializableExtra("rideObject") as Ride
         val country = intent.getStringExtra("country")
+        init(country)
+        Log.d("gettingObject", ride.toString())
+        Log.d("MY COMMUNITY::", "" + getCommunityForNotification(ride.community))
+        manager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        getPermissionLocation()
+
+    }
+
+    private fun init(country: String?) {
         materialDialog = MaterialDialog.Builder(this)
                 .title(getString(R.string.loading))
                 .content(getString(R.string.please_wait))
@@ -113,12 +116,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         loadingBar = findViewById(R.id.loading)
         database = FirebaseDatabase.getInstance()
         databaseReference = database.reference.child(RIDES).push()
-        Log.d("gettingObject", ride.toString())
-        Log.d("MY COMMUNITY::", "" + getCommunityForNotification(ride.community))
-        // currentPosition()
-        manager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        getPermissionLocation()
-
     }
 
 
@@ -209,20 +206,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
             }
         }
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PLACE_PICKER_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                val place = PlacePicker.getPlace(this, data)
-                var addressText = place.name.toString()
-                addressText += "\n" + place.address.toString()
-
-                //   placeMarkerOnMap(place.latLng)
-            }
-        }
-    }
-
     private fun currentPositionMarker() {
         if (ContextCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION)
@@ -281,7 +264,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
     private fun sendNotification() {
         with(communityDal) {
             getCommunity(ride.community, object : CommunityCallback {
-                override fun getCommunityUsers(community: Community) {
+                override fun getCommunity(community: Community) {
                     val users: List<String> = community.users.filterNot { it == MainActivity.userId }
                     getCommunityTokens(users as ArrayList<String>
                             , object : TokenCallback {
@@ -339,20 +322,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
             return
         }
     }
-
-    private fun startLocationUpdates() {
-
-        if (ContextCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationClient.requestLocationUpdates(locationRequest(),
-                    locationCallback, Looper.myLooper())
-
-        }
-
-
-    }
-
     private fun locationRequest(): LocationRequest {
         var locationRequest = LocationRequest()
         if (manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -417,21 +386,5 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
 
     }
 
-    private fun convertCoordinateToAddress(location: Location) {
-        try {
-            var geo = Geocoder(applicationContext, Locale.getDefault())
-            var addresses: List<Address> = geo.getFromLocation(location.latitude, location.longitude, 1)
-            if (addresses.isEmpty()) {
-                Log.d("LOCATION", "WAITING")
-            } else {
-                if (addresses.isNotEmpty()) {
-                    Log.d("LOCALITY", "locality:${addresses[0].locality} Address:${addresses[0].getAddressLine(0)}Country:${addresses[0].countryName}")
-                    txtOrigin.setText(addresses[0].getAddressLine(0).toString(), TextView.BufferType.EDITABLE)
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
 
 }

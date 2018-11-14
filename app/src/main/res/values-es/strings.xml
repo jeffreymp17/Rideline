@@ -249,6 +249,9 @@
     <string name="noCars">You don\'t have any car</string>
     <string name="new_car">New Car</string>
     <string name="save">Save</string>
+    <string name="radioPrivate">Privada</string>
+    <string name="radioPublic">Pública</string>
+    <string name="communityType">Tipo de comunidad</string>
 
     <!--ARRAY OF RESTRICTIONS-->
     <string-array name="restrictions_array">

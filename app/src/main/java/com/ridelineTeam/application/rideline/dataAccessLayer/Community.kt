@@ -8,6 +8,7 @@ import com.google.firebase.database.ValueEventListener
 import com.ridelineTeam.application.rideline.dataAccessLayer.interfaces.CommunityCallback
 import com.ridelineTeam.application.rideline.dataAccessLayer.interfaces.TokenCallback
 import com.ridelineTeam.application.rideline.model.Community
+import com.ridelineTeam.application.rideline.model.User
 import com.ridelineTeam.application.rideline.util.files.COMMUNITIES
 import com.ridelineTeam.application.rideline.util.files.FirebaseUtils
 import com.ridelineTeam.application.rideline.util.files.TOKEN
@@ -29,7 +30,7 @@ class Community(private val activity: Activity) {
 
                     override fun onDataChange(data: DataSnapshot) {
                         val community = data.getValue(Community::class.java)
-                        communityCallback.getCommunityUsers(community!!)
+                        communityCallback.getCommunity(community!!)
                     }
 
                 })
@@ -52,5 +53,29 @@ class Community(private val activity: Activity) {
             }
 
         })
+    }
+    private fun addCommunityToCreator(key:String,uid:String ){
+        val db = FirebaseUtils.getDatabase().reference.child(USERS)
+        db.child(uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val user = dataSnapshot.getValue(User::class.java)
+                user!!.communities.add(key)
+                db.child(uid).setValue(user)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+
+            }
+        })
+
+    }
+    fun saveCommunity(community:Community,userId:String){
+        val db = FirebaseUtils.getDatabase().reference.child(COMMUNITIES).push()
+        db.setValue(community).addOnCompleteListener {
+            if(it.isComplete){
+                addCommunityToCreator(db.key!!,userId)
+            }
+        }
+
     }
 }

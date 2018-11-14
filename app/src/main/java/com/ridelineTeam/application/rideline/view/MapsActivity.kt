@@ -39,6 +39,9 @@ import com.ridelineTeam.application.rideline.MainActivity.Companion.PERMISSION_R
 import com.ridelineTeam.application.rideline.MainActivity.Companion.PLACE_PICKER_REQUEST
 import com.ridelineTeam.application.rideline.R
 import com.ridelineTeam.application.rideline.adapter.PlaceAutocompleteAdapter
+import com.ridelineTeam.application.rideline.dataAccessLayer.interfaces.CommunityCallback
+import com.ridelineTeam.application.rideline.dataAccessLayer.interfaces.TokenCallback
+import com.ridelineTeam.application.rideline.model.Community
 import com.ridelineTeam.application.rideline.model.Ride
 import com.ridelineTeam.application.rideline.model.enums.Type
 import com.ridelineTeam.application.rideline.util.files.*
@@ -46,6 +49,8 @@ import com.ridelineTeam.application.rideline.util.helpers.*
 import es.dmoral.toasty.Toasty
 import io.reactivex.disposables.Disposable
 import java.util.*
+import kotlin.collections.ArrayList
+import com.ridelineTeam.application.rideline.dataAccessLayer.Community as CommunityDal
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
@@ -75,7 +80,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
             LatLng((71).toDouble(), (136).toDouble())
     )
     private lateinit var connectivityDisposable: Disposable
-
+    private lateinit var communityDal: CommunityDal
 
     override fun onConnectionFailed(p0: ConnectionResult) {
         Toasty.error(this, p0.errorMessage.toString(), Toast.LENGTH_SHORT).show()
@@ -84,6 +89,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+        communityDal = CommunityDal(this@MapsActivity)
         ride = intent.getSerializableExtra("rideObject") as Ride
         val country = intent.getStringExtra("country")
         materialDialog = MaterialDialog.Builder(this)
@@ -112,8 +118,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         // currentPosition()
         manager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         getPermissionLocation()
-    }
 
+    }
 
 
     override fun onDestroy() {
@@ -121,66 +127,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         //  stopLocationUpdates()
         Log.d("STATE", "onDestroy")
     }
-    /*
-       private fun stopLocationUpdates() {
-           fusedLocationClient.removeLocationUpdates(
-                   locationCallback)
-       }
-
-         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-              super.onActivityResult(requestCode, resultCode, data)
-              Log.d("STARTGPS", "onActivityResult() called with: requestCode = [$requestCode], resultCode = [$resultCode], data = [$data]");
-              if (resultCode == Activity.RESULT_OK) {
-                  Log.d("STARTGPS", "ENBLED")
-                 /// permissionGranted=true
-                 // getLocation()
-                  startLocationUpdates()
-
-              } else if (resultCode == Activity.RESULT_CANCELED) {
-                  Toasty.warning(applicationContext, getString(R.string.permissionGPS), Toast.LENGTH_LONG, true).show()
-
-              }
-          }*/
-    /* private fun currentPosition() {
-           if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-               FragmentHelper.startGPS(this@MapsActivity)
-
-           } else {
-             locationRequest()
-           }
-       }*/
-    //else {
-    //  startLocationUpdates()
-    /*     locationListener = object : LocationListener {
-             override fun onLocationChanged(location: Location?) {
-                 with(mMap) {
-                     addMarker(MarkerOptions()
-                             .position(LatLng(location!!.latitude, location!!.longitude))
-                             .title("You are Here").icon(BitmapDescriptorFactory.defaultMarker(207f)))
-                     val latLng = LatLng(location.latitude, location.longitude)
-                     var cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15f)
-                     animateCamera(cameraUpdate)
-                     manager.removeUpdates(locationListener)
-                     Log.d("HERE", "I AM HERE")
-
-                 }
-             }
-
-             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-             }
-
-             override fun onProviderEnabled(provider: String?) {
-             }
-
-             override fun onProviderDisabled(provider: String?) {
-             }
-
-         }
-
-         manager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000 * 0, 0f, locationListener)
-*/
-
-    //}
 
     override fun onBackPressed() {
         super.onBackPressed()
@@ -206,31 +152,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
             }
         }
         btnCreate.setOnClickListener({ _ ->
-             if (validateFields()) {
-                 showProgressBar()
-                 ride.origin = txtOrigin.text.toString()
-                 ride.destination = txtDestination.text.toString()
-                 ride.id = databaseReference.key!!
-                 databaseReference.setValue(ride).addOnSuccessListener {
-                     getCommunityUsers()
-                     databaseReference.database.reference
-                             .child(USERS)
-                             .child(ride.user)
-                             .child("activeRide")
-                             .setValue(ride).addOnCompleteListener {
-                                 if (it.isComplete) {
-                                     databaseReference.database.reference.child(USERS)
-                                             .child(ride.user)
-                                             .child("taked").setValue(1)
-                                     startActivity(Intent(baseContext, MainActivity::class.java))
-                                     finish()
-                                 }
-                             }.addOnFailureListener {
-                                 Toasty.error(applicationContext, "Error when save active ride", Toast.LENGTH_SHORT, true).show()
-                             }
-                 }
-                 hideProgressBar()
-             }
+            if (validateFields()) {
+                showProgressBar()
+                ride.origin = txtOrigin.text.toString()
+                ride.destination = txtDestination.text.toString()
+                ride.id = databaseReference.key!!
+                databaseReference.setValue(ride).addOnSuccessListener {
+                    sendNotification()
+                    databaseReference.database.reference
+                            .child(USERS)
+                            .child(ride.user)
+                            .child("activeRide")
+                            .setValue(ride).addOnCompleteListener {
+                                if (it.isComplete) {
+                                    databaseReference.database.reference.child(USERS)
+                                            .child(ride.user)
+                                            .child("taked").setValue(1)
+                                    startActivity(Intent(baseContext, MainActivity::class.java))
+                                    finish()
+                                }
+                            }.addOnFailureListener {
+                                Toasty.error(applicationContext, "Error when save active ride", Toast.LENGTH_SHORT, true).show()
+                            }
+                }
+                hideProgressBar()
+            }
         })
     }
 
@@ -261,17 +207,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                 currentPositionMarker()
 
             }
-        }
-    }
-
-    private fun loadPlacePicker() {
-        val builder = PlacePicker.IntentBuilder()
-        try {
-            startActivityForResult(builder.build(this@MapsActivity), PLACE_PICKER_REQUEST)
-        } catch (e: GooglePlayServicesRepairableException) {
-            e.printStackTrace()
-        } catch (e: GooglePlayServicesNotAvailableException) {
-            e.printStackTrace()
         }
     }
 
@@ -313,7 +248,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
 
 
     private fun drawMap(origin: String, destination: String) {
-        InputsHelper.hideKeyboard(applicationContext,window.decorView.rootView)
+        InputsHelper.hideKeyboard(applicationContext, window.decorView.rootView)
         try {
             val results = MapDrawHelper.getDirectionsDetails(origin, destination,
                     TravelMode.DRIVING, getString(R.string.apiKey))
@@ -343,51 +278,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         }
     }
 
-    private fun getCommunityUsers() {
-        val ref: DatabaseReference = database.reference
-        val query: Query = ref.child(COMMUNITIES).child(ride.community).child(COMMUNITY_USERS)
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
+    private fun sendNotification() {
+        with(communityDal) {
+            getCommunity(ride.community, object : CommunityCallback {
+                override fun getCommunityUsers(community: Community) {
+                    val users: List<String> = community.users.filterNot { it == MainActivity.userId }
+                    getCommunityTokens(users as ArrayList<String>
+                            , object : TokenCallback {
+                        override fun getCommunityTokens(tokenList: ArrayList<String>) {
+                            if (ride.type.toString() == Type.OFFERED.toString()) {
+                                NotificationHelper.messageToCommunity(MainActivity.fmc, tokenList,
+                                        resources.getString(R.string.new_ride_offered),
+                                        resources.getString(R.string.new_ride_offered_body) + " " + communityDescription)
+                            } else {
+                                NotificationHelper.messageToCommunity(MainActivity.fmc, tokenList,
+                                        resources.getString(R.string.new_ride_requested),
+                                        resources.getString(R.string.new_ride_requested_body) + " " + communityDescription)
 
-            }
+                            }
+                        }
 
-            override fun onDataChange(data: DataSnapshot) {
-                for (users in data.children) {
-                    usersIds.add(users.value.toString())
+                    })
                 }
-                val users = usersIds.filterNot { it == MainActivity.userId }
-                getTokens(users as ArrayList<String>)
-                Log.d("USERS", "LIST--->$usersIds")
-            }
-
-
-        })
-    }
-
-    private fun getTokens(list: ArrayList<String>) {
-        getCommunityForNotification(ride.community)
-        val ref: DatabaseReference = database.reference
-        val query: Query = ref.child(USERS)
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-            }
-
-            override fun onDataChange(userToken: DataSnapshot) {
-                for (items in list) {
-                    listOfTokens.add(userToken.child(items).child(TOKEN).value.toString())
-                }
-                if (ride.type.toString() == Type.OFFERED.toString()) {
-                    NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens,
-                            resources.getString(R.string.new_ride_offered),
-                            resources.getString(R.string.new_ride_offered_body) + " " + communityDescription)
-                } else {
-                    NotificationHelper.messageToCommunity(MainActivity.fmc, listOfTokens,
-                            resources.getString(R.string.new_ride_requested),
-                            resources.getString(R.string.new_ride_requested_body) + " " + communityDescription)
-
-                }
-            }
-        })
+            })
+        }
     }
 
     private fun showProgressBar() {
@@ -454,7 +368,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
                     locationResult ?: return
                     for (location in locationResult.locations) {
                         with(mMap) {
-
                             addMarker(MarkerOptions()
                                     .position(LatLng(location!!.latitude, location!!.longitude))
                                     .title(getString(R.string.your_position)).icon(BitmapDescriptorFactory.defaultMarker(207f)))
@@ -484,7 +397,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
 
     override fun onResume() {
         super.onResume()
-        connectivityDisposable=ConnectivityHelper.networkConnectionState(applicationContext,this@MapsActivity)
+        connectivityDisposable = ConnectivityHelper.networkConnectionState(applicationContext, this@MapsActivity)
         // startLocationUpdates()
         Log.d("STATE", "onResume")
     }
@@ -503,21 +416,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleApiClient.On
         }
 
     }
-    private fun convertCoordinateToAddress(location:Location){
-        try{
-           var  geo = Geocoder(applicationContext, Locale.getDefault())
-           var addresses:List<Address>  = geo.getFromLocation(location.latitude, location.longitude, 1)
+
+    private fun convertCoordinateToAddress(location: Location) {
+        try {
+            var geo = Geocoder(applicationContext, Locale.getDefault())
+            var addresses: List<Address> = geo.getFromLocation(location.latitude, location.longitude, 1)
             if (addresses.isEmpty()) {
-               Log.d("LOCATION","WAITING")
-            }
-            else {
+                Log.d("LOCATION", "WAITING")
+            } else {
                 if (addresses.isNotEmpty()) {
-                    Log.d("LOCALITY","locality:${addresses[0].locality} Address:${addresses[0].getAddressLine(0)}Country:${addresses[0].countryName}")
+                    Log.d("LOCALITY", "locality:${addresses[0].locality} Address:${addresses[0].getAddressLine(0)}Country:${addresses[0].countryName}")
                     txtOrigin.setText(addresses[0].getAddressLine(0).toString(), TextView.BufferType.EDITABLE)
                 }
             }
-        }
-        catch (e:Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }

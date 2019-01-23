@@ -8,6 +8,11 @@ This is a carpooling app that allows you to save fuel and reduce enviromental po
 * [Gradle](https://gradle.org/) - Dependency Management
 * [Picasso](http://square.github.io/picasso/) - Image downloading library
 
+
+## Versioning
+For the first stable version available, see the release-0.0.1 branch. 
+
+
 ## Authors
 
 * **Jeffry Martinez** - *Initial work* - [jf2028mp](https://github.com/jf2028mp)
